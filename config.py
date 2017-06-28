@@ -8,6 +8,12 @@ FLOOD_DETECTION_WINDOW = 4
 # shadowmuted
 FLOOD_DETECTION_MSG_PER_SEC = 3
 
+SIMILARITY_DETECTION_WINDOW = 30
+SIMILARITY_THRESHOLD = 70
+SIMILARITY_BURST = 20
+SIMILARITY_START = (2, 1)
+SIMILARITY_END = (50, 10)
+
 # duration in seconds until a warned flooder
 # isn't considered a flooder anymore if they stop flooding
 FLOOD_WARNING_TIMEOUT = 5 * 60

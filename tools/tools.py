@@ -6,24 +6,34 @@ from io import BytesIO
 from re import sub, compile as regex
 from shlex import quote
 from struct import pack
-from collections import defaultdict
-from itertools import chain
+from collections import defaultdict, deque
+from itertools import chain, product, takewhile
+from functools import lru_cache
 from asyncio import get_event_loop, create_subprocess_shell
 from asyncio.subprocess import PIPE
 from typing import List, Union
 
 import numpy
 from scipy.io import wavfile
+from Levenshtein import distance as levenshtein
 
 from config import (
         FLOOD_DETECTION_WINDOW,
         FLOOD_DETECTION_MSG_PER_SEC,
+        SIMILARITY_DETECTION_WINDOW,
+        SIMILARITY_BURST,
+        SIMILARITY_THRESHOLD,
+        SIMILARITY_START,
+        SIMILARITY_END,
         FLOOD_WARNING_TIMEOUT,
         BANNED_WORDS,
     )
 from tools import pokemons
 from tools.audio_tools import resample
 from tools.phonems import PhonemList, Phonem
+
+
+assert 100 >= SIMILARITY_THRESHOLD >= 0
 
 
 logger = logging.getLogger('tools')
@@ -70,28 +80,60 @@ class PokeParameters:
 
 class UserState:
 
-    detection_window = timedelta(seconds=FLOOD_DETECTION_WINDOW)
+    speed_window = timedelta(seconds=FLOOD_DETECTION_WINDOW)
+    speed_window_max = FLOOD_DETECTION_MSG_PER_SEC * FLOOD_DETECTION_WINDOW
 
-    def __init__(self, banned_words=BANNED_WORDS):
+    similarity_window = timedelta(seconds=SIMILARITY_DETECTION_WINDOW)
+    similarity_burst = SIMILARITY_BURST
+    similarity_start = SIMILARITY_START
+    similarity_end = SIMILARITY_END
+    similarity_threshold = SIMILARITY_THRESHOLD
+
+    flood_warning_timeout = timedelta(seconds=FLOOD_WARNING_TIMEOUT)
+
+    def __init__(self, banned_words=BANNED_WORDS, **kwargs):
         from .effects import AudioEffect, HiddenTextEffect, ExplicitTextEffect, PhonemicEffect, \
             VoiceEffect
 
         self.effects = {cls: [] for cls in
                         (AudioEffect, HiddenTextEffect, ExplicitTextEffect, PhonemicEffect, VoiceEffect)}
 
-        self.last_attack = datetime.now()  # any user has to wait some time before attacking, after entering the chan
+        for prop_name in ['speed_window', 'similarity_window',
+                          'similarity_burst', 'speed_window_max',
+                          'similarity_start', 'similarity_end']:
+            default = getattr(self, prop_name)
+            value = kwargs.get(prop_name, default)
+            setattr(self, prop_name, value)
+
+        now = datetime.now()
+        self.backlog = list()
         self.timestamps = list()
-        self.has_been_warned = False # User has been warned he shouldn't flood
+        self.last_attack = now # any user has to wait some time before attacking, after entering the chan
+
+        self._maxlen = max(self.speed_window_max, SIMILARITY_DETECTION_WINDOW)
         self._banned_words = [regex(word) for word in banned_words]
+        self._last_reset_time = now
+        self._warning = {'state': False, 'date': None}
 
+        self._slope = ((self.similarity_end[1] - self.similarity_start[1])
+                       / (self.similarity_end[0] - self.similarity_start[0]))
+        self._ord_orig = (self.similarity_end[1]
+                          - self._slope * self.similarity_start[0])
 
-    def __setattr__(self, name, value):
-        object.__setattr__(self, name, value)
-        if name == "has_been_warned" and value:
-            # it's safe since the whole application only
-            # uses the default loop
-            loop = get_event_loop()
-            loop.call_later(FLOOD_WARNING_TIMEOUT, self._reset_warning)
+    @property
+    def warned(self):
+        warning_date = self._warning['date']
+        if warning_date and (datetime.now() - warning_date
+                             > self.flood_warning_timeout):
+            self._warning = {'state': False, 'date': None}
+        return self._warning['state']
+
+    @warned.setter
+    def warned(self, value):
+        self._warning = {
+            'state': value,
+            'date': datetime.now() if value else None
+        }
 
     def add_effect(self, effect):
         """Adds an effect to one of the active tools list (depending on the effect type)"""
@@ -111,41 +153,83 @@ class UserState:
                     self.effects[cls].append(efct)
                     break
 
+    def add_to_backlog(self, msg):
+        self.timestamps.append(datetime.now())
+        self.backlog.append(msg)
+
+        if len(self.timestamps) > self._maxlen:
+            self.timestamps = self.timestamps[-self._maxlen:]
+            self.backlog = self.backlog[-self._maxlen:]
+
     def reset_flood_detection(self):
-        self.timestamps = list()
+        self._last_reset_time = datetime.now()
 
-    def check_flood(self, msg):
-        self._add_timestamp()
-        threshold = FLOOD_DETECTION_MSG_PER_SEC * FLOOD_DETECTION_WINDOW
-        return len(self.timestamps) > threshold or self.censor(msg)
+    @property
+    def is_flooding(self):
+#        return self.is_too_fast or self.is_censored or self.is_rambling
+        return self.is_rambling
 
-    def _add_timestamp(self):
-        """Add a timestamp for a user's message, and clears timestamps which are too old"""
-        # removing msg timestamps that are out of the detection window
+    @property
+    def is_too_fast(self):
         now = datetime.now()
-        self._refresh_timestamps(now)
-        self.timestamps.append(now)
+        in_window = list()
 
-    def censor(self, msg):
+        for timestamp in reversed(self.timestamps):
+            if timestamp < self._last_reset_time:
+                break
+            if now - timestamp > self.speed_window:
+                break
+            in_window.append(timestamp)
+
+        return len(in_window) > self.speed_window_max
+
+    @property
+    def is_censored(self):
+        msg = self.backlog[-1]
         return any(regex_word.fullmatch(msg) for regex_word in self._banned_words)
 
-    def _reset_warning(self):
-        """
-        Helper with a better debug representation than
-        a lambda for use as a callback in the event loop.
-        """
-        self.has_been_warned = False
+    @property
+    def is_rambling(self):
 
-    def _refresh_timestamps(self, now=None):
-        # now has to be a possible argument else there might me slight
-        # time differences between the current time of the calling function
-        # and this one's current time.
-        now = now if now else datetime.now()
-        # removing msg timestamps that are out of the detection window
-        updated = [timestamp for timestamp in self.timestamps
-                   if timestamp + self.detection_window > now]
-        self.timestamps = updated
+        relevant_timestamps = self._in_window(self.similarity_window)
+        if len(relevant_timestamps) <= self.similarity_burst:
+            return False
 
+        last_msg = self.backlog[-1]
+        similarity_tests = [self._are_too_similar(last_msg, msg)
+                            for msg in self.backlog[1:]]
+
+        if not similarity_tests:
+            return False
+
+        mean_similarity_percent = (sum(similarity_tests) / len(self.backlog)) * 100
+        return mean_similarity_percent > self.similarity_threshold
+
+    def _in_window(self, window):
+        now = datetime.now()
+        in_window = list()
+
+        for timestamp in reversed(self.timestamps):
+            if timestamp < self._last_reset_time:
+                break
+            if now - timestamp > window:
+                break
+            in_window.append(timestamp)
+
+        return in_window
+
+    @lru_cache()
+    def _are_too_similar(self, str1, str2):
+        length = max(len(str1), len(str2))
+
+        if length >= self.similarity_end[0]:
+            threshold = self.similarity_end[1]
+        elif str1 == str2:
+            return True
+        else:
+            threshold = self._slope * length + self._ord_orig
+
+        return distance > levenshtein(str1, str2)
 
 class AudioRenderer:
     lang_voices_mapping = {"fr": ("fr", (1, 2, 3, 4, 5, 6, 7)),

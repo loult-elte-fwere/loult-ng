@@ -245,13 +245,14 @@ class LoultServer:
                 client.send_binary(binary_payload)
 
     def _check_flood(self, msg):
-        if not self.user.state.check_flood(msg):
+        self.user.state.add_to_backlog(msg)
+        if not self.user.state.is_flooding:
             return False
 
         if self.cookie in self.loult_state.banned_cookies:
             return True
 
-        if self.user.state.has_been_warned: # user has already been warned. Ban him/her and notify everyone
+        if self.user.state.warned: # user has already been warned. Ban him/her and notify everyone
             self.logger.info('has been detected as a flooder')
             self._broadcast_to_channel(type='antiflood', event='banned',
                                        flooder_id=self.user.user_id,
@@ -261,7 +262,7 @@ class LoultServer:
         else:
             # resets the user's msg log, then warns the user
             self.user.state.reset_flood_detection()
-            self.user.state.has_been_warned = True
+            self.user.state.warned = True
             self.send_json(type='antiflood', event='flood_warning',
                            date=time() * 1000)
             alarm_sound = self._open_sound_file("tools/data/alerts/alarm.wav")
@@ -271,8 +272,6 @@ class LoultServer:
 
     @auto_close
     async def _msg_handler(self, msg_data : Dict):
-        if self._check_flood(msg_data['msg']):
-            return
         now = datetime.now()
         # user object instance renders both the output sound and output text
         output_msg, wav = await self.user.render_message(msg_data["msg"], msg_data.get("lang", "fr"))
@@ -296,8 +295,6 @@ class LoultServer:
         msg_type = msg_data['type']
         user_id = self.user.user_id
         output_msg = escape(msg_data['msg'])
-        if self._check_flood(output_msg):
-            return
 
         info = self.channel_obj.log_to_backlog(user_id, output_msg, kind=msg_type)
         self._broadcast_to_channel(type=msg_type, msg=output_msg,
@@ -415,6 +412,10 @@ class LoultServer:
             msg = json.loads(payload.decode('utf-8'))
         except json.JSONDecodeError:
             return self.sendClose(code=4001, reason='Malformed JSON.')
+
+        if msg['type'] in ('msg', 'me', 'bot'):
+            if self._check_flood(msg['msg']):
+                return
 
         if 'msg' in msg:
             msg['msg'] = sub(INVISIBLE_CHARS, '', msg['msg'])
