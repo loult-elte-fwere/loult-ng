@@ -344,17 +344,17 @@ class LoultServer:
 
         if self.raw_cookie not in MOD_COOKIES:
             self.logger.info('unauthorized access to shadowban tools')
-            return self.send_json(type="shadowban", user_id=user_id, state="unauthorized")
+            return self.send_json(type="shadowban", userid=user_id, state="unauthorized")
 
         shadowbanned_user = self.channel_obj.users[user_id]
-        if msg_data["action"] == "on":
+        if msg_data["action"] == "apply":
             shadowbanned_user.state.is_shadowbanned = True
             loult_state.shadowbanned_cookies.add(shadowbanned_user.cookie_hash)
-            self.send_json(type="shadowban", user_id=user_id, state="on")
-        elif msg_data["action"] == "off":
+            self.send_json(type="shadowban", userid=user_id, state="apply_ok")
+        elif msg_data["action"] == "remove":
             shadowbanned_user.state.is_shadowbanned = False
             loult_state.shadowbanned_cookies.remove(shadowbanned_user.cookie_hash)
-            self.send_json(type="shadowban", user_id=user_id, state="off")
+            self.send_json(type="shadowban", userid=user_id, state="remove_ok")
 
     @auto_close
     async def _trash_handler(self, msg_data: Dict):
@@ -362,18 +362,18 @@ class LoultServer:
 
         if self.raw_cookie not in MOD_COOKIES:
             self.logger.info('unauthorized access to trash tools')
-            return self.send_json(type="shadowban", user_id=user_id, state="unauthorized")
+            return self.send_json(type="shadowban", userid=user_id, state="unauthorized")
 
         trashed_user = self.channel_obj.users[user_id]
-        if msg_data["action"] == "on":
+        if msg_data["action"] == "apply":
             loult_state.trashed_cookies.add(trashed_user.cookie_hash)
-            self.send_json(type="trash", user_id=user_id, state="on")
+            self.send_json(type="trash", userid=user_id, state="apply_ok")
             for client in self.channel_obj.clients:
                 if client.user == self.user:
                     client.sendClose(code=4006,reason="Reconnect please")
-        elif msg_data["action"] == "off":
+        elif msg_data["action"] == "remove":
             loult_state.trashed_cookies.remove(trashed_user.cookie_hash)
-            self.send_json(type="trash", user_id=user_id, state="off")
+            self.send_json(type="trash", userid=user_id, state="remove_ok")
 
     @auto_close
     async def _binary_handler(self, payload):
