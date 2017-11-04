@@ -6,7 +6,7 @@ from functools import partial
 from itertools import cycle
 from os import path
 from typing import List
-from math import ave
+from statistics import mean
 
 import numpy
 from pysndfx import AudioEffectsChain
@@ -405,7 +405,7 @@ class CrapweEffect(PhonemicEffect):
             if phonem.name in FrenchPhonems.VOWELS and random.randint(1, 4) >= self.intensity:
                 phonem.duration *= 8
                 if phonem.pitch_modifiers:
-                    orgnl_pitch_avg = numpy.average([pitch for pos, pitch in phonem.pitch_modifiers])
+                    orgnl_pitch_avg = mean([pitch for pos, pitch in phonem.pitch_modifiers])
                 else:
                     orgnl_pitch_avg = 150
                 phonem.set_from_pitches_list([orgnl_pitch_avg + ((-1) ** i * 30) for i in range(4)])
