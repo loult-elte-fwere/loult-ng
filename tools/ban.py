@@ -20,7 +20,7 @@ class Ban:
         'remove': 'nft delete element inet %s "{ban_type}" "{{{ip}}}"' % NFTABLES_OUTPUT,
     }
 
-    def __init__(self, ban_type, state, timeout=None):
+    def __init__(self, ban_type, action, timeout=None):
         if not timeout:
             timeout = '0s'
         timeout = str(timeout)
@@ -32,15 +32,15 @@ class Ban:
 
         if not search('^(\d+d)?(\d+h)?(\d+m)?(\d+s)?$', timeout):
             raise BanFail('timeout_invalid')
-        if state not in self.commands:
+        if action not in self.commands:
             raise BanFail('wrong_state')
         if ban_type not in self.ban_types:
             raise BanFail('wrong_type')
 
-        self.state = state
+        self.action = action
         self.type = ban_type
         self.timeout = timeout
-        self.template = self.commands[state]
+        self.template = self.commands[action]
 
     def __call__(self, ip_list):
         return self._ban(ip_list)
@@ -59,10 +59,10 @@ class Ban:
         if err:
             await self._handle_failure(ip_list)
 
-        return self.state + '_ok'
+        return self.action + '_ok'
 
     def _make_cmd(self, ip_list):
-        if self.state == 'apply':
+        if self.action == 'apply':
             ip_arg = ', '.join('%s timeout %s' % (ip, self.timeout)
                                for ip in ip_list)
         else:
@@ -82,10 +82,10 @@ class Ban:
 
     async def _handle_failure(self, ip_list):
         """Removes all bans that we tried to set."""
-        if self.state == 'apply':
+        if self.action == 'apply':
             try:
                 ban = Ban(self.type, 'remove')
                 await ban(ip_list)
             except BanFail:
                 raise BanFail('backend_failure')
-        raise BanFail(self.state + '_fail')
+        raise BanFail(self.action + '_fail')

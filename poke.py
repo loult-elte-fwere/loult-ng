@@ -296,7 +296,7 @@ class LoultServer:
     async def _ban_handler(self, msg_data : Dict):
         user_id = msg_data['userid']
         ban_type = msg_data['type']
-        state = msg_data['state']
+        action = msg_data['action']
         timeout = msg_data.get('timeout', None)
         info = {'type': ban_type, 'userid': user_id}
 
@@ -329,7 +329,7 @@ class LoultServer:
         log_msg = '{type}:{ip}:{userid}:resulted in "{state}"'
 
         try:
-            ban = Ban(ban_type, state, timeout)
+            ban = Ban(ban_type, action, timeout)
             info['state'] = await ban(todo)
             self.logger.info(log_msg.format(**info, ip=todo))
             self.send_json(**info)
