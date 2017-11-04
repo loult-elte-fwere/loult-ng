@@ -242,6 +242,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     case 'move':
                         move(msg);
                         break;
+
+                    case 'audio_broadcast':
+                        lastMuted = muted.indexOf(msg.userid) !== -1;
+                        break;
                     
                     case 'msg':
                         lastMuted = muted.indexOf(msg.userid) !== -1;

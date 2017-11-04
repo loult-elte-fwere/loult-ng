@@ -6,6 +6,7 @@ from functools import partial
 from itertools import cycle
 from os import path
 from typing import List
+from math import ave
 
 import numpy
 from pysndfx import AudioEffectsChain
@@ -132,22 +133,6 @@ class SnebwewEffect(ExplicitTextEffect):
         return reconstructed
 
 
-class SpoinkEffect(ExplicitTextEffect):
-    NAME = "mme"
-    TIMEOUT = 150
-    _spoink_punchlines = ["hihihi", "onwww", "jtm", "jvm", "c'est genre hyper irrespectueux", "onwwwwww",
-                          "onw pleuwww", "pleplpleplelepelepeleuwww", "peuw", "jtm mr", "t two cwle",
-                          "dacowe"]
-
-    def process(self, text : str):
-        if random.randint(0, 3) != 0:
-            if random.randint(0, 4) == 0:
-                text = "hihihihi " + text
-        else:
-            text = random.choice(self._spoink_punchlines)
-        return text
-
-
 class PoiloEffect(ExplicitTextEffect):
     NAME = "poil au snèbwèw"
     TIMEOUT = 180
@@ -240,6 +225,7 @@ class SpeechMasterEffect(HiddenTextEffect):
         reconstructed = " ".join([word + random.choice(self.available_punctuation)
                                   for word in space_splitted])
         return reconstructed
+
 
 class SkyblogEffect(ExplicitTextEffect):
     """Increases your style by 64%"""
@@ -493,6 +479,21 @@ class PitchRandomizerEffect(PhonemicEffect):
                                       for duration, pitch in phonem.pitch_modifiers]
         return phonems
 
+class CyborgEffect(PhonemicEffect):
+    NAME = "cyborg"
+    TIMEOUT = 180
+
+    def process(self, phonems: PhonemList):
+        for phonem in phonems:
+            if phonem.name in FrenchPhonems.VOWELS and random.randint(1, 1) == 1:
+                phonem.duration *= 2
+                if phonem.pitch_modifiers:
+                    orgnl_pitch_avg = average([pitch for pos, pitch in phonem.pitch_modifiers])
+                else:
+                    orgnl_pitch_avg = 150
+                phonem.set_from_pitches_list([orgnl_pitch_avg + ((-1) ** i * 80) for i in range(25)])
+        return phonems
+
 #### Here are the voice effets ####
 
 
@@ -537,8 +538,8 @@ class GhostEffect(AudioEffect):
     TIMEOUT = 120
 
     def process(self, wave_data: numpy.ndarray):
-        reverb, reverse = ReverbManEffect(), tools.ReversedEffect()
-        return reverse.process(reverb.process(reverse.process(wave_data)))
+        reverb = ReverbManEffect()
+        return reverb.process(wave_data[::-1])[::-1]
 
 
 class RobotVoiceEffect(AudioEffect):

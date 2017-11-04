@@ -15,7 +15,8 @@ from salt import SALT
 from tools.audio_tools import mix_tracks
 from tools import AudioEffect, PhonemicEffect, PoiloEffect, PitchRandomizerEffect, PhonemicFofoteEffect, VowelExchangeEffect
 from tools.effects.effects import SkyblogEffect, AutotuneEffect, GrandSpeechMasterEffect, CrapweEffect, ReverbManEffect, \
-    ContradictorEffect, RobotVoiceEffect, PitchShiftEffect, GodSpeakingEffect
+    ContradictorEffect, RobotVoiceEffect, PitchShiftEffect, GodSpeakingEffect, AccentMarseillaisEffect, GhostEffect, \
+    AccentAllemandEffect
 from tools.phonems import PhonemList, FrenchPhonems
 from tools.users import User
 
@@ -86,19 +87,19 @@ class SpeechDeformation(PhonemicEffect):
 
     def process(self, phonems : PhonemList):
         for phonem in phonems:
-            if phonem.name in FrenchPhonems.VOWELS and random.randint(1,4) == 1:
-                phonem.duration *= 8
+            if phonem.name in FrenchPhonems.VOWELS and random.randint(1,1) == 1:
+                phonem.duration *= 2
                 if phonem.pitch_modifiers:
                     orgnl_pitch_avg = average([pitch for pos, pitch in phonem.pitch_modifiers])
                 else :
                     orgnl_pitch_avg = 150
-                phonem.set_from_pitches_list([orgnl_pitch_avg + ((-1) ** i * 40) for i in range(4)])
+                phonem.set_from_pitches_list([orgnl_pitch_avg + ((-1) ** i * 80) for i in range(25)])
         return phonems
 
 
-fake_cookie = md5(("6225f3ff26c044c069233193a39466" + SALT).encode('utf8')).digest()
+fake_cookie = md5(("622545604c69233193a39466" + SALT).encode('utf8')).digest()
 user = User(fake_cookie, "wesh", None)
-for effect in [AutotuneEffect(), GodSpeakingEffect()]:
+for effect in [SpeechDeformation()]:
     user.state.add_effect(effect)
 
 msg = """Non mais là les mecs faut se détendre si vous voulez sortir moi jme

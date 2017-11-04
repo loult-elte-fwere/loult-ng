@@ -1,6 +1,9 @@
 # in seconds, the time a pokemon has to wait before being able to attack again
 ATTACK_RESTING_TIME = 30
 
+# Time before a user can talk after connecting, in seconds
+TIME_BEFORE_TALK = 5
+
 # in seconds, the time during which a users's message are "remembered"
 FLOOD_DETECTION_WINDOW = 4
 
@@ -26,7 +29,10 @@ MOD_COOKIES = ["put your cookies here; not their hashes, not userids, the actual
 
 # Here are the cookies of users that can broadcast sound to other users. For those users, when they send a
 # wav saound binary, the sound is just passed to other users with no modifications
+# Alos, cookies that are allowed to render text to sound and not send the text of their message
+# (thus sending "sound-only" messages)
 SOUND_BROADCASTER_COOKIES = ["put your cookies here; not their hashes, not userids, the actual cookies' id key"]
+
 
 # Name of a netfilter table with a chain whose hook is 'input' (resp. 'output')
 # in which the sets 'ban' (resp. 'slowban') are present. If you use the sample
