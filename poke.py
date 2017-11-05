@@ -315,10 +315,11 @@ class LoultServer:
                 client.send_json(type="banned",
                                  msg="ofwere")
 
-        # and everyone is notified of the ban as to instigate fear in the heart of others
-        self._broadcast_to_channel(type='antiflood', event='banned',
-                                   flooder_id=user_id,
-                                   date=time() * 1000)
+        if action == "apply" and ban_type == "ban":
+            # and everyone is notified of the ban as to instigate fear in the heart of others
+            self._broadcast_to_channel(type='antiflood', event='banned',
+                                       flooder_id=user_id,
+                                       date=time() * 1000)
 
         connected_list = {client.ip for client in self.channel_obj.clients
                           if client.user and client.user.user_id == user_id}
