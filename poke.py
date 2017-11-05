@@ -370,7 +370,7 @@ class LoultServer:
             loult_state.trashed_cookies.add(trashed_user.cookie_hash)
             self.send_json(type="trash", userid=user_id, state="apply_ok")
             for client in self.channel_obj.clients:
-                if client.user == self.user:
+                if client.user.user_id == user_id:
                     client.sendClose(code=4006,reason="Reconnect please")
         elif msg_data["action"] == "remove":
             loult_state.trashed_cookies.remove(trashed_user.cookie_hash)
