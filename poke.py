@@ -176,7 +176,7 @@ class LoultServer:
     async def _msg_handler(self, msg_data : Dict):
         now = datetime.now()
         if (now - self.user.state.connection_time).seconds < TIME_BEFORE_TALK:
-            return self.send_json(type='wait')
+            return self.send_json(type='wait',date=time()*1000)
 
         if self._check_flood(msg_data['msg']):
             return
