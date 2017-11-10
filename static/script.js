@@ -23,7 +23,7 @@
 	// DOM-related functions
 
 	var parser = function(raw_msg) {
-		var profane = new RegExp('(?:^\|[ \n\r\t.,\'"\+!?-]+)(tg|fdp|put+(e|ain)|bi+t+e|cul|couille|chat+e|chien+(?:as+)?e|salope?|(pd)+|p(?:é|è|ai|ay)d(?:é|è|ai|ay)|salaud|sc?hnec?k|(?:em)?merd(?:e|ier|eux|eur)|bordel|queue|foutre|nique|encul(?:é|er)|enfoiré|branleu?r|fiotte|burne|chi(?:er?|é)|con(?:ne|n?ard|n?asse)?)(?:[ \n\r\t.,\'"\+!?-]+\|$)', 'gi');
+		var profane = new RegExp('\\b((?:tg+|fdp+|ba+t+a+r+d?|fiste?(?:u?r?)|ta+r+l+o+u+(z|s)e|taf+iol+e|péta+se?|put+(e|ain)|bi+t+e|cu+l|co+u+i+l+e|cha+t+e|chi+e+n+(?:a+s+)?e|sa+l+o+p+e?|(pd+)+|p(?:é|è|ai|ay)d(?:é|è|ai|ay)|salaud|sc?hne+c?k|(?:em)?me+r+d+(?:i?er?|eu(?:x|r))|bo+r+de+l+|fo+u+t+r+e|ni+qu?(?:é|eu?r?)|encu+l+(?:é|eu?r)|enf+oiré|branl+eu?r?|fi+o+t+e|bu+r+n+e|co+n(?:ne|n?a+rd|n?a+s+e)?)s?)\\b', 'gi');
 		var rules = [
 			{
 				test: msg => msg.includes('http'),
@@ -43,7 +43,7 @@
 			},
 			{
 				test: msg => msg.match(profane),
-				run: msg => msg.replace(profane, function(matched){ return '<span class="pinktext">' + matched.replace(/\S/gi, '♥') + '</span>'; })
+				run: msg => msg.replace(profane, function(matched){ return '<span class="pinktext">' + '♥'.repeat(matched.length) + '</span>'; })
 			}
 		];
 
@@ -408,6 +408,10 @@
 						ws.send(JSON.stringify({type: 'me', msg: trimed.substr(4)}));
 					else if(trimed.match(/^\/(poker|rainbow|flip|omg)$/i))
 						document.body.className = theme + ' ' + trimed.substr(1);
+					else if(trimed.match(/^\/((?:bisw){2})$/i)) {
+						document.body.className = 'cozy pink comic';
+						chat.scrollTop = chat.scrollHeight;
+					}
 					else {
 						ws.send(JSON.stringify({type: 'msg', msg: trimed, lang: lang}));
 						underlay.className = 'pulse';
@@ -442,6 +446,10 @@
 					case 'bot':
 						if(!lastMuted)
 							addLine(users[msg.userid], parser(msg.msg), msg.date, msg.type, msg.userid);
+					break;
+
+					case 'wait':
+						addLine({name : 'info'}, "La connection est en cours. Concentrez-vous quelques instants avant de dire des âneries.", msg.date, 'log');
 					break;
 
 					case 'me':
@@ -549,8 +557,8 @@
 
 			if(!banned) {
 				addLine({name : 'info'}, 'Nouvelle connexion en cours...', (new Date), 'part');
-				window.setTimeout(wsConnect, waitTime);
 				waitTime = Math.min(waitTime * 2, 120000);
+				window.setTimeout(wsConnect, waitTime);
 			}
 		};
 	};
