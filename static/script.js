@@ -448,6 +448,10 @@
 							addLine(users[msg.userid], parser(msg.msg), msg.date, msg.type, msg.userid);
 					break;
 
+					case 'wait':
+						addLine({name : 'info'}, "La connection est en cours. Concentrez-vous quelques instants avant de dire des âneries.", msg.date, 'log');
+					break;
+
 					case 'me':
 						if(!lastMuted)
 							addLine({name : 'info', color : users[msg.userid].color}, 'Le ' + users[msg.userid].name + ' ' + users[msg.userid].adjective + ' ' + parser(msg.msg), msg.date, 'me');
