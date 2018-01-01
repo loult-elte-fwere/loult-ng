@@ -453,10 +453,6 @@ class LoultServer:
             elif msg['type'] in ('me', 'bot'):
                 ensure_future(self._norender_msg_handler(msg))
 
-            else:
-                return self.sendClose(code=4003,
-                                      reason='Unrecognized command type.')
-
     def onClose(self, wasClean, code, reason):
         """Triggered when the WS connection closes. Mainly consists of deregistering the user"""
         if self.cnx:
