@@ -670,6 +670,46 @@ select {
 	opacity: 0.8;
 }
 
+.pink main, .pink ul, .pink footer > div, .pink #window, .pink #window > div:first-child {
+	border-color: #ff0090;
+}
+
+.pink header, .pink #window > div:first-child, .pink footer > div > i, .pink footer, .pink #close {
+	background: #ff0090;
+}
+
+.pink footer > div > i, .pink #close, .pink #window > div:first-child {
+	color: #EEE;
+}
+
+.pink #close {
+	padding: 5px;
+	border-radius: 99px;
+	border: 2px solid #DDD;
+}
+
+.pink #close:hover {
+	background: #ff0090 !important;
+	opacity: 0.8;
+}
+
+.pink, .pink ul, .pink #window, .pink #input, .pink select {
+	background: #ffcceb;
+	color: #ff0090;
+}
+
+.pink ::-webkit-scrollbar-track {
+	background-color: #ffcceb;
+}
+
+.pink ::-webkit-scrollbar, .pink ::-webkit-scrollbar-thumb {
+	background-color: #ff0090;
+}
+
+.pink ::-webkit-scrollbar-track, .pink ::-webkit-scrollbar, .pink ::-webkit-scrollbar-thumb {
+	border-color: #ffcceb;
+}
+
 .night, .night ul, .night #window, .night #input, .night select {
 	background: #222;
 	color: #EEE;
