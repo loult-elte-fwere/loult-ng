@@ -499,6 +499,10 @@
 						}
 					break;
 
+					case 'wait':
+						addLine({name : 'info'}, "La connection est en cours. Concentrez-vous quelques instants avant de dire des âneries.", msg.date, 'log');
+					break;
+
 					case 'userlist':
 						for(var i = 0; i < msg.users.length; i++)
 							addUser(msg.users[i].userid, msg.users[i].params);

@@ -759,6 +759,7 @@ select {
 }
 
 .night #underlay {
+    -webkit-filter: invert(50%) brightness(200%);
     filter: invert(50%) brightness(200%);
 }
 
