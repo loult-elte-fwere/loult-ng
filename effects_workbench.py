@@ -16,7 +16,7 @@ from tools.audio_tools import mix_tracks
 from tools import AudioEffect, PhonemicEffect, PoiloEffect, PitchRandomizerEffect, PhonemicFofoteEffect, VowelExchangeEffect
 from tools.effects.effects import SkyblogEffect, AutotuneEffect, GrandSpeechMasterEffect, CrapweEffect, ReverbManEffect, \
     ContradictorEffect, RobotVoiceEffect, PitchShiftEffect, GodSpeakingEffect, AccentMarseillaisEffect, GhostEffect, \
-    AccentAllemandEffect
+    AccentAllemandEffect, CyborgEffect
 from tools.phonems import PhonemList, FrenchPhonems
 from tools.users import User
 
@@ -99,7 +99,7 @@ class SpeechDeformation(PhonemicEffect):
 
 fake_cookie = md5(("622545604c69233193a39466" + SALT).encode('utf8')).digest()
 user = User(fake_cookie, "wesh", None)
-for effect in [SpeechDeformation()]:
+for effect in [CyborgEffect()]:
     user.state.add_effect(effect)
 
 msg = """Non mais là les mecs faut se détendre si vous voulez sortir moi jme

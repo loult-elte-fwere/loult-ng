@@ -488,7 +488,7 @@ class CyborgEffect(PhonemicEffect):
             if phonem.name in FrenchPhonems.VOWELS and random.randint(1, 1) == 1:
                 phonem.duration *= 2
                 if phonem.pitch_modifiers:
-                    orgnl_pitch_avg = average([pitch for pos, pitch in phonem.pitch_modifiers])
+                    orgnl_pitch_avg = mean([pitch for pos, pitch in phonem.pitch_modifiers])
                 else:
                     orgnl_pitch_avg = 150
                 phonem.set_from_pitches_list([orgnl_pitch_avg + ((-1) ** i * 80) for i in range(25)])

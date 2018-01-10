@@ -21,10 +21,10 @@ from autobahn.websocket.types import ConnectionDeny
 from salt import SALT
 
 from config import ATTACK_RESTING_TIME, BAN_TIME, MOD_COOKIES, SOUND_BROADCASTER_COOKIES, MAX_COOKIES_PER_IP, \
-    TIME_BEFORE_TALK
+    TIME_BEFORE_TALK, TIME_BETWEEN_CONNECTIONS
 from tools.ban import Ban, BanFail
 from tools.combat import CombatSimulator
-from tools.tools import INVISIBLE_CHARS, encode_json
+from tools.tools import INVISIBLE_CHARS, encode_json, OrderedDequeDict
 from tools.users import User
 
 
@@ -84,6 +84,13 @@ class LoultServer:
     def onConnect(self, request):
         """HTTP-level request, triggered when the client opens the WSS connection"""
        	self.ip = request.headers['x-real-ip']
+
+        # checking if this IP's last login isn't too close from this one
+        if self.ip in self.loult_state.ip_last_login:
+            if (datetime.now() - self.loult_state.ip_last_login[self.ip]).seconds < TIME_BETWEEN_CONNECTIONS:
+                raise ConnectionDeny(403, 'Wait some time before trying to connect')
+        self.loult_state.ip_last_login[self.ip] = datetime.now()
+
         self.logger.info('attempting a connection')
 
         # trying to extract the cookie from the request header. Else, creating a new cookie and
@@ -206,6 +213,18 @@ class LoultServer:
                            msg=output_msg, date=info['date'])
             if synth:
                 self.send_binary(wav)
+
+    @auto_close
+    async def _pm_handler(self, msg_data: Dict):
+        # cleaning up none values in case of fuckups
+        msg_data = {key: value for key, value in msg_data.items() if value is not None}
+        targer_id, target = self.channel_obj.get_user_by_name(msg_data["target"], msg_data.get("order", 1) - 1)
+        if target is None:
+            self.send_json(type='private_msg', event='invalid')
+        for client in self.channel_obj.clients:
+            if client.user == target:
+                client.send_json(type='private_msg', msg=msg_data["msg"])
+
 
     @auto_close
     async def _norender_msg_handler(self, msg_data: Dict):
@@ -370,7 +389,7 @@ class LoultServer:
             loult_state.trashed_cookies.add(trashed_user.cookie_hash)
             self.send_json(type="trash", userid=user_id, state="apply_ok")
             for client in self.channel_obj.clients:
-                if client.user.user_id == user_id:
+                if client.user is not None and client.user.user_id == user_id:
                     client.sendClose(code=4006,reason="Reconnect please")
         elif msg_data["action"] == "remove":
             loult_state.trashed_cookies.remove(trashed_user.cookie_hash)
@@ -410,6 +429,10 @@ class LoultServer:
                 # when the message is just a simple text message (regular chat)
                 ensure_future(self._msg_handler(msg))
 
+            if msg['type'] == 'private_msg':
+                # when it's a private message destined to a specific user
+                ensure_future(self._pm_handler(msg))
+
             elif msg["type"] == "attack":
                 # when the current client attacks someone else
                 ensure_future(self._attack_handler(msg))
@@ -429,10 +452,6 @@ class LoultServer:
 
             elif msg['type'] in ('me', 'bot'):
                 ensure_future(self._norender_msg_handler(msg))
-
-            else:
-                return self.sendClose(code=4003,
-                                      reason='Unrecognized command type.')
 
     def onClose(self, wasClean, code, reason):
         """Triggered when the WS connection closes. Mainly consists of deregistering the user"""
@@ -543,6 +562,7 @@ class LoultServerState:
         self.ip_backlog = deque(maxlen=100) #type: Tuple(str, str)
         self.shadowbanned_cookies = set()
         self.trashed_cookies = set()
+        self.ip_last_login = OrderedDequeDict()
 
     def channel_connect(self, client : LoultServer, user_cookie : str, channel_name : str) -> Tuple[Channel, User]:
         # if the channel doesn't exist, we instanciate it and add it to the channel dict
