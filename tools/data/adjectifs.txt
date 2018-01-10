@@ -532,6 +532,7 @@ auréolé
 austral
 australien
 austro-hongrois
+autiste
 auto-immun
 autocollant
 autodestructeur
@@ -1546,7 +1547,6 @@ céladon
 célinien
 célébrant
 céphalo-rachidien
-céphalorachidien
 céruléen
 cérusé
 céréalier
@@ -1596,7 +1596,6 @@ destiné
 destructeur
 destructible
 destructif
-deutsche mark
 diable
 diacritique
 diagonal
@@ -1754,6 +1753,7 @@ déambulateur
 déambulatoire
 débarqué
 débauché
+débile
 débilitant
 débiteur
 déblayeur
@@ -5569,6 +5569,7 @@ stroboscopique
 structural
 structurel
 structuré
+stupide
 stupéfait
 stupéfiant
 stygien
@@ -6437,3 +6438,4 @@ zélé
 événementiel
 éwé
 ôté
+du Mordor
