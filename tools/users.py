@@ -15,7 +15,7 @@ from tools.tools import AudioRenderer, SpoilerBipEffect, prepare_text_for_tts
 from .phonems import PhonemList
 
 with open(path.join(path.dirname(path.realpath(__file__)), "data/adjectifs.txt")) as adj_file:
-    adjectives = adj_file.read().split()
+    adjectives = adj_file.read().splitlines()
 
 
 class VoiceParameters:
