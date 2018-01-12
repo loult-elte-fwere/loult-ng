@@ -3,7 +3,7 @@
 import json
 import logging
 import wave
-from asyncio import get_event_loop, ensure_future
+from asyncio import get_event_loop, ensure_future, sleep, gather
 from collections import OrderedDict, deque
 from copy import deepcopy
 from datetime import datetime, timedelta
@@ -581,6 +581,11 @@ class LoultServerState:
         loop.call_later(BAN_TIME * 60, self.banned_cookies.remove, cookie)
 
 
+async def say_hi():
+    while True:
+        await sleep(5)
+        print("WESH WESH")
+
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
     logger = logging.getLogger('server')
@@ -627,7 +632,8 @@ if __name__ == "__main__":
         )
 
     coro = loop.create_server(factory, '127.0.0.1', 9000)
-    server = loop.run_until_complete(coro)
+    test_hi = ensure_future(say_hi())
+    server = loop.run_until_complete(gather(coro, test_hi))
 
     try:
         loop.run_forever()
