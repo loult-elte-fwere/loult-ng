@@ -610,6 +610,10 @@ if __name__ == "__main__":
     loop = get_event_loop()
     loult_state = LoultServerState()
 
+    # setting up events
+    from tools.events import SayHi, EventScheduler
+    scheduler = EventScheduler([SayHi(loult_state, timedelta(seconds=15))])
+
     try:
         loop.run_until_complete(Ban.test_ban())
         loult_state.can_ban = True
@@ -632,8 +636,8 @@ if __name__ == "__main__":
         )
 
     coro = loop.create_server(factory, '127.0.0.1', 9000)
-    test_hi = ensure_future(say_hi())
-    server = loop.run_until_complete(gather(coro, test_hi))
+    scheduler_task = ensure_future(scheduler())
+    server = loop.run_until_complete(gather(coro, scheduler_task))
 
     try:
         loop.run_forever()
