@@ -60,6 +60,7 @@ class UserState:
                         (AudioEffect, HiddenTextEffect, ExplicitTextEffect, PhonemicEffect, VoiceEffect)}
         self.connection_time = datetime.now()
         self.last_attack = datetime.now()  # any user has to wait some time before attacking, after entering the chan
+        self.last_message = datetime.now()
         self.timestamps = list()
         self.has_been_warned = False # User has been warned he shouldn't flood
         self._banned_words = [regex(word) for word in banned_words]
@@ -104,6 +105,7 @@ class UserState:
         """Add a timestamp for a user's message, and clears timestamps which are too old"""
         # removing msg timestamps that are out of the detection window
         now = datetime.now()
+        self.last_message = now
         self._refresh_timestamps(now)
         self.timestamps.append(now)
 
@@ -163,7 +165,7 @@ class User:
                     'name': self.poke_params.pokename,
                     'img': str(self.poke_params.poke_id).zfill(3),
                     'color': self.poke_params.color,
-                    'adjective' : self.poke_params.poke_adj
+                    'adjective': self.poke_params.poke_adj
                 }
             }
         return self._info

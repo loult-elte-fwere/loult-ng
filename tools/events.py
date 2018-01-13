@@ -2,8 +2,12 @@ from datetime import timedelta, datetime, time, date
 from typing import List, Tuple
 import asyncio
 from time import time as timestamp
+import random
 
 from poke import LoultServerState
+from tools.effects.effects import AutotuneEffect, ReverbManEffect, SkyblogEffect, RobotVoiceEffect, \
+    AngryRobotVoiceEffect, PitchShiftEffect, GrandSpeechMasterEffect
+from tools.users import User
 
 
 def compute_next_occ(period, occ_time: time):
@@ -50,11 +54,54 @@ class SayHi(PeriodicEvent):
     async def happen(self):
         for channel in self.loultstate.chans.values():
             user = next(iter(channel.users.values()))
-            client = next(iter(channel.clients))
-            client._broadcast_to_channel(type='msg', userid=user.user_id,
-                                         msg="WESH WESH", date=timestamp() * 1000)
+            channel.broadcast(type='msg', userid=user.user_id,
+                              msg="WESH WESH", date=timestamp() * 1000)
 
 
+class EffectEvent(PeriodicEvent):
+
+    def _select_random_users(self, user_list: List[User]) -> List[User]:
+        #filtering out users who haven't talked in the last 20 minutes
+        now = datetime.now()
+        users = [user for user in user_list if (now - user.state.last_message).minutes < 20]
+        # selecting 3 random users
+        selected_users = []
+        while users or len(selected_users) < 3:
+            rnd_user = users.pop(random.randint(0,len(users) - 1))
+            selected_users.append(rnd_user)
+        return selected_users
+
+
+class BienChantewEvent(EffectEvent):
+
+    async def happen(self):
+        for channel in self.loultstate.chans.values():
+            selected_users = self._select_random_users(channel.users.values())
+            for user in selected_users:
+                autotune = AutotuneEffect()
+                ouevewb = ReverbManEffect()
+                autotune._timeout = 7200 # 2 hours
+                ouevewb._timeout = 7200 # 2 hours
+                user.state.add_effect(autotune)
+                user.state.add_effect(ouevewb)
+                channel.broadcast(type="notification",
+                                  event_type="autotune",
+                                  msg="%s a été visité par le Qwil du bon ouévèwb!")
+
+
+class MaledictionEvent(EffectEvent):
+
+    async def happen(self):
+        for channel in self.loultstate.chans.values():
+            selected_users = self._select_random_users(channel.users.values())
+            for user in selected_users:
+                effects = [GrandSpeechMasterEffect(), RobotVoiceEffect(), AngryRobotVoiceEffect(), PitchShiftEffect()]
+                for effect in effects:
+                    effect._timeout = 7200
+                    user.state.add_effect(effect)
+                channel.broadcast(type="notification",
+                                  event_type="malediction",
+                                  msg="%s a été touché par la maledictionw!")
 
 class EventScheduler:
 

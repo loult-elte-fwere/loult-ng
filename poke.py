@@ -146,14 +146,6 @@ class LoultServer:
     def send_binary(self, payload):
         self.sendMessage(payload, isBinary=True)
 
-    def _broadcast_to_channel(self, binary_payload=None, **kwargs):
-        msg = encode_json(kwargs)
-        for client in self.channel_obj.clients:
-            if kwargs: # in case there is no "text" message to be broadcasted
-                client.sendMessage(msg)
-            if binary_payload:
-                client.send_binary(binary_payload)
-
     def _check_flood(self, msg):
         if not self.user.state.check_flood(msg):
             return False
@@ -163,7 +155,7 @@ class LoultServer:
 
         if self.user.state.has_been_warned: # user has already been warned. Ban him/her and notify everyone
             self.logger.info('has been detected as a flooder')
-            self._broadcast_to_channel(type='antiflood', event='banned',
+            self.channel_obj.broadcast(type='antiflood', event='banned',
                                        flooder_id=self.user.user_id,
                                        date=time() * 1000)
             self.loult_state.ban_cookie(self.cookie)
@@ -201,11 +193,11 @@ class LoultServer:
         info = self.channel_obj.log_to_backlog(self.user.user_id, output_msg)
         if not self.user.state.is_shadowbanned:
             if "notext" in msg_data and self.raw_cookie in SOUND_BROADCASTER_COOKIES:
-                self._broadcast_to_channel(type="audio_broadcast", userid=self.user.user_id,
+                self.channel_obj.broadcast(type="audio_broadcast", userid=self.user.user_id,
                                            binary_payload=wav if synth else None)
             else:
                 # broadcast message and rendered audio to all clients in the channel
-                self._broadcast_to_channel(type='msg', userid=self.user.user_id,
+                self.channel_obj.broadcast(type='msg', userid=self.user.user_id,
                                            msg=output_msg, date=info['date'],
                                            binary_payload=wav if synth else None)
         else: # we just send the message to the current client
@@ -238,7 +230,7 @@ class LoultServer:
 
         info = self.channel_obj.log_to_backlog(user_id, output_msg, kind=msg_type)
         if not self.user.state.is_shadowbanned:
-            self._broadcast_to_channel(type=msg_type, msg=output_msg,
+            self.channel_obj.broadcast(type=msg_type, msg=output_msg,
                                        userid=user_id, date=info['date'])
         else: # user is shadowbanned, so it's only sent to the
             self.send_json(type=msg_type, msg=output_msg,
@@ -267,14 +259,14 @@ class LoultServer:
         elif (now - self.user.state.last_attack < timedelta(seconds=ATTACK_RESTING_TIME)):
             self.send_json(type='attack', event='invalid')
         else:
-            self._broadcast_to_channel(type='attack', date=time() * 1000,
+            self.channel_obj.broadcast(type='attack', date=time() * 1000,
                                        event='attack',
                                        attacker_id=self.user.user_id,
                                        defender_id=adversary_id)
 
             combat_sim = CombatSimulator()
             combat_sim.run_attack(self.user, adversary, self.channel_obj)
-            self._broadcast_to_channel(type='attack', date=time() * 1000,
+            self.channel_obj.broadcast(type='attack', date=time() * 1000,
                                        event='dice',
                                        attacker_dice=combat_sim.atk_dice,
                                        defender_dice=combat_sim.def_dice,
@@ -285,13 +277,13 @@ class LoultServer:
 
             if combat_sim.affected_users: # there are users affected by some effects
                 for user, effect in combat_sim.affected_users:
-                    self._broadcast_to_channel(type='attack', date=time() * 1000,
+                    self.channel_obj.broadcast(type='attack', date=time() * 1000,
                                                event='effect',
                                                target_id=user.user_id,
                                                effect=effect.name,
                                                timeout=effect.timeout)
             else: # list is empty, no one was attacked
-                self._broadcast_to_channel(type='attack', date=time() * 1000,
+                self.channel_obj.broadcast(type='attack', date=time() * 1000,
                                            event='nothing')
 
             # combat_sim uses the last attack time to compute the bonus,
@@ -305,7 +297,7 @@ class LoultServer:
         if not {"x", "y", "id"}.issubset(set(msg_data.keys())):
             return
         # signalling all users in channel that this user moved
-        self._broadcast_to_channel(type='move',
+        self.channel_obj.broadcast(type='move',
                                    id=escape(msg_data['id'][:12]),
                                    userid=self.user.user_id,
                                    x=float(msg_data['x']),
@@ -336,7 +328,7 @@ class LoultServer:
 
         if action == "apply" and ban_type == "ban":
             # and everyone is notified of the ban as to instigate fear in the heart of others
-            self._broadcast_to_channel(type='antiflood', event='banned',
+            self.channel_obj.broadcast(type='antiflood', event='banned',
                                        flooder_id=user_id,
                                        date=time() * 1000)
 
@@ -401,7 +393,7 @@ class LoultServer:
         if self.raw_cookie in SOUND_BROADCASTER_COOKIES:
             try:
                 _ = wave.open(BytesIO(payload)) # testing if it's a proper wav file
-                self._broadcast_to_channel(type="audio_broadcast", userid=self.user.user_id,
+                self.channel_obj.broadcast(type="audio_broadcast", userid=self.user.user_id,
                                            binary_payload=payload)
             except wave.Error:
                 return self.sendClose(code=4002,
@@ -482,6 +474,14 @@ class Channel:
     def _signal_user_disconnect(self, client: LoultServer, user: User):
         client.send_json(type='disconnect', date=time() * 1000,
                          userid=user.user_id)
+
+    def broadcast(self, binary_payload=None, **kwargs):
+        msg = encode_json(kwargs)
+        for client in self.clients:
+            if kwargs:  # in case there is no "text" message to be broadcasted
+                client.sendMessage(msg)
+            if binary_payload:
+                client.send_binary(binary_payload)
 
     def channel_leave(self, client: LoultServer, user: User):
         try:

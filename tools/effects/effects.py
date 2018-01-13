@@ -101,6 +101,11 @@ class AudioEffect(Effect):
         pass
 
 
+class VisualEffect(Effect):
+    """Doesn't do anything, just here to notify the client"""
+
+
+
 #### Here are the text effects ####
 
 class SnebwewEffect(ExplicitTextEffect):
