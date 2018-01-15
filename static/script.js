@@ -120,10 +120,10 @@
 			return;
 
 		users[userid] = params;
-		
+
 		if(ambtn.checked && muted.indexOf(userid) === -1)
 			muted.push(userid);
-		
+
 		var row = document.createElement('li');
 		row.appendChild(document.createTextNode(params.name));
 		row.style.color = params.color;
@@ -424,7 +424,7 @@
 
 				lastMsg = input.value;
 				input.value = '';
-				
+
 			}
 			else if(evt.keyCode === 38 || evt.keyCode === 40) {
 				evt.preventDefault();
@@ -502,13 +502,17 @@
 						switch(msg['event']) {
 							case 'banned':
 								addLine({name : 'info'}, 'Le ' + users[msg.flooder_id].name + ' ' + users[msg.flooder_id].adjective + ' était trop faible. Il est libre maintenant.', msg.date, 'kick');
-							break;
+					        break;
 
 							case 'flood_warning':
 								addLine({name : 'info'}, 'Attention, la qualité de vos contributions semble en baisse. Prenez une grande inspiration.', msg.date, 'kick');
 							break;
 						}
 					break;
+
+                    case 'notification':
+                        addLine({name : 'info'}, msg.msg, msg.date, 'info');
+                    break;
 
 					case 'userlist':
 						for(var i = 0; i < msg.users.length; i++)
@@ -552,7 +556,7 @@
 
 			if(banned)
 				addLine({name : 'info'}, 'CIVILISE TOI FILS DE PUTE', (new Date), 'kick');
-			
+
 			addLine({name : 'info'}, 'Vous êtes déconnecté.', (new Date), 'part');
 
 			if(!banned) {
@@ -564,7 +568,7 @@
 	};
 
 	wsConnect();
-	
+
 	var tick = function() {
 		if(x >= 100) {
 			x -= 100;
@@ -575,6 +579,6 @@
 			x = 0;
 		xp.style.width = x + '%';
 	}
-	
+
 	setInterval(tick, 2000);
 });

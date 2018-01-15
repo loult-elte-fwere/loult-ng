@@ -6,22 +6,22 @@ import wave
 from asyncio import get_event_loop, ensure_future, sleep, gather
 from collections import OrderedDict, deque
 from copy import deepcopy
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time
 from functools import lru_cache, wraps
 from hashlib import md5
 from html import escape
+from io import BytesIO
 from itertools import chain
 from os import urandom, path
 from re import sub
-from time import time
-from io import BytesIO
+from time import time as timestamp
 from typing import List, Dict, Set, Tuple
 
 from autobahn.websocket.types import ConnectionDeny
-from salt import SALT
 
 from config import ATTACK_RESTING_TIME, BAN_TIME, MOD_COOKIES, SOUND_BROADCASTER_COOKIES, MAX_COOKIES_PER_IP, \
     TIME_BEFORE_TALK, TIME_BETWEEN_CONNECTIONS
+from salt import SALT
 from tools.ban import Ban, BanFail
 from tools.combat import CombatSimulator
 from tools.tools import INVISIBLE_CHARS, encode_json, OrderedDequeDict
@@ -135,7 +135,7 @@ class LoultServer:
         my_userlist[self.user.user_id]['params']['you'] = True  # tells the JS client this is the user's pokemon
         # sending the current user list to the client
         self.send_json(type='userlist', users=list(my_userlist.values()))
-        self.send_json(type='backlog', msgs=self.channel_obj.backlog, date=time() * 1000)
+        self.send_json(type='backlog', msgs=self.channel_obj.backlog, date=timestamp() * 1000)
 
         self.cnx = True  # connected!
         self.logger.info('has fully open a connection')
@@ -157,7 +157,7 @@ class LoultServer:
             self.logger.info('has been detected as a flooder')
             self.channel_obj.broadcast(type='antiflood', event='banned',
                                        flooder_id=self.user.user_id,
-                                       date=time() * 1000)
+                                       date=timestamp() * 1000)
             self.loult_state.ban_cookie(self.cookie)
             self.sendClose(code=4004, reason='banned for flooding')
         else:
@@ -165,7 +165,7 @@ class LoultServer:
             self.user.state.reset_flood_detection()
             self.user.state.has_been_warned = True
             self.send_json(type='antiflood', event='flood_warning',
-                           date=time() * 1000)
+                           date=timestamp() * 1000)
             alarm_sound = self._open_sound_file("tools/data/alerts/alarm.wav")
             self.send_binary(alarm_sound)
             self.logger.info('has been warned for flooding')
@@ -175,7 +175,7 @@ class LoultServer:
     async def _msg_handler(self, msg_data : Dict):
         now = datetime.now()
         if (now - self.user.state.connection_time).seconds < TIME_BEFORE_TALK:
-            return self.send_json(type='wait',date=time()*1000)
+            return self.send_json(type='wait',date=timestamp()*1000)
 
         if self._check_flood(msg_data['msg']):
             return
@@ -259,14 +259,14 @@ class LoultServer:
         elif (now - self.user.state.last_attack < timedelta(seconds=ATTACK_RESTING_TIME)):
             self.send_json(type='attack', event='invalid')
         else:
-            self.channel_obj.broadcast(type='attack', date=time() * 1000,
+            self.channel_obj.broadcast(type='attack', date=timestamp() * 1000,
                                        event='attack',
                                        attacker_id=self.user.user_id,
                                        defender_id=adversary_id)
 
             combat_sim = CombatSimulator()
             combat_sim.run_attack(self.user, adversary, self.channel_obj)
-            self.channel_obj.broadcast(type='attack', date=time() * 1000,
+            self.channel_obj.broadcast(type='attack', date=timestamp() * 1000,
                                        event='dice',
                                        attacker_dice=combat_sim.atk_dice,
                                        defender_dice=combat_sim.def_dice,
@@ -277,13 +277,14 @@ class LoultServer:
 
             if combat_sim.affected_users: # there are users affected by some effects
                 for user, effect in combat_sim.affected_users:
-                    self.channel_obj.broadcast(type='attack', date=time() * 1000,
+                    self.channel_obj.broadcast(type='attack', date=timestamp() * 1000,
                                                event='effect',
+                                               tag=effect.TAG if hasattr(effect, "TAG") else None,
                                                target_id=user.user_id,
                                                effect=effect.name,
                                                timeout=effect.timeout)
             else: # list is empty, no one was attacked
-                self.channel_obj.broadcast(type='attack', date=time() * 1000,
+                self.channel_obj.broadcast(type='attack', date=timestamp() * 1000,
                                            event='nothing')
 
             # combat_sim uses the last attack time to compute the bonus,
@@ -330,7 +331,7 @@ class LoultServer:
             # and everyone is notified of the ban as to instigate fear in the heart of others
             self.channel_obj.broadcast(type='antiflood', event='banned',
                                        flooder_id=user_id,
-                                       date=time() * 1000)
+                                       date=timestamp() * 1000)
 
         connected_list = {client.ip for client in self.channel_obj.clients
                           if client.user and client.user.user_id == user_id}
@@ -469,10 +470,10 @@ class Channel:
         self.ip_cookies_tracker = dict()  # type: Dict[str,Set[bytes]]
 
     def _signal_user_connect(self, client: LoultServer, user: User):
-        client.send_json(type='connect', date=time() * 1000, **user.info)
+        client.send_json(type='connect', date=timestamp() * 1000, **user.info)
 
     def _signal_user_disconnect(self, client: LoultServer, user: User):
-        client.send_json(type='disconnect', date=time() * 1000,
+        client.send_json(type='disconnect', date=timestamp() * 1000,
                          userid=user.user_id)
 
     def broadcast(self, binary_payload=None, **kwargs):
@@ -533,7 +534,7 @@ class Channel:
             'user': self.users[user_id].info['params'],
             'msg': msg,
             'userid': user_id,
-            'date': time() * 1000,
+            'date': timestamp() * 1000,
             'type': kind,
         }
 
@@ -611,8 +612,15 @@ if __name__ == "__main__":
     loult_state = LoultServerState()
 
     # setting up events
-    from tools.events import SayHi, EventScheduler
-    scheduler = EventScheduler([SayHi(loult_state, timedelta(seconds=15))])
+    from tools.events import EventScheduler, BienChantewEvent, MaledictionEvent, BienDowmiwEvent, next_occ
+
+    scheduler = EventScheduler([BienChantewEvent(loult_state, timedelta(days=1),
+                                                 next_occ(datetime.day, time(hour=22, minute=0))),
+                                MaledictionEvent(loult_state, timedelta(days=1),
+                                                 next_occ(datetime.day, time(hour=4, minute=0))),
+                                BienDowmiwEvent(loult_state, timedelta(days=1),
+                                                 next_occ(datetime.day, time(hour=0, minute=0)))
+                                ])
 
     try:
         loop.run_until_complete(Ban.test_ban())

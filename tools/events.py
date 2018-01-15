@@ -6,11 +6,11 @@ import random
 
 from poke import LoultServerState
 from tools.effects.effects import AutotuneEffect, ReverbManEffect, SkyblogEffect, RobotVoiceEffect, \
-    AngryRobotVoiceEffect, PitchShiftEffect, GrandSpeechMasterEffect
+    AngryRobotVoiceEffect, PitchShiftEffect, GrandSpeechMasterEffect, VisualEffect
 from tools.users import User
 
 
-def compute_next_occ(period, occ_time: time):
+def next_occ(period, occ_time: time):
     now = datetime.now()
     today = date.today()
     if period is datetime.day:
@@ -58,15 +58,36 @@ class SayHi(PeriodicEvent):
                               msg="WESH WESH", date=timestamp() * 1000)
 
 
+class BienDowmiwEvent(PeriodicEvent):
+
+    class BienDowmiwEffect(VisualEffect):
+        TIMEOUT = 10
+        NAME = "fnre du biendowmiw"
+        TAG = "biendowmiw"
+
+    async def happen(self):
+        for channel in self.loultstate.chans.values():
+            for user in channel.users.values():
+                if random.randint(1,10) == 1:
+                    effect = self.BienDowmiwEffect()
+                    channel.broadcast(type='attack', date=timestamp() * 1000,
+                                      event='effect',
+                                      tag=effect.TAG,
+                                      target_id=user.user_id,
+                                      effect=effect.name,
+                                      timeout=effect.timeout)
+
+
+
 class EffectEvent(PeriodicEvent):
 
     def _select_random_users(self, user_list: List[User]) -> List[User]:
         #filtering out users who haven't talked in the last 20 minutes
         now = datetime.now()
-        users = [user for user in user_list if (now - user.state.last_message).minutes < 20]
+        users = [user for user in user_list if (now - user.state.last_message).seconds < 20 * 60]
         # selecting 3 random users
         selected_users = []
-        while users or len(selected_users) < 3:
+        while users and len(selected_users) < 3:
             rnd_user = users.pop(random.randint(0,len(users) - 1))
             selected_users.append(rnd_user)
         return selected_users
@@ -86,7 +107,8 @@ class BienChantewEvent(EffectEvent):
                 user.state.add_effect(ouevewb)
                 channel.broadcast(type="notification",
                                   event_type="autotune",
-                                  msg="%s a été visité par le Qwil du bon ouévèwb!")
+                                  date=timestamp() * 1000,
+                                  msg="%s a été visité par le Qwil du bon ouévèwb!" % user.poke_params.pokename)
 
 
 class MaledictionEvent(EffectEvent):
@@ -101,7 +123,8 @@ class MaledictionEvent(EffectEvent):
                     user.state.add_effect(effect)
                 channel.broadcast(type="notification",
                                   event_type="malediction",
-                                  msg="%s a été touché par la maledictionw!")
+                                  date=timestamp() * 1000,
+                                  msg="%s a été touché par la maledictionw!" % user.poke_params.pokename)
 
 class EventScheduler:
 
@@ -123,7 +146,7 @@ class EventScheduler:
             now = datetime.now()
             event_time, event = self.schedule.pop(0)
             event.update_next_occ(now)
-            await asyncio.sleep((event_time - now).seconds)
-            await event.happen()
             self.schedule.append((event.next_occurence, event))
+            await asyncio.sleep((event_time - now).total_seconds())
+            await event.happen()
             self.schedule.sort(key=lambda x: x[0])
