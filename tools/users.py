@@ -20,13 +20,13 @@ DATA_FILES_FOLDER = path.join(path.dirname(path.realpath(__file__)), "data/")
 with open(path.join(DATA_FILES_FOLDER, "adjectifs.txt")) as file:
     adjectives = file.read().splitlines()
 
-with open(path.join(DATA_FILES_FOLDER, "data/metiers.txt")) as file:
+with open(path.join(DATA_FILES_FOLDER, "metiers.txt")) as file:
     jobs = file.read().splitlines()
 
-with open(path.join(DATA_FILES_FOLDER, "data/villes.json")) as file:
+with open(path.join(DATA_FILES_FOLDER, "villes.json")) as file:
     cities = json.load(file)
 
-with open(path.join(DATA_FILES_FOLDER, "data/metiers.txt")) as file:
+with open(path.join(DATA_FILES_FOLDER, "metiers.txt")) as file:
     sexual_orient = file.read().splitlines()
 
 class VoiceParameters:
