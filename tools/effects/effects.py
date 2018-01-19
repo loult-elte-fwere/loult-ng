@@ -484,21 +484,6 @@ class PitchRandomizerEffect(PhonemicEffect):
                                       for duration, pitch in phonem.pitch_modifiers]
         return phonems
 
-class CyborgEffect(PhonemicEffect):
-    NAME = "cyborg"
-    TIMEOUT = 180
-
-    def process(self, phonems: PhonemList):
-        for phonem in phonems:
-            if phonem.name in FrenchPhonems.VOWELS and random.randint(1, 1) == 1:
-                phonem.duration *= 2
-                if phonem.pitch_modifiers:
-                    orgnl_pitch_avg = mean([pitch for pos, pitch in phonem.pitch_modifiers])
-                else:
-                    orgnl_pitch_avg = 150
-                phonem.set_from_pitches_list([orgnl_pitch_avg + ((-1) ** i * 80) for i in range(25)])
-        return phonems
-
 #### Here are the voice effets ####
 
 

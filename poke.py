@@ -210,7 +210,7 @@ class LoultServer:
     async def _pm_handler(self, msg_data: Dict):
         # cleaning up none values in case of fuckups
         msg_data = {key: value for key, value in msg_data.items() if value is not None}
-        targer_id, target = self.channel_obj.get_user_by_name(msg_data["target"], msg_data.get("order", 1) - 1)
+        target = self.channel_obj.users.get(msg_data.get("userid"))
         if target is None:
             self.send_json(type='private_msg', event='invalid')
         for client in self.channel_obj.clients:

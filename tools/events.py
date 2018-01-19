@@ -25,6 +25,7 @@ def next_occ(period, occ_time: time):
         else:
             return datetime.combine(today, time(hour=now.hour, minute=occ_minute))
 
+
 class Event:
 
     def __init__(self, loultstate: LoultServerState):
@@ -78,7 +79,6 @@ class BienDowmiwEvent(PeriodicEvent):
                                       timeout=effect.timeout)
 
 
-
 class EffectEvent(PeriodicEvent):
 
     def _select_random_users(self, user_list: List[User]) -> List[User]:
@@ -130,7 +130,10 @@ class EventScheduler:
 
     def __init__(self, events: List[Event]):
         self.events = events
-        self.schedule = [] # type:List[Tuple[datetime, Event]]
+        self.schedule = []  # type:List[Tuple[datetime, Event]]
+
+    def _order_schedule(self):
+        self.schedule.sort(key=lambda x: x[0])
 
     def _build_scheduler(self):
         now = datetime.now()
@@ -138,7 +141,7 @@ class EventScheduler:
             if event.next_occurence < now:
                 event.update_next_occ(now)
             self.schedule.append((event.next_occurence, event))
-        self.schedule.sort(key=lambda x: x[0])
+        self._order_schedule()
 
     async def __call__(self):
         self._build_scheduler()
@@ -149,4 +152,4 @@ class EventScheduler:
             self.schedule.append((event.next_occurence, event))
             await asyncio.sleep((event_time - now).total_seconds())
             await event.happen()
-            self.schedule.sort(key=lambda x: x[0])
+            self._order_schedule()

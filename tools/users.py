@@ -6,6 +6,7 @@ from re import compile as regex
 from struct import pack
 from typing import Tuple, List
 from os import path
+import json
 
 from config import FLOOD_DETECTION_WINDOW, BANNED_WORDS, FLOOD_WARNING_TIMEOUT, FLOOD_DETECTION_MSG_PER_SEC, \
     ATTACK_RESTING_TIME
@@ -14,9 +15,19 @@ from tools import pokemons
 from tools.tools import AudioRenderer, SpoilerBipEffect, prepare_text_for_tts
 from .phonems import PhonemList
 
-with open(path.join(path.dirname(path.realpath(__file__)), "data/adjectifs.txt")) as adj_file:
-    adjectives = adj_file.read().split()
+DATA_FILES_FOLDER = path.join(path.dirname(path.realpath(__file__)), "data/")
 
+with open(path.join(DATA_FILES_FOLDER, "adjectifs.txt")) as file:
+    adjectives = file.read().splitlines()
+
+with open(path.join(DATA_FILES_FOLDER, "data/metiers.txt")) as file:
+    jobs = file.read().splitlines()
+
+with open(path.join(DATA_FILES_FOLDER, "data/villes.json")) as file:
+    cities = json.load(file)
+
+with open(path.join(DATA_FILES_FOLDER, "data/metiers.txt")) as file:
+    sexual_orient = file.read().splitlines()
 
 class VoiceParameters:
 
@@ -45,7 +56,30 @@ class PokeParameters:
         color_rgb = hsv_to_rgb(cookie_hash[4] / 255, 0.8, 0.9)
         return cls('#' + pack('3B', *(int(255 * i) for i in color_rgb)).hex(), # color
                    (cookie_hash[2] | (cookie_hash[3] << 8)) % len(pokemons.pokemon) + 1,
-                   (cookie_hash[5] | (cookie_hash[6] << 13)) % len(adjectives) + 1) # poke id
+                   (cookie_hash[5] | (cookie_hash[6] << 13)) % len(adjectives) + 1)
+
+
+class PokeProfile:
+
+    def __init__(self, job_id, age, city_id, sex_orient_id):
+        self.job = jobs[job_id]
+        self.age = age
+        self.city, self.departement = cities[city_id]
+        self.sex_orient = sexual_orient[sex_orient_id]
+
+    def to_dict(self):
+        return {"job": self.job,
+                "age": self.age,
+                "city": self.city,
+                "departement": self.departement,
+                "orientation": self.sex_orient}
+
+    @classmethod
+    def from_cookie_hash(cls, cookie_hash):
+        return cls((cookie_hash[10] | (cookie_hash[12] << 9)) % len(jobs),  # job
+                   (cookie_hash[13] << 7 % 80) + 15,  # age
+                   (cookie_hash[7] | (cookie_hash[14] << 16)) % len(cities),  # city
+                   (cookie_hash[2] << 4) % len(sexual_orient))  # sexual orientation
 
 
 class UserState:
@@ -138,6 +172,7 @@ class User:
         self.audio_renderer = AudioRenderer()
         self.voice_params = VoiceParameters.from_cookie_hash(cookie_hash)
         self.poke_params = PokeParameters.from_cookie_hash(cookie_hash)
+        self.poke_profile = PokeProfile.from_cookie_hash(cookie_hash)
         self.user_id = cookie_hash.hex()[-16:]
         self.cookie_hash = cookie_hash
 
@@ -166,7 +201,9 @@ class User:
                     'img': str(self.poke_params.poke_id).zfill(3),
                     'color': self.poke_params.color,
                     'adjective': self.poke_params.poke_adj
-                }
+                },
+                'profile': self.poke_profile.to_dict()
+
             }
         return self._info
 
