@@ -1,12 +1,9 @@
 ﻿document.addEventListener('DOMContentLoaded', function() {
-	var l = document.cookie.match(/lv=(\d+)/) ? parseInt(document.cookie.match(/lv=(\d+)/)[1]) : 1;
 	var audio = (window.AudioContext || typeof webkitAudioContext !== 'undefined');
 	var userlist = document.getElementById('userlist');
 	var underlay = document.getElementById('underlay');
 	var input = document.getElementById('input');
 	var chat = document.getElementById('chat');
-	var lv = document.getElementById('lv');
-	var xp = document.getElementById('xp');
 	var theme = (localStorage.theme && localStorage.theme.split(' ').length > 2) ? localStorage.theme : 'cozy night sans';
 	var waitTime = 1000;
 	var banned = false;
@@ -17,13 +14,12 @@
 	var lastMsg;
 	var lastRow;
 	var lastId;
-	var x = 0;
 	var ws;
 
 	// DOM-related functions
 
 	var parser = function(raw_msg) {
-		var profane = new RegExp('\\b((?:tg+|fdp+|ba+t+a+r+d?|fiste?(?:u?r?)|ta+r+l+o+u+(z|s)e|taf+iol+e|péta+se?|put+(e|ain)|bi+t+e|cu+l|co+u+i+l+e|cha+t+e|chi+e+n+(?:a+s+)?e|sa+l+o+p+e?|(pd+)+|p(?:é|è|ai|ay)d(?:é|è|ai|ay)|salaud|sc?hne+c?k|(?:em)?me+r+d+(?:i?er?|eu(?:x|r))|bo+r+de+l+|fo+u+t+r+e|ni+qu?(?:é|eu?r?)|encu+l+(?:é|eu?r)|enf+oiré|branl+eu?r?|fi+o+t+e|bu+r+n+e|co+n(?:ne|n?a+rd|n?a+s+e)?)s?)\\b', 'gi');
+		var profane = new RegExp(/\b((?:t ?g+|fdp+|ba+t+a+r+d?|fiste?(?:u?r?)|ta+r+l+o+u+(z|s)e|taf+iol+e|péta+s+e?|put+(e|ain)|bi+t+e|cu+l|co+u+i+l+e|cha+t+e|chi+e+n+(?:a+s+)?e|sa+l+o+p+e?|(p ?d+)+|p(?:é|è|ai|ay)d(?:é|è|ai|ay)|salaud|sc?hne+c?k|(?:em)?me+r+d+(?:i?er?|eu(?:x|r))|bo+r+de+l+|fo+u+t+r+e|ni+qu?(?:é|eu?r?)|encu+l+(?:é+|eu?r)|enf+oiré+|branl+eu?r?|fi+o+t+e|bu+r+n+e|co+n(?:ne|n?a+rd|n?a+s+e)?)s?)\b/, 'gi');
 		var rules = [
 			{
 				test: msg => msg.includes('http'),
@@ -35,7 +31,7 @@
 			},
 			{
 				test: msg => msg.includes('://vocaroo.com/i/'),
-				run: msg => msg.replace(/<a href="https?:\/\/vocaroo.com\/i\/(\w+)" target="_blank">https?:\/\/vocaroo.com\/i\/\w+<\/a>/g, '<audio controls><source src="http://vocaroo.com/media_command.php?media=$1&command=download_mp3" type="audio/mpeg"><source src="http://vocaroo.com/media_command.php?media=$1&command=download_webm" type="audio/webm"></audio>$&')
+				run: msg => msg.replace(/<a href="https?:\/\/vocaroo.com\/i\/(\w+)" target="_blank">https?:\/\/vocaroo.com\/i\/\w+<\/a>/g, '<audio controls><source src="https://vocaroo.com/media_command.php?media=$1&command=download_mp3" type="audio/mpeg"><source src="https://vocaroo.com/media_command.php?media=$1&command=download_webm" type="audio/webm"></audio>$&')
 			},
 			{
 				test: msg => msg.startsWith('&gt;'),
@@ -43,7 +39,7 @@
 			},
 			{
 				test: msg => msg.match(profane),
-				run: msg => msg.replace(profane, function(matched){ return '<span class="pinktext">' + '♥'.repeat(matched.length) + '</span>'; })
+				run: msg => msg.replace(profane, function(matched){ return msg.includes('<a href=') ? matched : '<span class="pinktext">' + '♥'.repeat(matched.length) + '</span>'; })
 			}
 		];
 
@@ -53,8 +49,8 @@
 
 	var addLine = function(pkmn, txt, datemsg, rowclass, uid) {
 		var atBottom = (chat.scrollTop === (chat.scrollHeight - chat.offsetHeight));
-		var uid = uid || null;
 		var text = document.createElement('div');
+		var uid = uid || null;
 		text.innerHTML = txt;
 
 		if(lastId !== uid || pkmn.name === 'info') {
@@ -66,19 +62,19 @@
 				i.className = 'material-icons';
 				i.appendChild(document.createTextNode('info_outline'));
 				row.appendChild(i);
-
-				if(pkmn.color)
-					row.style.color = pkmn.color;
 			}
 			else {
 				var pic = document.createElement('div');
 				var img1 = document.createElement('img');
 				var img2 = document.createElement('img');
+				var img3 = document.createElement('img');
 
 				img1.src = '/pokemon/' + pkmn.img + '.gif';
 				img2.src = '/img/pokemon/' + pkmn.img + '.gif';
+				img3.src = '/dev/pokemon/' + pkmn.img + '.png';
 				pic.appendChild(img1);
 				pic.appendChild(img2);
+				pic.appendChild(img3);
 				row.appendChild(pic);
 
 				var name = document.createElement('div');
@@ -87,7 +83,13 @@
 				msg.appendChild(name);
 
 				row.style.borderColor = pkmn.color;
+
+				if(!document.hasFocus())
+					document.title = '(' + ++count + ') Loult.family';
 			}
+
+			if(pkmn.color)
+				row.style.color = pkmn.color;
 
 			row.className = rowclass;
 			row.appendChild(msg);
@@ -98,18 +100,10 @@
 			row.appendChild(dt);
 
 			chat.appendChild(row);
-
-			if(uid !== you)
-				x += 1 / (1 + (l * 0.3));
 		}
-		else if (uid === you)
-			x -= 3 / (1 + (l * 0.6));
 
 		lastRow.appendChild(text);
 		lastId = uid;
-
-		if(!document.hasFocus() && pkmn.name !== 'info')
-			document.title = '(' + ++count + ') Loult.family';
 
 		if(atBottom)
 			chat.scrollTop = chat.scrollHeight;
@@ -150,7 +144,6 @@
 		else {
 			underlay.style.backgroundImage = 'url("/dev/pokemon/' + params.img + '.png")';
 			you = userid;
-			lv.innerHTML = users[you].name + ' niveau ' + l;
 		}
 
 		userlist.appendChild(row);
@@ -382,21 +375,21 @@
 			if(evt.keyCode === 13 && input.value) {
 				var trimed = input.value.trim();
 				if(trimed.charAt(0) === '/') {
-					if(trimed.match(/^\/atta(ck|que)\s/i)) {
+					if(trimed.match(/^\/at(?:k|q|ta(?:ck|que))\s/i)) {
 						var splitted = trimed.split(' ');
 						ws.send(JSON.stringify({ type : 'attack', target : splitted[1], order : ((splitted.length === 3) ? parseInt(splitted[2]) : 0) }));
 					}
-					else if(trimed.match(/^\/(en|es|fr|de)\s/i)) {
+					else if(trimed.match(/^\/(?:en|es|fr|de)\s/i)) {
 						ws.send(JSON.stringify({type: 'msg', msg: trimed.substr(4), lang: trimed.substr(1, 2).toLowerCase()}));
 						underlay.className = 'pulse';
 					}
-					else if(trimed.match(/^\/vol(ume)?\s(\d+)$/i) && audio) {
+					else if(trimed.match(/^\/vol(?:ume)?\s(?:\d+)$/i) && audio) {
 						volrange.value = Math.min(100, trimed.match(/\d+$/i)[0]);
 						changeVolume();
 					}
-					else if(trimed.match(/^\/(help|aide)$/i)) {
+					else if(trimed.match(/^\/(?:help|aide)$/i)) {
 						var d = new Date;
-						addLine('info', '/attaque, /attack : Lancer une attaque sur quelqu\'un. Exemple : /attaque Miaouss', d, 'part');
+						addLine('info', '/attaque, /attack, /atq, /atk : Lancer une attaque sur quelqu\'un. Exemple : /attaque Miaouss', d, 'part');
 						addLine('info', '/en, /es, /fr, /de : Envoyer un message dans une autre langue. Exemple : /en Where is Pete Ravi?', d, 'part');
 						if(audio)
 							addLine('info', '/volume, /vol : Régler le volume rapidement. Exemple : /volume 50', d, 'part');
@@ -406,7 +399,7 @@
 					}
 					else if(trimed.match(/^\/me\s/i))
 						ws.send(JSON.stringify({type: 'me', msg: trimed.substr(4)}));
-					else if(trimed.match(/^\/(poker|rainbow|flip|omg)$/i))
+					else if(trimed.match(/^\/(?:poker|rainbow|flip|omg|retro|drukqs)$/i))
 						document.body.className = theme + ' ' + trimed.substr(1);
 					else if(trimed.match(/^\/((?:bisw){2})$/i)) {
 						document.body.className = 'cozy pink comic';
@@ -446,10 +439,6 @@
 					case 'bot':
 						if(!lastMuted)
 							addLine(users[msg.userid], parser(msg.msg), msg.date, msg.type, msg.userid);
-					break;
-
-					case 'wait':
-						addLine({name : 'info'}, "La connection est en cours. Concentrez-vous quelques instants avant de dire des âneries.", msg.date, 'log');
 					break;
 
 					case 'me':
@@ -514,6 +503,10 @@
                         addLine({name : 'info'}, msg.msg, msg.date, 'info');
                     break;
 
+					case 'wait':
+						addLine({name : 'info'}, "La connection est en cours. Concentrez-vous quelques instants avant de dire des âneries.", msg.date, 'log');
+					break;
+
 					case 'userlist':
 						for(var i = 0; i < msg.users.length; i++)
 							addUser(msg.users[i].userid, msg.users[i].params);
@@ -530,7 +523,6 @@
 					break;
 
 					case 'banned':
-						document.cookie = 'lv=1; Path=/';
 						banned = true;
 						ws.close();
 					break;
@@ -555,11 +547,18 @@
 				delUser(i);
 
 			if(banned)
+<<<<<<< HEAD
 				addLine({name : 'info'}, 'CIVILISE TOI FILS DE PUTE', (new Date), 'kick');
 
 			addLine({name : 'info'}, 'Vous êtes déconnecté.', (new Date), 'part');
 
 			if(!banned) {
+=======
+				for(var i = 0; i < 500; i++)
+					addLine({name : 'info'}, 'CIVILISE TOI.', (new Date), 'kick');
+			else {
+				addLine({name : 'info'}, 'Vous êtes déconnecté.', (new Date), 'part');
+>>>>>>> abc6f53be257f3d27970d96234ec4b1f3465a76f
 				addLine({name : 'info'}, 'Nouvelle connexion en cours...', (new Date), 'part');
 				waitTime = Math.min(waitTime * 2, 120000);
 				window.setTimeout(wsConnect, waitTime);
@@ -569,6 +568,7 @@
 
 	wsConnect();
 
+<<<<<<< HEAD
 	var tick = function() {
 		if(x >= 100) {
 			x -= 100;
@@ -581,4 +581,6 @@
 	}
 
 	setInterval(tick, 2000);
+=======
+>>>>>>> abc6f53be257f3d27970d96234ec4b1f3465a76f
 });
