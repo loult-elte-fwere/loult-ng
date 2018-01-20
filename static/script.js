@@ -547,18 +547,10 @@
 				delUser(i);
 
 			if(banned)
-<<<<<<< HEAD
-				addLine({name : 'info'}, 'CIVILISE TOI FILS DE PUTE', (new Date), 'kick');
-
-			addLine({name : 'info'}, 'Vous êtes déconnecté.', (new Date), 'part');
-
-			if(!banned) {
-=======
 				for(var i = 0; i < 500; i++)
 					addLine({name : 'info'}, 'CIVILISE TOI.', (new Date), 'kick');
 			else {
 				addLine({name : 'info'}, 'Vous êtes déconnecté.', (new Date), 'part');
->>>>>>> abc6f53be257f3d27970d96234ec4b1f3465a76f
 				addLine({name : 'info'}, 'Nouvelle connexion en cours...', (new Date), 'part');
 				waitTime = Math.min(waitTime * 2, 120000);
 				window.setTimeout(wsConnect, waitTime);
@@ -566,21 +558,5 @@
 		};
 	};
 
-	wsConnect();
-
-<<<<<<< HEAD
-	var tick = function() {
-		if(x >= 100) {
-			x -= 100;
-			lv.innerHTML = users[you].name + ' niveau ' + ++l;
-			document.cookie = 'lv=' + l + '; Path=/';
-		}
-		else if(x <= 0)
-			x = 0;
-		xp.style.width = x + '%';
-	}
-
-	setInterval(tick, 2000);
-=======
->>>>>>> abc6f53be257f3d27970d96234ec4b1f3465a76f
+wsConnect();
 });

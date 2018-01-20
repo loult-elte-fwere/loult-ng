@@ -26,7 +26,7 @@ with open(path.join(DATA_FILES_FOLDER, "metiers.txt")) as file:
 with open(path.join(DATA_FILES_FOLDER, "villes.json")) as file:
     cities = json.load(file)
 
-with open(path.join(DATA_FILES_FOLDER, "metiers.txt")) as file:
+with open(path.join(DATA_FILES_FOLDER, "sexualite.txt")) as file:
     sexual_orient = file.read().splitlines()
 
 class VoiceParameters:
@@ -77,7 +77,7 @@ class PokeProfile:
     @classmethod
     def from_cookie_hash(cls, cookie_hash):
         return cls((cookie_hash[10] | (cookie_hash[12] << 9)) % len(jobs),  # job
-                   (cookie_hash[13] << 7 % 80) + 15,  # age
+                   ((cookie_hash[13] << 7) % 80) + 15,  # age
                    (cookie_hash[7] | (cookie_hash[14] << 16)) % len(cities),  # city
                    (cookie_hash[2] << 4) % len(sexual_orient))  # sexual orientation
 
