@@ -155,7 +155,7 @@
 		l.className = 'material-icons';
 		l.appendChild(document.createTextNode('my_location'));
 
-		pimg.src = '/pokemon/' + params.img + '.gif';
+		pimg.src = '/img/pokemon/' + params.img + '.gif';
 		idiv.appendChild(pimg);
 
 		phead.style.backgroundImage = 'linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0) 35px, rgba(' + parseInt(params.color.slice(1, 3), 16) + ', ' + parseInt(params.color.slice(3, 5), 16) + ', ' + parseInt(params.color.slice(5, 7), 16) + ', 0.2) 35px, ' + params.color + ' 100%)';
