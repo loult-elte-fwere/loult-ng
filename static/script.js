@@ -115,10 +115,10 @@
 			return;
 
 		users[userid] = params;
-		
+
 		if(ambtn.checked && muted.indexOf(userid) === -1)
 			muted.push(userid);
-		
+
 		var row = document.createElement('li');
 		row.appendChild(document.createTextNode(params.name));
 		row.style.color = params.color;
@@ -155,8 +155,7 @@
 		l.className = 'material-icons';
 		l.appendChild(document.createTextNode('my_location'));
 
-		// pimg.src = '/pokemon/' + params.img + '.gif';
-		pimg.src = 'img/pokemon/' + params.img + '.gif';
+		pimg.src = '/pokemon/' + params.img + '.gif';
 		idiv.appendChild(pimg);
 
 		phead.style.backgroundImage = 'linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0) 35px, rgba(' + parseInt(params.color.slice(1, 3), 16) + ', ' + parseInt(params.color.slice(3, 5), 16) + ', ' + parseInt(params.color.slice(5, 7), 16) + ', 0.2) 35px, ' + params.color + ' 100%)';
@@ -453,7 +452,6 @@
 
 				lastMsg = input.value;
 				input.value = '';
-				
 			}
 			else if(evt.keyCode === 38 || evt.keyCode === 40) {
 				evt.preventDefault();
