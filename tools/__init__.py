@@ -10,7 +10,7 @@ from .effects.effects import (
     VieuxPortEffect, GodSpeakingEffect, WpseEffect,
     AutotuneEffect, VoiceSpeedupEffect, StutterEffect,
     GrandSpeechMasterEffect, VowelExchangeEffect, SkyblogEffect,
-    PitchShiftEffect, ContradictorEffect, CyborgEffect
+    PitchShiftEffect, ContradictorEffect
 )
 
 # the multiplier for each tools list sets the "probability" of the effect
@@ -22,10 +22,10 @@ AVAILABLE_EFFECTS = 1 * [GodSpeakingEffect, SnebwewEffect, VoiceSpeedupEffect,
                          VocalDyslexia, ReverbManEffect, PhonemicNwwoiwwEffect,
                          StutterEffect, GrandSpeechMasterEffect, TouretteEffect,
                          VowelExchangeEffect, PitchShiftEffect,
-                         ContradictorEffect, CyborgEffect] + \
+                         ContradictorEffect] + \
                     6 * [AutotuneEffect, PitchRandomizerEffect,
                          RobotVoiceEffect, AngryRobotVoiceEffect]
-#AVAILABLE_EFFECTS = [ContradictorEffect] # single tools list used when testing
+#AVAILABLE_EFFECTS = [CyborgEffect] # single tools list used when testing
 
 
 def get_random_effect() -> Effect:

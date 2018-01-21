@@ -1,7 +1,0 @@
-This is a temporary documentation file. A real sphinx doc should be built at some point.
-
-Mbrola phonems format explained:
-http://www.tcts.fpms.ac.be/synthesis/mbrola/mbruse.html#PHONETIC
-
-French available phonem:
-http://www.phon.ucl.ac.uk/home/sampa/french.htm
