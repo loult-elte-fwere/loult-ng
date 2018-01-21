@@ -77,8 +77,8 @@ class PokeProfile:
     @classmethod
     def from_cookie_hash(cls, cookie_hash):
         return cls((cookie_hash[4] | (cookie_hash[2] << 7)) % len(jobs), # job
-                   (cookie_hash[3] | (cookie_hash[5] << 6)) % 60 + 15, # age
-                   (cookie_hash[5] | (cookie_hash[4] << 5)) % len(cities), # city
+                   (cookie_hash[3] | (cookie_hash[5] << 6)) % 62 + 18, # age
+                   ((cookie_hash[6] * cookie_hash[4] << 17)) % len(cities), # city
                    (cookie_hash[2] | (cookie_hash[3] << 4)) % len(sexual_orient)) # sexual orientation
 
 
