@@ -19,12 +19,12 @@
 	// DOM-related functions
 
 	var parser = function(raw_msg) {
-		var profane = new RegExp(/\b((?:t ?g+|fdp+|ba+t+a+r+d?|fiste?(?:u?r?)|ta+r+l+o+u+(z|s)e|taf+iol+e|péta+s+e?|put+(e|ain)|bi+t+e|cu+l|co+u+i+l+e|cha+t+e|chi+e+n+(?:a+s+)?e|sa+l+o+p+e?|(p ?d+)+|p(?:é|è|ai|ay)d(?:é|è|ai|ay)|salaud|sc?hne+c?k|(?:em)?me+r+d+(?:i?er?|eu(?:x|r))|bo+r+de+l+|fo+u+t+r+e|ni+qu?(?:é|eu?r?)|encu+l+(?:é+|eu?r)|enf+oiré+|branl+eu?r?|fi+o+t+e|bu+r+n+e|co+n(?:ne|n?a+rd|n?a+s+e)?)s?)\b/, 'gi'),
+		var profane_or_url = new RegExp(/(https?:\/\/[^< ]*[^<*.,?! :])|\b((?:t ?g+|fdp+|ba+t+a+r+d?|fiste?(?:u?r?)|ta+r+l+o+u+(z|s)e|taf+iol+e|péta+s+e?|put+(e|ain)|bi+t+e|cu+l|co+u+i+l+e|cha+t+e|chi+e+n+(?:a+s+)?e|sa+l+o+p+e?|(p ?d+)+|p(?:é|è|ai|ay)d(?:é|è|ai|ay)|salaud|sc?hne+c?k|(?:em)?me+r+d+(?:i?er?|eu(?:x|r))|bo+r+de+l+|fo+u+t+r+e|ni+qu?(?:é|eu?r?)|encu+l+(?:é+|eu?r)|enf+oiré+|branl+eu?r?|fi+o+t+e|bu+r+n+e|co+n(?:ne|n?a+rd|n?a+s+e)?)s?)\b/, 'gi'),
 			rules = [
-			{
+			/*{
 				test: msg => msg.includes('http'),
 				run: msg => msg.replace(/https?:\/\/[^< ]*[^<*.,?! :]/g, '<a href="$&" target="_blank">$&</a>')
-			},
+			},*/
 			{
 				test: msg => msg.includes('**'),
 				run: msg => msg.replace(/\*{2}([^\*]+)\*{2}?/g, '<span class="spoiler">$1</span>')
@@ -38,8 +38,8 @@
 				run: msg => msg.replace(/(.+)/g, '<span class="greentext">$1</span>')
 			},
 			{
-				test: msg => msg.match(profane),
-				run: msg => msg.replace(profane, function(matched){ return msg.includes('<a href=') ? matched : '<span class="pinktext">' + '♥'.repeat(matched.length) + '</span>'; })
+				test: msg => msg.match(profane_or_url),
+				run: msg => msg.replace(profane_or_url, function(matched) { return matched.includes('http')? `<a href="${matched}" target="_blank">${matched}</a>` : '<span class="pinktext">' + '♥'.repeat(matched.length) + '</span>'; })
 			}
 		];
 
