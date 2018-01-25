@@ -488,16 +488,29 @@ class PitchRandomizerEffect(PhonemicEffect):
 
 
 class VoiceSpeedupEffect(VoiceEffect):
-    TIMEOUT = 150
+    TIMEOUT = 200
     NAME = "en stress"
 
-    def __init__(self):
+    def __init__(self, factor: float=None):
         super().__init__()
-        self.multiplier = random.uniform(1.5, 2.4)
+        self.factor = random.uniform(1.5, 2.4) if factor is None else factor
 
     def process(self, voice_params : VoiceParameters):
-        voice_params.speed = int(self.multiplier * voice_params.speed)
+        voice_params.speed = int(self.factor * voice_params.speed)
         return voice_params
+
+
+class VoiceCloneEffect(VoiceEffect):
+    TIMEOUT = 600
+    NAME = "clone de voiw"
+
+    def __init__(self, voice_params : VoiceParameters):
+        super().__init__()
+        self.params = voice_params
+
+    def process(self, voice_params : VoiceParameters):
+        return self.params
+
 
 
 #### Here are the audio effects ####

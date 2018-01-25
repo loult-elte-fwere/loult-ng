@@ -6,7 +6,7 @@ import random
 
 from poke import LoultServerState
 from tools.effects.effects import AutotuneEffect, ReverbManEffect, SkyblogEffect, RobotVoiceEffect, \
-    AngryRobotVoiceEffect, PitchShiftEffect, GrandSpeechMasterEffect, VisualEffect
+    AngryRobotVoiceEffect, PitchShiftEffect, GrandSpeechMasterEffect, VisualEffect, VoiceCloneEffect, VoiceSpeedupEffect
 from tools.users import User
 
 
@@ -21,39 +21,38 @@ def next_occ(period, occ_time: time):
 
     elif period is datetime.hour:
         if now.minute > occ_time.minute:
-            return datetime.combine(today, time(hour=now.hour + 1, minute=occ_minute))
+            return datetime.combine(today, time(hour=now.hour + 1, minute=occ_time.minute))
         else:
-            return datetime.combine(today, time(hour=now.hour, minute=occ_minute))
+            return datetime.combine(today, time(hour=now.hour, minute=occ_time.minute))
 
 
 class Event:
 
-    def __init__(self, loultstate: LoultServerState):
-        self.loultstate = loultstate
+    def __init__(self):
         self.next_occurence = None
 
     def update_next_occ(self, now):
         pass
 
-    async def happen(self):
+    async def happen(self, loultstate):
         pass
 
 
 class PeriodicEvent(Event):
 
-    def __init__(self, loultstate, period: timedelta, first_occ=None):
-        super().__init__(loultstate)
+    def __init__(self, period: timedelta, first_occ: datetime=None):
+        super().__init__()
         self.period = period
         self.next_occurence = first_occ if first_occ is not None else datetime.now()
 
     def update_next_occ(self, now):
-        self.next_occurence = self.next_occurence + self.period
+        self.next_occurence += self.period
 
 
 class SayHi(PeriodicEvent):
 
-    async def happen(self):
-        for channel in self.loultstate.chans.values():
+    async def happen(self, loultstate):
+        for channel in loultstate.chans.values():
             user = next(iter(channel.users.values()))
             channel.broadcast(type='msg', userid=user.user_id,
                               msg="WESH WESH", date=timestamp() * 1000)
@@ -66,8 +65,8 @@ class BienDowmiwEvent(PeriodicEvent):
         NAME = "fnre du biendowmiw"
         TAG = "biendowmiw"
 
-    async def happen(self):
-        for channel in self.loultstate.chans.values():
+    async def happen(self, loultstate):
+        for channel in loultstate.chans.values():
             for user in channel.users.values():
                 if random.randint(1,10) == 1:
                     effect = self.BienDowmiwEffect()
@@ -95,8 +94,8 @@ class EffectEvent(PeriodicEvent):
 
 class BienChantewEvent(EffectEvent):
 
-    async def happen(self):
-        for channel in self.loultstate.chans.values():
+    async def happen(self, loultstate):
+        for channel in loultstate.chans.values():
             selected_users = self._select_random_users(channel.users.values())
             for user in selected_users:
                 autotune = AutotuneEffect()
@@ -113,8 +112,8 @@ class BienChantewEvent(EffectEvent):
 
 class MaledictionEvent(EffectEvent):
 
-    async def happen(self):
-        for channel in self.loultstate.chans.values():
+    async def happen(self, loultstate):
+        for channel in loultstate.chans.values():
             selected_users = self._select_random_users(channel.users.values())
             for user in selected_users:
                 effects = [GrandSpeechMasterEffect(), RobotVoiceEffect(), AngryRobotVoiceEffect(), PitchShiftEffect()]
@@ -122,13 +121,61 @@ class MaledictionEvent(EffectEvent):
                     effect._timeout = 7200
                     user.state.add_effect(effect)
                 channel.broadcast(type="notification",
-                                  event_type="malediction",
+                                  event_type="curse",
                                   date=timestamp() * 1000,
                                   msg="%s a été touché par la maledictionw!" % user.poke_params.pokename)
 
+
+class PseudoPeriodicEvent(Event):
+
+    def __init__(self, pseudo_period: timedelta, variance: timedelta, first_occ: datetime=None, ):
+        super().__init__()
+        self.pseudo_period = pseudo_period
+        self.variance = variance
+        if first_occ is None:
+            self.next_occurence = datetime.now()
+            self.update_next_occ(None)
+        else:
+            self.next_occurence = first_occ
+
+    def update_next_occ(self, now):
+        new_period_secs = random.gauss(self.pseudo_period.total_seconds(), self.variance.total_seconds())
+        new_period_timedelta = timedelta(seconds=new_period_secs)
+        self.next_occurence += new_period_timedelta
+
+
+class UsersVoicesShuffleEvent(PseudoPeriodicEvent):
+
+    async def happen(self, loultstate):
+        for channel in loultstate.chans.values():
+            users_lists = list(channel.users.values())
+            random.shuffle(users_lists)
+            for user_receiver, user_giver in zip(channel.users.values(), users_lists):
+                user_receiver.state.add_effect(VoiceCloneEffect(user_giver.voice_params))
+            channel.broadcast(type="notification",
+                              event_type="voice_shuffle",
+                              date=timestamp() * 1000,
+                              msg="Les voix des pokémons ont été mélangées!")
+
+
+class AmphetamineEvent(PseudoPeriodicEvent):
+
+    async def happen(self, loultstate):
+        for channel in loultstate.chans.values():
+            for user in channel.users.values():
+                effect = VoiceSpeedupEffect(factor=2.4)
+                effect._timeout = 600
+                user.state.add_effect(effect)
+            channel.broadcast(type="notification",
+                              event_type="amphetamine",
+                              date=timestamp() * 1000,
+                              msg="LE LOULT EST SOUS AMPHETAMINE")
+
+
 class EventScheduler:
 
-    def __init__(self, events: List[Event]):
+    def __init__(self, loultstate, events: List[Event]):
+        self.loultstate = loultstate
         self.events = events
         self.schedule = []  # type:List[Tuple[datetime, Event]]
 
@@ -143,13 +190,14 @@ class EventScheduler:
             self.schedule.append((event.next_occurence, event))
         self._order_schedule()
 
-    async def __call__(self):
+    async def start(self):
         self._build_scheduler()
         while self.schedule:
             now = datetime.now()
             event_time, event = self.schedule.pop(0)
             event.update_next_occ(now)
             self.schedule.append((event.next_occurence, event))
-            await asyncio.sleep((event_time - now).total_seconds())
-            await event.happen()
+            if (event_time - now).total_seconds() > 0: # if we're "late" then the effect is played right away
+                await asyncio.sleep((event_time - now).total_seconds())
+            await event.happen(self.loultstate)
             self._order_schedule()
