@@ -183,7 +183,7 @@ class ContradictorEffect(ExplicitTextEffect):
             self.verb_tree = pickle.load(treefile) # type:Node
 
     def process(self, text : str):
-        if random.randint(1, 3) == 1:
+        if random.randint(1, 2) == 1:
             splitted = text.split()
             reconstructed = ''
             previous_was_negation = False
@@ -196,7 +196,7 @@ class ContradictorEffect(ExplicitTextEffect):
                         reconstructed += 'pas'
                         previous_was_negation = False
 
-            return  reconstructed
+            return reconstructed
         else:
             return text
 
