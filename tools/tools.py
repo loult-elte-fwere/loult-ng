@@ -9,6 +9,7 @@ from re import sub
 from shlex import quote
 from struct import pack
 from typing import Union
+from collections import OrderedDict
 
 import numpy
 from scipy.io import wavfile
@@ -193,3 +194,18 @@ def prepare_text_for_tts(text : str, lang : str) -> str:
 
 def encode_json(data):
     return json.dumps(data, ensure_ascii=False).encode('utf-8')
+
+
+class OrderedDequeDict(OrderedDict):
+
+    def __init__(self, size=100, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.size = size
+
+    def __setitem__(self, key, value):
+        if key in self:
+            del self[key]
+        elif len(self) == self.size:
+            self.popitem(last=False)
+
+        OrderedDict.__setitem__(self, key, value)

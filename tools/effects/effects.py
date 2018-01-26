@@ -101,6 +101,11 @@ class AudioEffect(Effect):
         pass
 
 
+class VisualEffect(Effect):
+    """Doesn't do anything, just here to notify the client"""
+
+
+
 #### Here are the text effects ####
 
 class SnebwewEffect(ExplicitTextEffect):
@@ -178,7 +183,7 @@ class ContradictorEffect(ExplicitTextEffect):
             self.verb_tree = pickle.load(treefile) # type:Node
 
     def process(self, text : str):
-        if random.randint(1, 3) == 1:
+        if random.randint(1, 2) == 1:
             splitted = text.split()
             reconstructed = ''
             previous_was_negation = False
@@ -191,7 +196,7 @@ class ContradictorEffect(ExplicitTextEffect):
                         reconstructed += 'pas'
                         previous_was_negation = False
 
-            return  reconstructed
+            return reconstructed
         else:
             return text
 
@@ -479,35 +484,47 @@ class PitchRandomizerEffect(PhonemicEffect):
                                       for duration, pitch in phonem.pitch_modifiers]
         return phonems
 
-class CyborgEffect(PhonemicEffect):
-    NAME = "cyborg"
-    TIMEOUT = 180
+
+class PubertyEffect(PhonemicEffect):
+    NAME = "puberté"
+    TIMEOUT = 30
 
     def process(self, phonems: PhonemList):
         for phonem in phonems:
-            if phonem.name in FrenchPhonems.VOWELS and random.randint(1, 1) == 1:
+            if phonem.name in FrenchPhonems.VOWELS and random.randint(1, 2) == 1:
                 phonem.duration *= 2
-                if phonem.pitch_modifiers:
-                    orgnl_pitch_avg = average([pitch for pos, pitch in phonem.pitch_modifiers])
-                else:
-                    orgnl_pitch_avg = 150
-                phonem.set_from_pitches_list([orgnl_pitch_avg + ((-1) ** i * 80) for i in range(25)])
+                factor = random.uniform(0.3, 2)
+                phonem.pitch_modifiers = [(pos, int(pitch * factor)) for pos, pitch in phonem.pitch_modifiers]
         return phonems
+
 
 #### Here are the voice effets ####
 
 
 class VoiceSpeedupEffect(VoiceEffect):
-    TIMEOUT = 150
+    TIMEOUT = 200
     NAME = "en stress"
 
-    def __init__(self):
+    def __init__(self, factor: float=None):
         super().__init__()
-        self.multiplier = random.uniform(1.5, 2.4)
+        self.factor = random.uniform(1.5, 2.4) if factor is None else factor
 
     def process(self, voice_params : VoiceParameters):
-        voice_params.speed = int(self.multiplier * voice_params.speed)
+        voice_params.speed = int(self.factor * voice_params.speed)
         return voice_params
+
+
+class VoiceCloneEffect(VoiceEffect):
+    TIMEOUT = 600
+    NAME = "clone de voiw"
+
+    def __init__(self, voice_params : VoiceParameters):
+        super().__init__()
+        self.params = voice_params
+
+    def process(self, voice_params : VoiceParameters):
+        return self.params
+
 
 
 #### Here are the audio effects ####

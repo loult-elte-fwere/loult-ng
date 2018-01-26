@@ -197,6 +197,7 @@ alerté
 alexandrin
 alezan
 algonquin
+algophile
 algérien
 aligné
 aligoté
@@ -262,6 +263,8 @@ amylique
 améliorateur
 amélioré
 américain
+américano-burundais
+américano-malgache
 américano-soviétique
 amérindien
 anabolisant
@@ -309,6 +312,7 @@ anodin
 anormal
 anosmique
 anthropophage
+anthropopithèque
 anthropoïde
 anti-atomique
 anti-aérien
@@ -532,6 +536,7 @@ auréolé
 austral
 australien
 austro-hongrois
+autiste
 auto-immun
 autocollant
 autodestructeur
@@ -730,13 +735,12 @@ bloqué
 blotti
 bohémien
 boisé
+boit-sans-soif
 boitillant
-bold
 bolivien
 bombardé
 bombé
 bon
-bonard
 bondissant
 bondé
 bonnard
@@ -1051,7 +1055,7 @@ chaussant
 chaussé
 chauvin
 chavirant
-cheap
+cheminot
 chenillé
 chenu
 cher
@@ -1172,7 +1176,6 @@ cohérent
 coiffant
 coiffé
 coincé
-cold
 collaborationniste
 collant
 collatéral
@@ -1238,7 +1241,6 @@ compétitif
 comtal
 comédien
 con
-conard
 concentrationnaire
 concentré
 concepteur
@@ -1293,6 +1295,7 @@ connaissant
 connaisseur
 connard
 connexe
+connecté
 connu
 conquérant
 consacré
@@ -1452,6 +1455,7 @@ court
 courtaud
 courtelinesque
 courtisan
+courtois
 couru
 cousu
 coutumier
@@ -1546,7 +1550,6 @@ céladon
 célinien
 célébrant
 céphalo-rachidien
-céphalorachidien
 céruléen
 cérusé
 céréalier
@@ -1596,7 +1599,6 @@ destiné
 destructeur
 destructible
 destructif
-deutsche mark
 diable
 diacritique
 diagonal
@@ -1754,6 +1756,7 @@ déambulateur
 déambulatoire
 débarqué
 débauché
+débile
 débilitant
 débiteur
 déblayeur
@@ -1797,6 +1800,7 @@ décomposé
 déconcertant
 déconcerté
 déconfit
+déconnecté
 décontenancé
 décontract
 décontracté
@@ -1890,6 +1894,7 @@ démobilisateur
 démobilisé
 démocrate-chrétien
 démodé
+démoniaque
 démonstratif
 démontrable
 démonté
@@ -2222,6 +2227,9 @@ errant
 erroné
 escamotable
 escarpé
+esclavagiste
+esclave
+escroc
 eskimo
 espacé
 espagnol
@@ -2429,6 +2437,8 @@ finet
 fini
 finissant
 fiscal
+fisteur
+fisté
 fixateur
 fixé
 fiérot
@@ -2665,6 +2675,7 @@ gastro-intestinal
 gastrolâtre
 gaucher
 gaufré
+gaulois
 gavroche
 gay
 gazier
@@ -2717,6 +2728,7 @@ gongoriste
 gordien
 gorge-de-pigeon
 gorgé
+gothique
 gouailleur
 goudronné
 gouleyant
@@ -2890,6 +2902,7 @@ hivernant
 hiérarchisé
 hodgkinien
 hollywoodien
+holographique
 homogénéisé
 homologué
 homosexuel
@@ -2919,6 +2932,7 @@ humoral
 huppé
 hurlant
 hurleur
+hurluberlu
 huron
 hydratant
 hydrochlorique
@@ -2958,6 +2972,7 @@ hétérogène
 hétérosexuel
 hôtelier
 iambique
+iconoclaste
 identifiant
 identificateur
 idiosyncrasique
@@ -3048,7 +3063,6 @@ impur
 impénitent
 impératif
 impérial
-in-bord
 in-folio
 inabouti
 inaccompli
@@ -3262,6 +3276,7 @@ insonore
 insouciant
 insoumis
 insoupçonné
+insulinosécréteur
 inspirant
 inspirateur
 inspiratoire
@@ -3387,6 +3402,7 @@ iranien
 iraquien
 iridescent
 irisé
+irlando-syrien
 irradiant
 irraisonné
 irrationnel
@@ -3417,6 +3433,8 @@ ithyphallique
 itinérant
 ivoirien
 ivoirin
+ivre
+ivrogne
 jacassant
 jacobin
 jacobite
@@ -3479,8 +3497,8 @@ kantien
 kazakh
 khmer
 khédival
+kinky
 kirghize
-knock-out
 kényan
 labial
 lacanien
@@ -3604,6 +3622,7 @@ luminescent
 lunetteux
 lunetté
 luné
+lusitano-macédonien
 lustral
 lustré
 luthérien
@@ -3639,6 +3658,7 @@ madré
 mafflu
 magdalénien
 maghrébin
+magique
 magistral
 magouilleur
 magyar
@@ -3648,8 +3668,10 @@ maigrichon
 maigriot
 maillé
 majeur
-majo
 mal
+mal appris
+mal baisé
+mal élevé
 malabar
 maladif
 maladroit
@@ -3663,6 +3685,7 @@ malentendant
 malfaisant
 malfamé
 malformé
+malhonnête
 malin
 malintentionné
 mallarméen
@@ -3673,6 +3696,7 @@ malsain
 malséant
 malveillant
 malvenu
+malvoyant
 maléficié
 mamelu
 manceau
@@ -3707,6 +3731,7 @@ marié
 marle
 marmoréen
 marocain
+maroco-tchèque
 marquant
 marquisien
 marqué
@@ -3726,7 +3751,6 @@ mastard
 masturbateur
 masturbatoire
 mat
-mat'
 matelassé
 maternel
 mati
@@ -3831,6 +3855,7 @@ mirobolant
 miroitant
 miscible
 misérabiliste
+misérable
 miséricordieux
 mithriaque
 mitigé
@@ -3840,11 +3865,11 @@ mitral
 mitré
 mité
 mnémonique
+mobile
 mobilier
 mobilisable
 mobilisateur
 mochard
-mod
 modificateur
 modifié
 modulable
@@ -3931,7 +3956,6 @@ mouvementé
 moyen
 moyen-oriental
 moï
-mudéjar
 muet
 mufle
 mugissant
@@ -4004,6 +4028,7 @@ mélomane
 mémoriel
 ménager
 ménopausé
+méphistophélique
 méprisant
 méridien
 méridional
@@ -4058,7 +4083,6 @@ neuronal
 neutralisant
 neutralisateur
 neutronique
-new
 nicaraguayen
 nicet
 nickelé
@@ -4069,6 +4093,7 @@ nigérian
 nigérien
 nimbé
 nippon
+nippo-ukrainien
 nitreux
 nitré
 nié
@@ -4082,7 +4107,6 @@ nominal
 nominaliste
 nominatif
 nommé
-non
 non-combattant
 non-fumeur
 non-initié
@@ -4125,7 +4149,9 @@ numéroté
 nuptial
 nutritif
 nutritionnel
+nyctalope
 nymphal
+nymphomane
 né
 néandertalien
 néanderthalien
@@ -4143,6 +4169,7 @@ néo-renaissant
 néo-réaliste
 néoclassique
 néocolonial
+néocriticiste
 néogothique
 néonatal
 névralgique
@@ -4298,6 +4325,7 @@ oxfordien
 oxygéné
 oyant
 pacificateur
+pagano-chrétien
 paillard
 pailleté
 paillu
@@ -4411,6 +4439,7 @@ patronal
 patronymique
 pattu
 paumé
+pauvre
 pavlovien
 pavé
 payant
@@ -4484,7 +4513,6 @@ pestilentiel
 petiot
 petit
 peuhl
-peul
 peuplé
 phalangiste
 phallocratique
@@ -4524,6 +4552,7 @@ pimpant
 pincé
 pinçard
 pinéal
+pirate
 piquant
 piqueur
 piqué
@@ -4592,7 +4621,6 @@ pointé
 poissard
 poitevin
 poivré
-polack
 polak
 polarisant
 polarisé
@@ -4607,7 +4635,9 @@ politicien
 pollinisateur
 polluant
 pollueur
+polono-népalais
 poltron
+polycentriste
 polychromé
 polycéphale
 polygonal
@@ -4634,6 +4664,7 @@ ponté
 poplité
 populacier
 porcin
+portable
 portal
 portant
 portatif
@@ -4712,6 +4743,7 @@ profanateur
 professionnel
 professoral
 profitant
+profiteur
 profond
 profus
 programmateur
@@ -4822,6 +4854,7 @@ préétabli
 prêt
 prêteur
 prêté
+psammophyte
 psychorigide
 psychosexuel
 psychotechnique
@@ -4854,6 +4887,8 @@ puéril
 pyogène
 pyramidal
 pyramidé
+pyromane
+pyrophore
 pyrrhonien
 pyrénéen
 pythagoricien
@@ -5109,6 +5144,7 @@ riant
 ricain
 ricanant
 ricaneur
+riche
 richard
 ridé
 rieur
@@ -5135,7 +5171,6 @@ ronflant
 rongeant
 rongeur
 ronronnant
-rose-thé
 rosicrucien
 rosé
 rotateur
@@ -5178,6 +5213,7 @@ russo-allemand
 russo-américain
 russophone
 rustaud
+rustre
 rusé
 rutilant
 rythmé
@@ -5329,6 +5365,9 @@ sanglant
 sanglotant
 sanguin
 sanguinolent
+sans retenue
+sans réserve
+sans usage
 sanscrit
 sanskrit
 saoudien
@@ -5337,6 +5376,8 @@ sapide
 sapien
 sarde
 sarrasin
+satanique
+sataniste
 satané
 satiné
 satisfaisant
@@ -5352,10 +5393,13 @@ saurien
 sautant
 sautillant
 sauté
+sauvage
+sauvé
 savant
 savonnier
 savoyard
 saxon
+scabreux
 scalène
 scandalisé
 scarlatin
@@ -5451,6 +5495,7 @@ single
 singulier
 sinistré
 sino-américain
+sino-lituanien
 sinusal
 sinusoïdal
 siphonné
@@ -5477,6 +5522,7 @@ solognot
 solvable
 somalien
 somatique
+sombre
 sommeillant
 somnolent
 sondé
@@ -5498,6 +5544,7 @@ soufré
 soulageant
 soule
 soulevé
+soumis
 soupier
 sourd
 sourd-muet
@@ -5569,6 +5616,7 @@ stroboscopique
 structural
 structurel
 structuré
+stupide
 stupéfait
 stupéfiant
 stygien
@@ -5580,7 +5628,6 @@ stérilisé
 stéroïde
 stéréophonique
 stéréotypé
-su
 suant
 sub-claquant
 sub-vocal
@@ -5837,7 +5884,6 @@ tonifiant
 tonitruant
 tonkinois
 tonnant
-too much
 topique
 toquard
 toqué
@@ -5870,7 +5916,6 @@ tournant
 tournoyant
 tourné
 tousseur
-tout
 tout-fait
 tout-fou
 tout-puissant
@@ -6006,7 +6051,6 @@ tétanisé
 tétramère
 têtu
 ubiquitaire
-uht
 ukrainien
 ulcéreux
 ulcéré
@@ -6048,6 +6092,7 @@ usé
 utilisé
 utérin
 uxorilocal
+va-nu-pieds
 vacant
 vaccinal
 vaccinant
@@ -6067,6 +6112,7 @@ validé
 vallonné
 valorisant
 valétudinaire
+vandale
 vanillé
 vanné
 vantard
@@ -6224,6 +6270,7 @@ walter
 waterproof
 westphalien
 wilhelmien
+wisigoth
 xiphoïde
 xième
 xérographique
@@ -6256,6 +6303,7 @@ zélé
 écarté
 écervelé
 échancré
+échangiste
 échappé
 échaudé
 échevelé
@@ -6378,6 +6426,7 @@ zélé
 équidistant
 équilatéral
 équilibré
+équivoque
 équin
 équipé
 équivalent
@@ -6437,3 +6486,15 @@ zélé
 événementiel
 éwé
 ôté
+beurré comme un kouign-amann
+bourré comme un coing
+de la jaquette
+de malheur
+du bien dowmiw
+du Mordor
+du ter-ter
+du turfu
+déchiré comme un drap de pauvre
+défoncé comme un terrain de manœuvre
+rond comme une queue de pelle
+toumiwmiw
