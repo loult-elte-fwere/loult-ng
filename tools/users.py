@@ -76,10 +76,10 @@ class PokeProfile:
 
     @classmethod
     def from_cookie_hash(cls, cookie_hash):
-        return cls((cookie_hash[10] | (cookie_hash[12] << 9)) % len(jobs),  # job
-                   ((cookie_hash[13] << 7) % 80) + 15,  # age
-                   (cookie_hash[7] | (cookie_hash[14] << 16)) % len(cities),  # city
-                   (cookie_hash[2] << 4) % len(sexual_orient))  # sexual orientation
+        return cls((cookie_hash[4] | (cookie_hash[2] << 7)) % len(jobs), # job
+                   (cookie_hash[3] | (cookie_hash[5] << 6)) % 62 + 18, # age
+                   ((cookie_hash[6] * cookie_hash[4] << 17)) % len(cities), # city
+                   (cookie_hash[2] | (cookie_hash[3] << 4)) % len(sexual_orient)) # sexual orientation
 
 
 class UserState:

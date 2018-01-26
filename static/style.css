@@ -10,11 +10,8 @@
 	background-color: #DDD;
 }
 
-* {
-	transition: background-color 200ms linear;
-}
-
 html, body, header, main, footer, div, i, ul, li, select, input {
+	transition: background-color 200ms linear;
 	box-sizing: border-box;
 	padding: 0;
 	margin: 0;
@@ -103,7 +100,6 @@ header > div > img {
 footer > div {
 	height: 100%;
 	width: 200px;
-	padding: 0 10px;
 	border-left: 2px solid #BBB;
 	display: -webkit-box;
 	display: -ms-flexbox;
@@ -122,9 +118,20 @@ footer > div {
 }
 
 footer > div > i {
-	padding: 5px;
-	border-radius: 99px;
-	border: 2px solid #BBB;
+	-webkit-box-flex: 1;
+	-webkit-flex: 1;
+	-ms-flex: 1;
+	flex: 1;
+	text-align: center;
+	padding: 13px 10px;
+}
+
+footer > div > i:not(:first-child) {
+	border-left: 2px solid #BBB;
+}
+
+footer > div > i:hover {
+	background: #EEE;
 }
 
 main {
@@ -219,7 +226,7 @@ main {
 	bottom: 6px;
 }
 
-#chat > div > div:first-child > img:nth-child(2) {
+#chat > div > div:first-child > img:not(:first-child), ul > li > div > div:first-child > div > img {
 	top: -100%;
 	left: -100%;
 	right: -100%;
@@ -241,6 +248,10 @@ main {
 
 #chat > div > :nth-child(2) > div:not(:first-child) {
 	color: #333;
+}
+
+#chat > .msg > :nth-child(3) {
+	color: #999;
 }
 
 ul {
@@ -284,7 +295,61 @@ audio + a {
 
 a:hover, li > i:hover, footer i:hover, #window input:hover, #window label:hover, select:hover {
 	cursor: pointer;
-	opacity: 0.8;
+}
+
+ul > li:hover > div {
+	display: block;
+}
+
+ul > li > div {
+	z-index: 25;
+	color: #333;
+	display: none;
+	position: absolute;
+	top: 57px;
+	right: 222px;
+	width: 400px;
+	font-size: 11px;
+	background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0) 35px, #f9f9f9 35px, #f9f9f9 100%);
+}
+
+ul > li > div > div:first-child {
+	font-size: 25px;
+	line-height: 30px;
+	padding-bottom: 10px;
+	text-align: center;
+}
+
+ul > li > div > div:first-child > div {
+	background-color: #DDD;
+	border-radius: 99px;
+	overflow: hidden;
+	height: 70px;
+	width: 70px;
+	position: relative;
+	display: inline-block;
+	border-right: 2px solid rgba(0, 0, 0, 0.5);
+	border-bottom: 2px solid rgba(0, 0, 0, 0.5);	
+}
+
+ul > li > div > div:first-child > div > img {
+	position: absolute;
+	display: block;
+	margin: auto;
+}
+
+ul > li > div > div:last-child {
+	padding: 5px 10px;
+	line-height: 25px;
+	border: 2px solid #BBB;
+	border-top: 0;
+}
+
+ul > li > div > div:last-child > i {
+	position: relative;
+	top: 3px;
+	font-size: 15px;
+	margin-right: 5px;
 }
 
 .backlog {
@@ -295,20 +360,23 @@ a:hover, li > i:hover, footer i:hover, #window input:hover, #window label:hover,
 	filter: blur(1px);
 }
 
-.backlog > div, #chat > div > div:last-child {
-	opacity: 0.8;
+.log, .log > div > div {
+	color: #3C3 !important;
+	border-color: #3C3;
 }
 
-.log {
-	color: #3C3;
+.part, .part > div > div {
+	color: #1AC !important;
+	border-color: #1AC;
 }
 
-.part {
-	color: #1AC;
+.kick, .kick > div > div {
+	color: #F33 !important;
+	border-color: #F33;
 }
 
-.kick {
-	color: #F33;
+.me > div > div {
+	color: inherit !important;
 }
 
 .log, .part, .me, .kick {
@@ -414,14 +482,10 @@ a:hover, li > i:hover, footer i:hover, #window input:hover, #window label:hover,
 	width: 680px;
 	height: 700px;
 	margin: auto;
-	background: #f9f9f9;
-	box-shadow: 0 0 15px #BBB;
-	border: 2px solid #BBB;
 	line-height: 1.5em;
-}
-
-#window {
 	font-size: 25px;
+	background: #f9f9f9;
+	border: 2px solid #BBB;
 }
 
 #window > div:first-child {
@@ -441,25 +505,11 @@ a:hover, li > i:hover, footer i:hover, #window input:hover, #window label:hover,
 	left: 0;
 	right: 0;
 	padding: 10px 0;
-	display: -webkit-box;
-	display: -ms-flexbox;
-	display: -webkit-flex;
-	display: flex;
-	-webkit-box-orient: vertical;
-	-webkit-box-direction: normal;
-	-ms-flex-direction: column;
-	flex-direction: column;
-	-webkit-box-pack: justify;
-	-ms-flex-pack: justify;
-	justify-content: space-between;
 }
 
 #window > div:last-child > div {
 	height: 80px;
 	padding: 10px 115px;
-	-webkit-box-flex: 1;
-	-ms-flex: 1;
-	flex: 1;
 }
 
 #window > div:last-child > div:nth-last-child(-n+2) {
@@ -507,6 +557,35 @@ select {
 }
 
 @media screen and (max-width: 680px) {
+	head {
+		padding-right: 0;
+	}
+
+	footer {
+		height: 100px;
+		max-height: 100px;
+	}
+
+	footer > div {
+		-webkit-flex-wrap: wrap;
+		flex-wrap: wrap;
+		width: 100px;
+	}
+
+	footer > div > i:nth-child(odd) {
+		border-left: 0;
+	}
+
+	footer > div > i:nth-child(-n+2) {
+		border-bottom: 2px solid #BBB;
+	}
+
+	#input {
+		height: auto;
+		padding: 10px;
+		font-size: 40px;
+	}
+
 	ul {
 		z-index: 25;
 		position: absolute;
@@ -549,28 +628,6 @@ select {
 		width: 60px;
 	}
 
-	footer {
-		height: 105px;
-		max-height: 105px;
-	}
-
-	footer > div {
-		-webkit-flex-wrap: wrap;
-		flex-wrap: wrap;
-		padding: 10px;
-		width: 105px;
-	}
-
-	#input {
-		height: auto;
-		padding: 10px;
-		font-size: 40px;
-	}
-	
-	head {
-		padding-right: 0;
-	}
-	
 	#underlay {
 		right: 0;
 	}
@@ -595,26 +652,35 @@ select {
 	max-height: 40px;
 }
 
+.fat #chat {
+	padding-left: 4px;
+}
+
 .fat #chat > div > div:first-child {
 	position: absolute;
-	top: -20px;
-	left: -20px;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	margin: 0;
 	border: 0;
 	border-radius: 0;
-	overflow: visible;
+	opacity: 0.1;
+	z-index: 21;
 	background: transparent !important;
 }
 
+.fat #chat > div:not(:first-child) {
+	border-top: 2px solid #999;
+	border-color: inherit;
+}
+
 .fat #chat > div > :nth-child(2) {
-	margin-left: 100px;
+	padding-left: 1px;
+	z-index: 24;
 }
 
-.fat #chat > div > div:first-child > img:nth-child(3) {
-	width: 100px;
-}
-
-.fat .backlog > div:first-child {
-	opacity: 1;
+.fat #underlay {
+	display: none;
 }
 
 .fat #chat > div > :nth-child(2) > div:not(:first-child) {
@@ -630,12 +696,12 @@ select {
 	padding-left: 5px;
 }
 
-.console #chat > div > div:nth-child(2) > div:first-child {
+.console #chat > div.msg > div:nth-child(2) > div:first-child {
 	float: left;
 	height: 100%;
 }
 
-.console #chat > div:not(.log):not(.part):not(.me):not(.kick) > div:nth-child(2) > div:first-child::after {
+.console #chat > div.msg > div:nth-child(2) > div:first-child::after {
 	content: ':';
 	padding-left: 5px;
 }
@@ -720,7 +786,7 @@ select {
 	border-color: #FCE;
 }
 
-.night #chat > div > :nth-child(2) > div:not(:first-child) {
+.night #chat > div > :nth-child(2) > div:not(:first-child), .night ul > li > div > div {
 	color: #EEE;
 }
 
@@ -729,25 +795,16 @@ select {
 	color: #EEE;
 }
 
-.night ul > li > i, .night select {
+.night ul > li > i, .night select, .night footer > div > i {
 	color: #DDD;
 }
 
-.night #close, .night #chat > div > div:first-child {
+.night #close, .night #chat > div > div:first-child, .night ul > li > div > div:first-child > div, .night footer > div > i:hover {
 	background-color: #333;
 }
 
-.night main, .night #window > div:first-child, .night footer > div, .night ul, .night #close, .night #window {
+.night main, .night #window > div:first-child, .night footer > div, .night footer > div > i, .night ul, .night #close, .night #window, .night ul > li > div > div:last-child {
 	border-color: #111;
-}
-
-.night footer > div > i {
-	border-color: #999;
-	color: #999;
-}
-
-.night .backlog > div, .night #chat > div > div:last-child {
-	opacity: 0.4;
 }
 
 .night header, .night #window > div:first-child {
@@ -758,9 +815,13 @@ select {
 	background: linear-gradient(to bottom, #333 0%, #111 100%);
 }
 
+.night ul > li > div {
+	background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0) 35px, #222 35px, #222 100%);
+}
+
 .night #underlay {
-    -webkit-filter: invert(50%) brightness(200%);
-    filter: invert(50%) brightness(200%);
+  -webkit-filter: invert(50%) brightness(200%);
+  filter: invert(50%) brightness(200%);
 }
 
 .night ::-webkit-scrollbar-track {
@@ -823,18 +884,13 @@ select {
 }
 
 .retro {
-    -webkit-filter: grayscale(100%);
-    filter: grayscale(100%);
+	-webkit-filter: grayscale(100%);
+	filter: grayscale(100%);
 }
 
 .drukqs {
 	-webkit-animation: fader 30s infinite;
 	animation: fader 30s infinite;
-}
-
-.rainbow i, .rainbow a, .rainbow #chat > div:nth-last-of-type(-n+50) > div > div:first-child, .rainbow .me:nth-last-of-type(-n+50), .rainbow .log:nth-last-of-type(-n+50), .rainbow .part:nth-last-of-type(-n+50) {
-	-webkit-animation: fader 10s infinite;
-	animation: fader 10s infinite;
 }
 
 @-webkit-keyframes fader {
