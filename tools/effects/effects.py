@@ -484,6 +484,20 @@ class PitchRandomizerEffect(PhonemicEffect):
                                       for duration, pitch in phonem.pitch_modifiers]
         return phonems
 
+
+class PubertyEffect(PhonemicEffect):
+    NAME = "puberté"
+    TIMEOUT = 30
+
+    def process(self, phonems: PhonemList):
+        for phonem in phonems:
+            if phonem.name in FrenchPhonems.VOWELS and random.randint(1, 2) == 1:
+                phonem.duration *= 2
+                factor = random.uniform(0.3, 2)
+                phonem.pitch_modifiers = [(pos, int(pitch * factor)) for pos, pitch in phonem.pitch_modifiers]
+        return phonems
+
+
 #### Here are the voice effets ####
 
 
