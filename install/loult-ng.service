@@ -1,0 +1,13 @@
+[Unit]
+Description=Daemon for the loult websocket server
+After=network.target
+
+[Service]
+User=YOUR-USER
+Group=www-data
+WorkingDirectory=/path/to/the/loult-ng
+Environment="PATH=/path/to/the/loult/venv/bin:/usr/bin"
+ExecStart=/path/to/the/loult-ng/venv/bin/python poke.py
+
+[Install]
+WantedBy=multi-user.target

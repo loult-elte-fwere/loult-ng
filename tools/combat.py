@@ -53,11 +53,11 @@ class CombatSimulator:
             effect = get_random_effect()
             defender.state.add_effect(effect)
             self._affected_users = [(defender, effect)]
-            if self.atk_dice + self.atk_bonus > 100: # adding an effect for every chunck of 50 > 100
-                for i in range((self.atk_dice + self.atk_bonus) // 50):
+            if self.atk_dice + self.atk_bonus > 100: # adding an effect for every slice of 50 above 100
+                for i in range((self.atk_dice + self.atk_bonus - 100) // 50):
                     effect = get_random_effect()
                     defender.state.add_effect(effect)
-                    self._affected_users = [(defender, effect)]
+                    self._affected_users.append((defender, effect))
 
     @property
     def affected_users(self):
