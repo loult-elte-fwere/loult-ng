@@ -77,6 +77,15 @@ class AddTrackEffect(AudioEffect):
         return mix_tracks(track_data[rate*3:len(wave_data) + rate*5] * 0.4, wave_data, align="center")
 
 
+class BadCellphoneEffect(AudioEffect):
+    NAME = "convert"
+    TIMEOUT = 30
+
+    def process(self, wave_data: numpy.ndarray):
+        # implementation of sox effect.wav sinc 600-3.5k overdrive 30 gain -7
+        return wave_data
+
+
 class SpeechDeformation(PhonemicEffect):
     NAME = "puberté"
     TIMEOUT = 30
