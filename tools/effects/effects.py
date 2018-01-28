@@ -487,7 +487,7 @@ class PitchRandomizerEffect(PhonemicEffect):
 
 class PubertyEffect(PhonemicEffect):
     NAME = "puberté"
-    TIMEOUT = 30
+    TIMEOUT = 180
 
     def process(self, phonems: PhonemList):
         for phonem in phonems:
