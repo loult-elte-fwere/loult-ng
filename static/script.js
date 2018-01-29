@@ -1,30 +1,30 @@
 ﻿document.addEventListener('DOMContentLoaded', function() {
-	var audio = (window.AudioContext || typeof webkitAudioContext !== 'undefined');
-	var userlist = document.getElementById('userlist');
-	var underlay = document.getElementById('underlay');
-	var input = document.getElementById('input');
-	var chat = document.getElementById('chat');
-	var theme = (localStorage.theme && localStorage.theme.split(' ').length > 2) ? localStorage.theme : 'cozy night sans';
-	var waitTime = 1000;
-	var banned = false;
-	var users = {};
-	var muted = [];
-	var you = null;
-	var count = 0;
-	var lastMsg;
-	var lastRow;
-	var lastId;
-	var ws;
+	var audio = (window.AudioContext || typeof webkitAudioContext !== 'undefined'),
+		userlist = document.getElementById('userlist'),
+		underlay = document.getElementById('underlay'),
+		input = document.getElementById('input'),
+		chat = document.getElementById('chat'),
+		theme = (localStorage.theme && localStorage.theme.split(' ').length > 2) ? localStorage.theme : 'cozy night sans',
+		waitTime = 1000,
+		banned = false,
+		users = {},
+		muted = [],
+		you = null,
+		count = 0,
+		lastMsg,
+		lastRow,
+		lastId,
+		ws;
 
 	// DOM-related functions
 
 	var parser = function(raw_msg) {
-		var profane = new RegExp(/\b((?:t ?g+|fdp+|ba+t+a+r+d?|fiste?(?:u?r?)|ta+r+l+o+u+(z|s)e|taf+iol+e|péta+s+e?|put+(e|ain)|bi+t+e|cu+l|co+u+i+l+e|cha+t+e|chi+e+n+(?:a+s+)?e|sa+l+o+p+e?|(p ?d+)+|p(?:é|è|ai|ay)d(?:é|è|ai|ay)|salaud|sc?hne+c?k|(?:em)?me+r+d+(?:i?er?|eu(?:x|r))|bo+r+de+l+|fo+u+t+r+e|ni+qu?(?:é|eu?r?)|encu+l+(?:é+|eu?r)|enf+oiré+|branl+eu?r?|fi+o+t+e|bu+r+n+e|co+n(?:ne|n?a+rd|n?a+s+e)?)s?)\b/, 'gi');
-		var rules = [
-			{
+		var profane_or_url = new RegExp(/(https?:\/\/[^< ]*[^<*.,?! :])|\b((?:t ?g+|fdp+|ba+t+a+r+d?|fiste?(?:u?r?)|ta+r+l+o+u+(z|s)e|taf+iol+e|péta+s+e?|put+(e|ain)|bi+t+e|cu+l|co+u+i+l+e|cha+t+e|chi+e+n+(?:a+s+)?e|sa+l+o+p+e?|(p ?d+)+|p(?:é|è|ai|ay)d(?:é|è|ai|ay)|salaud|sc?hne+c?k|(?:em)?me+r+d+(?:i?er?|eu(?:x|r))|bo+r+de+l+|fo+u+t+r+e|ni+qu?(?:é|eu?r?)|encu+l+(?:é+|eu?r)|enf+oiré+|branl+eu?r?|fi+o+t+e|bu+r+n+e|co+n(?:ne|n?a+rd|n?a+s+e)?)s?)\b/, 'gi'),
+			rules = [
+			/*{
 				test: msg => msg.includes('http'),
 				run: msg => msg.replace(/https?:\/\/[^< ]*[^<*.,?! :]/g, '<a href="$&" target="_blank">$&</a>')
-			},
+			},*/
 			{
 				test: msg => msg.includes('**'),
 				run: msg => msg.replace(/\*{2}([^\*]+)\*{2}?/g, '<span class="spoiler">$1</span>')
@@ -38,8 +38,8 @@
 				run: msg => msg.replace(/(.+)/g, '<span class="greentext">$1</span>')
 			},
 			{
-				test: msg => msg.match(profane),
-				run: msg => msg.replace(profane, function(matched){ return msg.includes('<a href=') ? matched : '<span class="pinktext">' + '♥'.repeat(matched.length) + '</span>'; })
+				test: msg => msg.match(profane_or_url),
+				run: msg => msg.replace(profane_or_url, function(matched) { return matched.includes('http')? `<a href="${matched}" target="_blank">${matched}</a>` : '<span class="pinktext">' + '♥'.repeat(matched.length) + '</span>'; })
 			}
 		];
 
@@ -48,14 +48,14 @@
 	};
 
 	var addLine = function(pkmn, txt, datemsg, rowclass, uid) {
-		var atBottom = (chat.scrollTop === (chat.scrollHeight - chat.offsetHeight));
-		var text = document.createElement('div');
-		var uid = uid || null;
+		var atBottom = (chat.scrollTop === (chat.scrollHeight - chat.offsetHeight)),
+			text = document.createElement('div'),
+			uid = uid || null;
 		text.innerHTML = txt;
 
-		if(lastId !== uid || pkmn.name === 'info') {
-			var row = document.createElement('div');
-			var msg = document.createElement('div');
+		if(lastId !== uid) {
+			var row = document.createElement('div'),
+				msg = document.createElement('div');
 
 			if(pkmn.name === 'info') {
 				var i = document.createElement('i');
@@ -64,10 +64,10 @@
 				row.appendChild(i);
 			}
 			else {
-				var pic = document.createElement('div');
-				var img1 = document.createElement('img');
-				var img2 = document.createElement('img');
-				var img3 = document.createElement('img');
+				var pic = document.createElement('div'),
+					img1 = document.createElement('img'),
+					img2 = document.createElement('img'),
+					img3 = document.createElement('img');
 
 				img1.src = '/pokemon/' + pkmn.img + '.gif';
 				img2.src = '/img/pokemon/' + pkmn.img + '.gif';
@@ -82,14 +82,12 @@
 				name.style.color = pkmn.color;
 				msg.appendChild(name);
 
-				row.style.borderColor = pkmn.color;
-
-				if(!document.hasFocus())
-					document.title = '(' + ++count + ') Loult.family';
 			}
 
-			if(pkmn.color)
+			if(pkmn.color) {
+				row.style.borderColor = pkmn.color;
 				row.style.color = pkmn.color;
+			}
 
 			row.className = rowclass;
 			row.appendChild(msg);
@@ -100,6 +98,9 @@
 			row.appendChild(dt);
 
 			chat.appendChild(row);
+
+			if(!document.hasFocus())
+				document.title = '(' + ++count + ') Loult.family';
 		}
 
 		lastRow.appendChild(text);
@@ -109,7 +110,7 @@
 			chat.scrollTop = chat.scrollHeight;
 	};
 
-	var addUser = function(userid, params) {
+	var addUser = function(userid, params, profile) {
 		if(userid in users)
 			return;
 
@@ -122,7 +123,6 @@
 		row.appendChild(document.createTextNode(params.name));
 		row.style.color = params.color;
 		row.style.backgroundImage = 'url("/pokemon/' + params.img + '.gif")';
-		row.className = 'left';
 
 		if(!params.you) {
 			var i = document.createElement('i');
@@ -145,6 +145,36 @@
 			underlay.style.backgroundImage = 'url("/dev/pokemon/' + params.img + '.png")';
 			you = userid;
 		}
+
+		var phead = document.createElement('div'),
+			pbody = document.createElement('div'),
+			pdiv = document.createElement('div'),
+			idiv = document.createElement('div'),
+			pimg = document.createElement('img'),
+			l = document.createElement('i');
+		l.className = 'material-icons';
+		l.appendChild(document.createTextNode('my_location'));
+
+		pimg.src = '/img/pokemon/' + params.img + '.gif';
+		idiv.appendChild(pimg);
+
+		phead.style.backgroundImage = 'linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0) 35px, rgba(' + parseInt(params.color.slice(1, 3), 16) + ', ' + parseInt(params.color.slice(3, 5), 16) + ', ' + parseInt(params.color.slice(5, 7), 16) + ', 0.2) 35px, ' + params.color + ' 100%)';
+		phead.appendChild(idiv);
+		phead.appendChild(document.createElement('br'));
+		phead.appendChild(document.createTextNode(params.name + ' ' + params.adjective));
+
+		pbody.appendChild(l);
+		pbody.appendChild(document.createTextNode(profile.city + ' (' + profile.departement + ')'));
+		pbody.appendChild(document.createElement('br'));
+		pbody.appendChild(document.createTextNode(profile.age + ' ans'));
+		pbody.appendChild(document.createElement('br'));
+		pbody.appendChild(document.createTextNode(profile.orientation));
+		pbody.appendChild(document.createElement('br'));
+		pbody.appendChild(document.createTextNode(profile.job));
+
+		pdiv.appendChild(phead);
+		pdiv.appendChild(pbody);
+		row.appendChild(pdiv);
 
 		userlist.appendChild(row);
 		users[userid].dom = row;
@@ -181,63 +211,66 @@
 
 	// Preferences
 
-	var gear = document.getElementById('gear');
-	var overlay = document.getElementById('overlay');
-	var cover = document.getElementById('cover');
-	var close = document.getElementById('close');
-	var ambtn = document.getElementById('am');
-	var head = document.getElementById('head');
-	var main = document.getElementById('main');
-	var foot = document.getElementById('foot');
-	var themes = document.getElementById('theme');
-	var colors = document.getElementById('color');
-	var fonts = document.getElementById('font');
-	var settings = theme.split(' ');
+	var gear = document.getElementById('gear'),
+		overlay = document.getElementById('overlay'),
+		cover = document.getElementById('cover'),
+		close = document.getElementById('close'),
+		ambtn = document.getElementById('am'),
+		head = document.getElementById('head'),
+		main = document.getElementById('main'),
+		foot = document.getElementById('foot'),
+		themes = document.getElementById('theme'),
+		colors = document.getElementById('color'),
+		fonts = document.getElementById('font'),
+		settings = theme.split(' ');
 
 	var openWindow = function() {
 		dontFocus = true;
 		input.blur();
 		overlay.style.display = 'block';
-		head.className = main.className = foot.className = bar.className = 'blur-in';
+		head.className = main.className = foot.className = 'blur-in';
 	};
 
 	var closeWindow = function() {
 		dontFocus = false;
 		refocus();
 		overlay.style.display = 'none';
-		head.className = main.className = foot.className = bar.className = '';
+		head.className = main.className = foot.className = '';
 	};
 
 	gear.onclick = openWindow;
 	cover.onclick = close.onclick = closeWindow;
 
-	document.body.className = theme;
+	var applyTheme = function() {
+		theme = localStorage.theme = settings.join(' ');
+		document.body.className = theme.replace('_', ' ');
+		chat.scrollTop = chat.scrollHeight;
+	};
+
+	applyTheme();
 	themes.value = settings[0];
 	colors.value = settings[1];
 	fonts.value = settings[2];
 
 	themes.onchange = function() {
 		settings[0] = this.value;
-		document.body.className = localStorage.theme = theme = settings.join(' ');
-		chat.scrollTop = chat.scrollHeight;
+		applyTheme();
 	};
 
 	colors.onchange = function() {
 		settings[1] = this.value;
-		document.body.className = localStorage.theme = theme = settings.join(' ');
-		chat.scrollTop = chat.scrollHeight;
+		applyTheme();
 	};
 
 	fonts.onchange = function() {
 		settings[2] = this.value;
-		document.body.className = localStorage.theme = theme = settings.join(' ');
-		chat.scrollTop = chat.scrollHeight;
+		applyTheme();
 	};
 
 	// Languages
 
-	var select = document.getElementById('lang');
-	var lang = document.cookie.match(/lang=(\w{2})/);
+	var select = document.getElementById('lang'),
+		lang = document.cookie.match(/lang=(\w{2})/);
 
 	if(!lang) {
 		var ln = navigator.language.substr(0, 2);
@@ -265,10 +298,10 @@
 	// Sound and volume
 
 	if(audio) {
-		var vol = document.getElementById('vol');
-		var volrange = document.getElementById('volrange');
-		var context = new (window.AudioContext || webkitAudioContext)();
-		var volume = (context.createGain ? context.createGain() : context.createGainNode());
+		var vol = document.getElementById('vol'),
+			volrange = document.getElementById('volrange'),
+			context = new (window.AudioContext || webkitAudioContext)(),
+			volume = (context.createGain ? context.createGain() : context.createGainNode());
 		volume.connect(context.destination);
 
 		var changeVolume = function() {
@@ -297,9 +330,9 @@
 	// Speech
 
 	if('webkitSpeechRecognition' in window) {
-		var mic = document.getElementById('mic');
-		var recognition = new webkitSpeechRecognition();
-		var recognizing = false;
+		var mic = document.getElementById('mic'),
+			recognition = new webkitSpeechRecognition(),
+			recognizing = false;
 
 		mic.innerHTML = 'mic_none';
 
@@ -389,19 +422,21 @@
 					}
 					else if(trimed.match(/^\/(?:help|aide)$/i)) {
 						var d = new Date;
-						addLine('info', '/attaque, /attack, /atq, /atk : Lancer une attaque sur quelqu\'un. Exemple : /attaque Miaouss', d, 'part');
-						addLine('info', '/en, /es, /fr, /de : Envoyer un message dans une autre langue. Exemple : /en Where is Pete Ravi?', d, 'part');
+						addLine({name : 'info'}, '/attaque, /attack, /atq, /atk : Lancer une attaque sur quelqu\'un. Exemple : /attaque Miaouss', d, 'part', 'help');
+						addLine({name : 'info'}, '/en, /es, /fr, /de : Envoyer un message dans une autre langue. Exemple : /en Where is Pete Ravi?', d, 'part', 'help');
 						if(audio)
-							addLine('info', '/volume, /vol : Régler le volume rapidement. Exemple : /volume 50', d, 'part');
-						addLine('info', '/me : Réaliser une action. Exemple: /me essaie la commande /me.', d, 'part');
-						addLine('info', '> : Indique une citation. Exemple : >Je ne reviendrais plus ici !', d, 'part');
-						addLine('info', '** ** : Masquer une partie d\'un message. Exemple : Carapuce est un **chic type** !', d, 'part');
+							addLine({name : 'info'}, '/volume, /vol : Régler le volume rapidement. Exemple : /volume 50', d, 'part', 'help');
+						addLine({name : 'info'}, '/me : Réaliser une action. Exemple: /me essaie la commande /me.', d, 'part', 'help');
+						addLine({name : 'info'}, '> : Indique une citation. Exemple : >Je ne reviendrais plus ici !', d, 'part', 'help');
+						addLine({name : 'info'}, '** ** : Masquer une partie d\'un message. Exemple : Carapuce est un **chic type** !', d, 'part', 'help');
 					}
 					else if(trimed.match(/^\/me\s/i))
 						ws.send(JSON.stringify({type: 'me', msg: trimed.substr(4)}));
-					else if(trimed.match(/^\/(?:poker|rainbow|flip|omg|retro|drukqs)$/i))
-						document.body.className = theme + ' ' + trimed.substr(1);
-					else if(trimed.match(/^\/((?:bisw){2})$/i)) {
+					else if(trimed.match(/^\/(?:poker|flip|omg|drukqs)$/i)) {
+						document.body.className = theme.replace('_', ' ') + ' ' + trimed.substr(1);
+						chat.scrollTop = chat.scrollHeight;
+					}
+					else if(trimed.match(/^\/((?:bisw)+)$/i)) {
 						document.body.className = 'cozy pink comic';
 						chat.scrollTop = chat.scrollHeight;
 					}
@@ -417,7 +452,6 @@
 
 				lastMsg = input.value;
 				input.value = '';
-
 			}
 			else if(evt.keyCode === 38 || evt.keyCode === 40) {
 				evt.preventDefault();
@@ -443,46 +477,46 @@
 
 					case 'me':
 						if(!lastMuted)
-							addLine({name : 'info', color : users[msg.userid].color}, 'Le ' + users[msg.userid].name + ' ' + users[msg.userid].adjective + ' ' + parser(msg.msg), msg.date, 'me');
+							addLine({name : 'info', color : users[msg.userid].color}, 'Le ' + users[msg.userid].name + ' ' + users[msg.userid].adjective + ' ' + parser(msg.msg), msg.date, 'me', msg.userid);
 					break;
 
 					case 'connect':
-						addUser(msg.userid, msg.params);
+						addUser(msg.userid, msg.params, msg.profile);
 						if(!lastMuted)
-							addLine({name : 'info'}, 'Un ' + msg.params.name + ' ' + msg.params.adjective + ' apparaît !', msg.date, 'log');
+							addLine({name : 'info'}, 'Un ' + msg.params.name + ' ' + msg.params.adjective + ' apparaît !', msg.date, 'log', msg.type);
 					break;
 
 					case 'disconnect':
 						if(!lastMuted)
-							addLine({name : 'info'}, 'Le ' + users[msg.userid].name + ' ' + users[msg.userid].adjective + ' s\'enfuit !', msg.date, 'part');
+							addLine({name : 'info'}, 'Le ' + users[msg.userid].name + ' ' + users[msg.userid].adjective + ' s\'enfuit !', msg.date, 'part', msg.type);
 						delUser(msg.userid);
 					break;
 
 					case 'attack':
 						switch(msg['event']) {
 							case 'attack':
-								addLine({name : 'info'}, users[msg.attacker_id].name + ' attaque ' + users[msg.defender_id].name + ' !', msg.date, 'log');
+								addLine({name : 'info'}, users[msg.attacker_id].name + ' attaque ' + users[msg.defender_id].name + ' !', msg.date, 'log', msg.type);
 							break;
 
 							case 'dice':
-								addLine({name : 'info'}, users[msg.attacker_id].name + ' tire un ' + msg.attacker_dice + ' + ('+ msg.attacker_bonus + '), ' + users[msg.defender_id].name + ' tire un ' + msg.defender_dice + ' + (' + msg.defender_bonus + ') !', msg.date, 'log');
+								addLine({name : 'info'}, users[msg.attacker_id].name + ' tire un ' + msg.attacker_dice + ' + ('+ msg.attacker_bonus + '), ' + users[msg.defender_id].name + ' tire un ' + msg.defender_dice + ' + (' + msg.defender_bonus + ') !', msg.date, 'log', msg.type);
 							break;
 
 							case 'effect':
-								addLine({name : 'info'}, users[msg.target_id].name + ' est maintenant affecté par l\'effet ' + msg.effect + ' !', msg.date, 'log');
+								addLine({name : 'info'}, users[msg.target_id].name + ' est maintenant affecté par l\'effet ' + msg.effect + ' !', msg.date, 'log', msg.type);
 								if(msg.target_id === you) {
 									var d = new Date(msg.date);
 									d.setSeconds(d.getSeconds() + msg.timeout);
-									setTimeout(function() { addLine({name : 'info'}, 'L\'effet ' + msg.effect + ' est terminé.', d, 'part'); }, msg.timeout * 1000);
+									setTimeout(function() { addLine({name : 'info'}, 'L\'effet ' + msg.effect + ' est terminé.', d, 'part', 'expire'); }, msg.timeout * 1000);
 								}
 							break;
 
 							case 'invalid':
-								addLine({name : 'info'}, 'Impossible d\'attaquer pour le moment, ou pokémon invalide', (new Date), 'kick');
+								addLine({name : 'info'}, 'Impossible d\'attaquer pour le moment, ou pokémon invalide', (new Date), 'kick', 'invalid');
 							break;
 
 							case 'nothing':
-								addLine({name : 'info'}, 'Il ne se passe rien...', msg.date, 'part');
+								addLine({name : 'info'}, 'Il ne se passe rien...', msg.date, 'log', msg.type);
 							break;
 						}
 					break;
@@ -490,36 +524,32 @@
 					case 'antiflood':
 						switch(msg['event']) {
 							case 'banned':
-								addLine({name : 'info'}, 'Le ' + users[msg.flooder_id].name + ' ' + users[msg.flooder_id].adjective + ' était trop faible. Il est libre maintenant.', msg.date, 'kick');
-					        break;
+								addLine({name : 'info'}, 'Le ' + users[msg.flooder_id].name + ' ' + users[msg.flooder_id].adjective + ' était trop faible. Il est libre maintenant.', msg.date, 'kick', msg.type);
+							break;
 
 							case 'flood_warning':
-								addLine({name : 'info'}, 'Attention, la qualité de vos contributions semble en baisse. Prenez une grande inspiration.', msg.date, 'kick');
+								addLine({name : 'info'}, 'Attention, la qualité de vos contributions semble en baisse. Prenez une grande inspiration.', msg.date, 'kick', msg.type);
 							break;
 						}
 					break;
 
-                    case 'notification':
-                        addLine({name : 'info'}, msg.msg, msg.date, 'info');
-                    break;
-
 					case 'wait':
-						addLine({name : 'info'}, "La connection est en cours. Concentrez-vous quelques instants avant de dire des âneries.", msg.date, 'log');
+						addLine({name : 'info'}, 'La connection est en cours. Concentrez-vous quelques instants avant de dire des âneries.', msg.date, 'log', msg.type);
 					break;
 
 					case 'userlist':
 						for(var i = 0; i < msg.users.length; i++)
-							addUser(msg.users[i].userid, msg.users[i].params);
+							addUser(msg.users[i].userid, msg.users[i].params, msg.users[i].profile);
 					break;
 
 					case 'backlog':
 						for(var i = 0; i < msg.msgs.length; i++)
 							if(msg.msgs[i].type === 'me')
-								addLine({name : 'info', color : msg.msgs[i].user.color}, 'Le ' + msg.msgs[i].user.name + ' ' + msg.msgs[i].user.adjective + ' ' + parser(msg.msgs[i].msg), msg.msgs[i].date, 'backlog me');
+								addLine({name : 'info', color : msg.msgs[i].user.color}, 'Le ' + msg.msgs[i].user.name + ' ' + msg.msgs[i].user.adjective + ' ' + parser(msg.msgs[i].msg), msg.msgs[i].date, 'backlog me', msg.msgs[i].userid);
 							else
 								addLine(msg.msgs[i].user, parser(msg.msgs[i].msg), msg.msgs[i].date, 'backlog ' + msg.msgs[i].type, msg.msgs[i].userid);
 
-						addLine({name : 'info'}, 'Vous êtes connecté.', (new Date), 'log');
+						addLine({name : 'info'}, 'Vous êtes connecté.', (new Date), 'log', 'connected');
 					break;
 
 					case 'banned':
@@ -558,5 +588,6 @@
 		};
 	};
 
-wsConnect();
+	wsConnect();
+
 });
