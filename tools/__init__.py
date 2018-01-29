@@ -10,7 +10,7 @@ from .effects.effects import (
     VieuxPortEffect, GodSpeakingEffect, WpseEffect,
     AutotuneEffect, VoiceSpeedupEffect, StutterEffect,
     GrandSpeechMasterEffect, VowelExchangeEffect, SkyblogEffect,
-    PitchShiftEffect, ContradictorEffect, PubertyEffect
+    PitchShiftEffect, ContradictorEffect, PubertyEffect, BadCellphoneEffect
 )
 
 # the multiplier for each tools list sets the "probability" of the effect
@@ -22,7 +22,7 @@ AVAILABLE_EFFECTS = 1 * [GodSpeakingEffect, SnebwewEffect, VoiceSpeedupEffect,
                          VocalDyslexia, ReverbManEffect, PhonemicNwwoiwwEffect,
                          StutterEffect, VowelExchangeEffect, PitchShiftEffect,
                          ContradictorEffect, PubertyEffect, PitchRandomizerEffect,
-                         RobotVoiceEffect, AngryRobotVoiceEffect] + \
+                         RobotVoiceEffect, AngryRobotVoiceEffect, BadCellphoneEffect] + \
                     6 * [AutotuneEffect, GrandSpeechMasterEffect, TouretteEffect]
 #AVAILABLE_EFFECTS = [CyborgEffect] # single tools list used when testing
 
