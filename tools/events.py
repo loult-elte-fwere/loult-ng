@@ -6,7 +6,8 @@ import random
 
 from poke import LoultServerState
 from tools.effects.effects import AutotuneEffect, ReverbManEffect, SkyblogEffect, RobotVoiceEffect, \
-    AngryRobotVoiceEffect, PitchShiftEffect, GrandSpeechMasterEffect, VisualEffect, VoiceCloneEffect, VoiceSpeedupEffect
+    AngryRobotVoiceEffect, PitchShiftEffect, GrandSpeechMasterEffect, VisualEffect, VoiceCloneEffect, \
+    VoiceSpeedupEffect, BadCellphoneEffect
 from tools.users import User
 
 
@@ -169,7 +170,21 @@ class AmphetamineEvent(PseudoPeriodicEvent):
             channel.broadcast(type="notification",
                               event_type="amphetamine",
                               date=timestamp() * 1000,
-                              msg="LE LOULT EST SOUS AMPHETAMINE")
+                              msg="LE LOULT EST SOUS AMPHETAMINE!")
+
+
+class TunnelEvent(PseudoPeriodicEvent):
+
+    async def happen(self, loultstate):
+        for channel in loultstate.chans.values():
+            for user in channel.users.values():
+                effect = BadCellphoneEffect(signal_strength=random.randint(1,2))
+                effect._timeout = 60
+                user.state.add_effect(effect)
+            channel.broadcast(type="notification",
+                              event_type="tunnel",
+                              date=timestamp() * 1000,
+                              msg="Le loult passe sous un tunnel!")
 
 
 class EventScheduler:
