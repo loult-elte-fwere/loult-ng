@@ -537,6 +537,10 @@
 						addLine({name : 'info'}, 'La connection est en cours. Concentrez-vous quelques instants avant de dire des âneries.', msg.date, 'log', msg.type);
 					break;
 
+					case 'notification':
+                        addLine({name : 'info'}, msg.msg, msg.date, 'info');
+                    break;
+
 					case 'userlist':
 						for(var i = 0; i < msg.users.length; i++)
 							addUser(msg.users[i].userid, msg.users[i].params, msg.users[i].profile);
