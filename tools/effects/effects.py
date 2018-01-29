@@ -8,7 +8,7 @@ from os import path
 from typing import List
 from statistics import mean
 
-import numpy
+import numpy as np
 from pysndfx import AudioEffectsChain
 from scipy.io.wavfile import read
 
@@ -97,7 +97,7 @@ class VoiceEffect(Effect):
 class AudioEffect(Effect):
     """Modifies the audio file, after the mbrola rendering"""
 
-    def process(self, wave_data: numpy.ndarray) -> numpy.ndarray:
+    def process(self, wave_data: np.ndarray) -> np.ndarray:
         pass
 
 
@@ -487,7 +487,7 @@ class PitchRandomizerEffect(PhonemicEffect):
 
 class PubertyEffect(PhonemicEffect):
     NAME = "puberté"
-    TIMEOUT = 30
+    TIMEOUT = 180
 
     def process(self, phonems: PhonemList):
         for phonem in phonems:
@@ -543,8 +543,8 @@ class ReverbManEffect(AudioEffect):
     def name(self):
         return self._name
 
-    def process(self, wave_data: numpy.ndarray):
-        wave_data = numpy.concatenate([wave_data, numpy.zeros(BASE_SAMPLING_RATE, wave_data.dtype)])
+    def process(self, wave_data: np.ndarray):
+        wave_data = np.concatenate([wave_data, np.zeros(BASE_SAMPLING_RATE, wave_data.dtype)])
         apply_audio_effects = AudioEffectsChain().reverb(reverberance=100, hf_damping=100)
         return apply_audio_effects(wave_data, sample_in=BASE_SAMPLING_RATE, sample_out=BASE_SAMPLING_RATE)
 
@@ -554,7 +554,7 @@ class GhostEffect(AudioEffect):
     NAME = "stalker"
     TIMEOUT = 120
 
-    def process(self, wave_data: numpy.ndarray):
+    def process(self, wave_data: np.ndarray):
         reverb = ReverbManEffect()
         return reverb.process(wave_data[::-1])[::-1]
 
@@ -563,7 +563,7 @@ class RobotVoiceEffect(AudioEffect):
     NAME = "Gladwse"
     TIMEOUT = 150
 
-    def process(self, wave_data: numpy.ndarray):
+    def process(self, wave_data: np.ndarray):
         apply_audio_effects = AudioEffectsChain().pitch(200).tremolo(500).delay(0.6, 0.8, [33],[0.9])
         return apply_audio_effects(wave_data, sample_in=BASE_SAMPLING_RATE, sample_out=BASE_SAMPLING_RATE)
 
@@ -574,7 +574,7 @@ class AngryRobotVoiceEffect(AudioEffect):
     NAME = "13-NRV"
     TIMEOUT = 150
 
-    def process(self, wave_data: numpy.ndarray):
+    def process(self, wave_data: np.ndarray):
         # making a partial for each pitch change
         effects_partials = [partial(AudioEffectsChain().pitch(pitch),
                                     sample_in=BASE_SAMPLING_RATE, sample_out=BASE_SAMPLING_RATE)
@@ -601,9 +601,9 @@ class PitchShiftEffect(AudioEffect):
         else:
             self._name, self.pitch_shift = "castration", 700
 
-    def process(self, wave_data: numpy.ndarray):
+    def process(self, wave_data: np.ndarray):
         pitch_shift = AudioEffectsChain().pitch(self.pitch_shift)
-        return pitch_shift(wave_data, sample_in=16000, sample_out=16000)
+        return pitch_shift(wave_data, sample_in=BASE_SAMPLING_RATE, sample_out=BASE_SAMPLING_RATE)
 
 
 class WpseEffect(AudioEffect):
@@ -618,15 +618,76 @@ class WpseEffect(AudioEffect):
         self.type_folder = random.choice(self.subfolders)
         self.samples = get_sounds(path.join(self.main_dir, self.type_folder))
 
-    def process(self, wave_data: numpy.ndarray):
+    def process(self, wave_data: np.ndarray):
         if random.randint(1,2) == 1:
             sample = random.choice(self.samples) * 0.3
             if self.type_folder == "burps":
-                wave_data = numpy.insert(wave_data, random.randint(1,len(wave_data)), sample)
+                wave_data = np.insert(wave_data, random.randint(1,len(wave_data)), sample)
             else:
                 wave_data = mix_tracks(wave_data, sample, offset=random.randint(1,len(wave_data)))
 
         return wave_data
+
+
+class BadCellphoneEffect(AudioEffect):
+    NAME = "mauvais réseau"
+    TIMEOUT = 200
+
+    _params_table = {1: (700, "3k", 30, -9),
+                     2: (400, "3.5k", 25, -6),
+                     3: (320, "3.8k", 22, -6)}
+    _interference_filepath = path.join(path.dirname(path.realpath(__file__)), "data/phone/interference.wav")
+
+    def __init__(self, signal_strength: int = None):
+        super().__init__()
+        self.signal = signal_strength if signal_strength is not None else random.randint(1, 3)
+        self._name = "%i barres de rézo" % self.signal
+        self.hpfreq, self.lpfreq, self.overdrive, self.gain = self._params_table[self.signal]
+        with open(self._interference_filepath, "rb") as sndfile:
+            rate, self.interf_fx = read(sndfile)
+
+    @property
+    def name(self):
+        return self._name
+
+    def _apply_interence(self, wave_data, amount):
+        cuts_lengths = (np.abs(np.random.normal(1.8, 0.5, amount)) * BASE_SAMPLING_RATE).astype("int16")
+        for cut_length in cuts_lengths:
+            # taking a random slice of the interference sound fx
+            slice_start = random.randint(0, len(self.interf_fx) - cut_length)
+            fx_slice = self.interf_fx[slice_start:slice_start + cut_length]
+            start_frame = random.randint(0, len(wave_data) - cut_length)
+            wave_data[start_frame:start_frame + cut_length] = fx_slice
+        return wave_data
+
+    def _apply_cuts(self, wave_data, amount):
+        #  making cuts in the sound, of around 0.6 sec
+        cuts_lengths = (np.abs(np.random.normal(0.3, 0.09, amount)) * BASE_SAMPLING_RATE).astype("int16")
+        for cut_length in cuts_lengths:
+            zeros = np.zeros(cut_length)
+            start_frame = random.randint(0, len(wave_data) - cut_length)
+            wave_data[start_frame:start_frame + cut_length] = zeros
+        return wave_data
+
+    def process(self, wave_data: np.ndarray):
+        # first, giving the
+        chain = AudioEffectsChain() \
+            .sinc(hpfreq=self.hpfreq, lpfreq=self.lpfreq) \
+            .overdrive(self.overdrive) \
+            .gain(self.gain)
+        phone_pass = chain(wave_data, sample_in=BASE_SAMPLING_RATE, sample_out=BASE_SAMPLING_RATE)
+        # now we just need to add some interference to the signal
+
+        seconds = len(phone_pass) / BASE_SAMPLING_RATE
+        if len(phone_pass) > 2 * BASE_SAMPLING_RATE:  # adding cuts only if it's longer than 2 seconds
+            if self.signal < 3:
+                phone_pass = self._apply_cuts(phone_pass, int(seconds * 0.7))
+            else:
+                phone_pass = self._apply_cuts(phone_pass, int(seconds * 0.5))
+
+        if self.signal == 1 and len(phone_pass) > 3 * BASE_SAMPLING_RATE:  # adding cuts only if it's longer than 3 seconds
+            phone_pass = self._apply_interence(phone_pass, int(seconds / 3))  # approx 1 interf/ 3 sec
+        return phone_pass
 
 
 #### Here are the effects groups ####
@@ -705,7 +766,7 @@ class GodSpeakingEffect(EffectGroup):
             with open(self._sound_file, "rb") as sndfile:
                 self.rate, self.track_data = read(sndfile)
 
-        def process(self, wave_data: numpy.ndarray):
+        def process(self, wave_data: np.ndarray):
             padding_time = self.rate * 2
             rnd_pos = random.randint(0, len(self.track_data) - len(wave_data) - padding_time)
             return mix_tracks(self.track_data[rnd_pos:rnd_pos + len(wave_data) + padding_time] * self._gain,

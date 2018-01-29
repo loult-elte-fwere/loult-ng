@@ -613,13 +613,14 @@ if __name__ == "__main__":
 
     # setting up events
     from tools.events import (EventScheduler, BienChantewEvent, MaledictionEvent, BienDowmiwEvent,
-                              UsersVoicesShuffleEvent, AmphetamineEvent, next_occ)
+                              UsersVoicesShuffleEvent, AmphetamineEvent, TunnelEvent, next_occ)
     scheduler = EventScheduler(loult_state,
                                [BienChantewEvent(timedelta(days=1), next_occ(datetime.day, time(hour=22, minute=0))),
                                 MaledictionEvent(timedelta(days=1), next_occ(datetime.day, time(hour=4, minute=0))),
                                 BienDowmiwEvent(timedelta(days=1), next_occ(datetime.day, time(hour=0, minute=0))),
                                 UsersVoicesShuffleEvent(timedelta(hours=4), timedelta(hours=0.5)),
-                                AmphetamineEvent(timedelta(hours=6), timedelta(hours=1))
+                                AmphetamineEvent(timedelta(hours=6), timedelta(hours=1)),
+                                TunnelEvent(timedelta(hours=2), timedelta(hours=0.5)),
                                 ])
 
     try:
