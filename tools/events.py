@@ -179,7 +179,7 @@ class TunnelEvent(PseudoPeriodicEvent):
         for channel in loultstate.chans.values():
             for user in channel.users.values():
                 effect = BadCellphoneEffect(signal_strength=random.randint(1,2))
-                effect._timeout = 60
+                effect._timeout = 300
                 user.state.add_effect(effect)
             channel.broadcast(type="notification",
                               event_type="tunnel",
@@ -212,7 +212,7 @@ class EventScheduler:
             event_time, event = self.schedule.pop(0)
             event.update_next_occ(now)
             self.schedule.append((event.next_occurence, event))
-            if (event_time - now).total_seconds() > 0: # if we're "late" then the effect is played right away
+            if (event_time - now).total_seconds() > 0: # if we're "late" then the event happens right away
                 await asyncio.sleep((event_time - now).total_seconds())
             await event.happen(self.loultstate)
             self._order_schedule()

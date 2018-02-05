@@ -94,7 +94,7 @@ class SpeechDeformation(PhonemicEffect):
 
 fake_cookie = md5(("622545609233193a39466" + SALT).encode('utf8')).digest()
 user = User(fake_cookie, "wesh", None)
-for effect in [BadCellphoneEffect()]:
+for effect in []:
     print("Applying effect %s" % effect.name)
     user.state.add_effect(effect)
 
