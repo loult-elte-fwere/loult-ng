@@ -4,6 +4,7 @@ import random
 import wave
 from asyncio import get_event_loop
 from hashlib import md5
+from itertools import cycle
 
 import numpy as np
 import pyaudio
@@ -13,7 +14,7 @@ from scipy.io.wavfile import read
 from salt import SALT
 from tools import AudioEffect, PhonemicEffect
 from tools.audio_tools import mix_tracks
-from tools.effects.effects import BadCellphoneEffect
+from tools.effects.effects import BadCellphoneEffect, AutotuneEffect
 from tools.phonems import PhonemList, FrenchPhonems
 from tools.users import User
 
@@ -92,9 +93,39 @@ class SpeechDeformation(PhonemicEffect):
         return phonems
 
 
+class RythmicEffect(PhonemicEffect):
+    NAME = "JR"
+    TIMEOUT = 200
+    BEAT_TIME = 80 # in milliseconds
+
+    def __init__(self):
+        super().__init__()
+        self.durations =[8]
+        for i in range(6):
+            buffer = []
+            for dur in self.durations:
+                random_bound = 2 if i <= 3 else 3
+                if random.randint(1,random_bound) == 1:
+                    half_dur = dur / 2
+                    buffer += [half_dur, half_dur]
+                else:
+                    buffer.append(dur)
+            self.durations = buffer
+            random.shuffle(self.durations)
+            print(self.durations)
+
+    def process(self, phonems : PhonemList):
+        beat_iterator = cycle(self.durations)
+        for phonem in phonems:
+            if phonem.name in FrenchPhonems.VOWELS:
+                beat = next(beat_iterator)
+                phonem.duration = int(beat * self.BEAT_TIME)
+        return phonems
+
+
 fake_cookie = md5(("622545609233193a39466" + SALT).encode('utf8')).digest()
 user = User(fake_cookie, "wesh", None)
-for effect in []:
+for effect in [BadCellphoneEffect()]:
     print("Applying effect %s" % effect.name)
     user.state.add_effect(effect)
 
