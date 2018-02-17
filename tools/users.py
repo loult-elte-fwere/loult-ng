@@ -1,3 +1,4 @@
+import logging
 import random
 from asyncio import get_event_loop
 from colorsys import hsv_to_rgb
@@ -214,7 +215,11 @@ class User:
                 if effect.is_expired():
                     effect_list.remove(effect)  # if the effect has expired, remove it
                 else:
-                    input_obj = effect.process(input_obj)
+                    try:
+                        input_obj = effect.process(input_obj)
+                    except Exception as e:
+                        logging.warning("Error while applying effect %s, error: \n %s"
+                                        % (effect.__class__.__name__, str(e)))
 
         return input_obj
 
