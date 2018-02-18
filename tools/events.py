@@ -7,7 +7,7 @@ import random
 from poke import LoultServerState
 from tools.effects.effects import AutotuneEffect, ReverbManEffect, SkyblogEffect, RobotVoiceEffect, \
     AngryRobotVoiceEffect, PitchShiftEffect, GrandSpeechMasterEffect, VisualEffect, VoiceCloneEffect, \
-    VoiceSpeedupEffect, BadCellphoneEffect
+    VoiceSpeedupEffect, BadCellphoneEffect, RythmicEffect
 from tools.users import User
 
 
@@ -186,6 +186,20 @@ class TunnelEvent(PseudoPeriodicEvent):
                               date=timestamp() * 1000,
                               msg="Le loult passe sous un tunnel!")
 
+
+class MusicalEvent(PseudoPeriodicEvent):
+
+    async def happen(self, loultstate):
+        for channel in loultstate.chans.values():
+            for user in channel.users.values():
+                effects = [RythmicEffect(), AutotuneEffect(), ReverbManEffect()]
+                for effect in effects:
+                    effect._timeout = 400
+                    user.state.add_effect(effect)
+            channel.broadcast(type="notification",
+                              event_type="musical",
+                              date=timestamp() * 1000,
+                              msg="Le loult est une comédie musicale!")
 
 class EventScheduler:
 
