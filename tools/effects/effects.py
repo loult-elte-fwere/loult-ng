@@ -391,6 +391,25 @@ class AutotuneEffect(PhonemicEffect):
         return phonems
 
 
+class RythmicEffect(PhonemicEffect):
+    NAME = "JR"
+    TIMEOUT = 200
+    BEAT_TIME = 80 # in milliseconds
+
+    def __init__(self):
+        super().__init__()
+        self.durations = [0.5, 0.5, 0.5, 0.5, 1, 1, 2, 2]
+        random.shuffle(self.durations)
+
+    def process(self, phonems : PhonemList):
+        beat_iterator = cycle(self.durations)
+        for phonem in phonems:
+            if phonem.name in FrenchPhonems.VOWELS:
+                beat = next(beat_iterator)
+                phonem.duration = int(beat * self.BEAT_TIME)
+        return phonems
+
+
 class CrapweEffect(PhonemicEffect):
     """Dilates random vowels and modifies the pitch to go up and down"""
     NAME = "crapwe force"
@@ -650,8 +669,8 @@ class BadCellphoneEffect(AudioEffect):
     def name(self):
         return self._name
 
-    def _apply_interence(self, wave_data, amount):
-        cuts_lengths = (np.abs(np.random.normal(1.8, 0.5, amount)) * BASE_SAMPLING_RATE).astype("int16")
+    def _apply_interference(self, wave_data, amount):
+        cuts_lengths = (np.abs(np.random.normal(1.8, 0.5, amount)) * BASE_SAMPLING_RATE).astype("int32")
         for cut_length in cuts_lengths:
             # taking a random slice of the interference sound fx
             slice_start = random.randint(0, len(self.interf_fx) - cut_length)
@@ -661,8 +680,8 @@ class BadCellphoneEffect(AudioEffect):
         return wave_data
 
     def _apply_cuts(self, wave_data, amount):
-        #  making cuts in the sound, of around 0.6 sec
-        cuts_lengths = (np.abs(np.random.normal(0.3, 0.09, amount)) * BASE_SAMPLING_RATE).astype("int16")
+        #  making cuts in the sound, of around 0.3 sec
+        cuts_lengths = (np.abs(np.random.normal(0.3, 0.09, amount)) * BASE_SAMPLING_RATE).astype("int32")
         for cut_length in cuts_lengths:
             zeros = np.zeros(cut_length)
             start_frame = random.randint(0, len(wave_data) - cut_length)
@@ -686,7 +705,7 @@ class BadCellphoneEffect(AudioEffect):
                 phone_pass = self._apply_cuts(phone_pass, int(seconds * 0.5))
 
         if self.signal == 1 and len(phone_pass) > 3 * BASE_SAMPLING_RATE:  # adding cuts only if it's longer than 3 seconds
-            phone_pass = self._apply_interence(phone_pass, int(seconds / 3))  # approx 1 interf/ 3 sec
+            phone_pass = self._apply_interference(phone_pass, int(seconds / 3))  # approx 1 interf/ 3 sec
         return phone_pass
 
 

@@ -7,7 +7,7 @@ import random
 from poke import LoultServerState
 from tools.effects.effects import AutotuneEffect, ReverbManEffect, SkyblogEffect, RobotVoiceEffect, \
     AngryRobotVoiceEffect, PitchShiftEffect, GrandSpeechMasterEffect, VisualEffect, VoiceCloneEffect, \
-    VoiceSpeedupEffect, BadCellphoneEffect
+    VoiceSpeedupEffect, BadCellphoneEffect, RythmicEffect
 from tools.users import User
 
 
@@ -179,13 +179,27 @@ class TunnelEvent(PseudoPeriodicEvent):
         for channel in loultstate.chans.values():
             for user in channel.users.values():
                 effect = BadCellphoneEffect(signal_strength=random.randint(1,2))
-                effect._timeout = 60
+                effect._timeout = 300
                 user.state.add_effect(effect)
             channel.broadcast(type="notification",
                               event_type="tunnel",
                               date=timestamp() * 1000,
                               msg="Le loult passe sous un tunnel!")
 
+
+class MusicalEvent(PseudoPeriodicEvent):
+
+    async def happen(self, loultstate):
+        for channel in loultstate.chans.values():
+            for user in channel.users.values():
+                effects = [RythmicEffect(), AutotuneEffect(), ReverbManEffect()]
+                for effect in effects:
+                    effect._timeout = 400
+                    user.state.add_effect(effect)
+            channel.broadcast(type="notification",
+                              event_type="musical",
+                              date=timestamp() * 1000,
+                              msg="Le loult est une comédie musicale!")
 
 class EventScheduler:
 
@@ -212,7 +226,7 @@ class EventScheduler:
             event_time, event = self.schedule.pop(0)
             event.update_next_occ(now)
             self.schedule.append((event.next_occurence, event))
-            if (event_time - now).total_seconds() > 0: # if we're "late" then the effect is played right away
+            if (event_time - now).total_seconds() > 0: # if we're "late" then the event happens right away
                 await asyncio.sleep((event_time - now).total_seconds())
             await event.happen(self.loultstate)
             self._order_schedule()
