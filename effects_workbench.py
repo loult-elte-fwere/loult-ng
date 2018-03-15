@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import io
 import logging
 import random
@@ -14,7 +15,7 @@ from scipy.io.wavfile import read
 from salt import SALT
 from tools import AudioEffect, PhonemicEffect
 from tools.audio_tools import mix_tracks
-from tools.effects.effects import BadCellphoneEffect, AutotuneEffect
+from tools.effects.effects import * # See tools/__init__.py for available effects
 from tools.phonems import PhonemList, FrenchPhonems
 from tools.users import User
 
