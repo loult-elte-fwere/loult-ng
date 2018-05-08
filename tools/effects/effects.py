@@ -391,6 +391,25 @@ class AutotuneEffect(PhonemicEffect):
         return phonems
 
 
+class RythmicEffect(PhonemicEffect):
+    NAME = "JR"
+    TIMEOUT = 200
+    BEAT_TIME = 80 # in milliseconds
+
+    def __init__(self):
+        super().__init__()
+        self.durations = [0.5, 0.5, 0.5, 0.5, 1, 1, 2, 2]
+        random.shuffle(self.durations)
+
+    def process(self, phonems : PhonemList):
+        beat_iterator = cycle(self.durations)
+        for phonem in phonems:
+            if phonem.name in FrenchPhonems.VOWELS:
+                beat = next(beat_iterator)
+                phonem.duration = int(beat * self.BEAT_TIME)
+        return phonems
+
+
 class CrapweEffect(PhonemicEffect):
     """Dilates random vowels and modifies the pitch to go up and down"""
     NAME = "crapwe force"
