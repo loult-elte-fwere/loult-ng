@@ -18,6 +18,7 @@ from time import time as timestamp
 from typing import List, Dict, Set, Tuple
 
 from autobahn.websocket.types import ConnectionDeny
+from scipy.io import wavfile
 
 from config import ATTACK_RESTING_TIME, BAN_TIME, MOD_COOKIES, SOUND_BROADCASTER_COOKIES, MAX_COOKIES_PER_IP, \
     TIME_BEFORE_TALK, TIME_BETWEEN_CONNECTIONS
@@ -393,10 +394,10 @@ class LoultServer:
         print("%s sending a sound file" % self.raw_cookie)
         if self.raw_cookie in SOUND_BROADCASTER_COOKIES:
             try:
-                _ = wave.open(BytesIO(payload)) # testing if it's a proper wav file
+                _ = wavfile.read(BytesIO(payload)) # testing if it's a proper wav file
                 self.channel_obj.broadcast(type="audio_broadcast", userid=self.user.user_id,
                                            binary_payload=payload)
-            except wave.Error:
+            except:
                 return self.sendClose(code=4002,
                                       reason='Invalid wav sound file')
         else:
