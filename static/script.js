@@ -403,6 +403,14 @@
 
 		var lastMuted = false;
 
+		input.onfocus = function(evt) {
+			if (audio && context && context.state !== "running") {
+				context.resume().then(() => {
+				    console.log('Playback resumed successfully');
+				  });
+			}
+		}
+
 		input.onkeydown = function(evt) {
 			underlay.className = '';
 			if(evt.keyCode === 13 && input.value) {
