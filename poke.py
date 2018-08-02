@@ -583,11 +583,6 @@ class LoultServerState:
         loop.call_later(BAN_TIME * 60, self.banned_cookies.remove, cookie)
 
 
-async def say_hi():
-    while True:
-        await sleep(5)
-        print("WESH WESH")
-
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
     logger = logging.getLogger('server')
