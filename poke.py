@@ -181,7 +181,11 @@ class LoultServer:
         if self._check_flood(msg_data['msg']):
             return
         # user object instance renders both the output sound and output text
-        output_msg, wav = await self.user.render_message(msg_data["msg"], msg_data.get("lang", "fr"))
+        try:
+            output_msg, wav = await self.user.render_message(msg_data["msg"], msg_data.get("lang", "fr"))
+        except OSError: # usually an out of memory error
+            exit(1) # exiting so the server can restart
+
         # estimating the end of the current voice render, to rate limit
         calc_sendend = max(self.sendend, now) + timedelta(seconds=len(wav) * 8 / 6000000)
         synth = calc_sendend < now + timedelta(seconds=2.5)

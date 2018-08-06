@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 from urllib import request
 from zipfile import ZipFile
 from io import BytesIO
