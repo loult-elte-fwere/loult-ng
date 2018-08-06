@@ -691,7 +691,7 @@ class BadCellphoneEffect(AudioEffect):
     def process(self, wave_data: np.ndarray):
         # first, giving the
         chain = AudioEffectsChain() \
-            .sinc(hpfreq=self.hpfreq, lpfreq=self.lpfreq) \
+            .sinc(high_pass_frequency=self.hpfreq, low_pass_frequency=self.lpfreq) \
             .overdrive(self.overdrive) \
             .gain(self.gain)
         phone_pass = chain(wave_data, sample_in=BASE_SAMPLING_RATE, sample_out=BASE_SAMPLING_RATE)
