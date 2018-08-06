@@ -180,7 +180,7 @@
 		users[userid].dom = row;
 	};
 
-	var delUter = function(userid) {
+	var delUser = function(userid) {
 		userlist.removeChild(users[userid].dom);
 		delete users[userid];
 	};
