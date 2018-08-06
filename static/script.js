@@ -550,6 +550,10 @@
                     break;
 
 					case 'userlist':
+					    // flushing previous user list just in case
+					    for(var i in users)
+				            delUser(i);
+
 						for(var i = 0; i < msg.users.length; i++)
 							addUser(msg.users[i].userid, msg.users[i].params, msg.users[i].profile);
 					break;
