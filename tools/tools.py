@@ -3,13 +3,14 @@ import logging
 import re
 from asyncio import create_subprocess_shell
 from asyncio.subprocess import PIPE
-from io import BytesIO
+from io import BytesIO, StringIO
 from itertools import chain
 from re import sub
 from shlex import quote
 from struct import pack
-from typing import Union
+from typing import Union, Dict, Tuple
 from collections import OrderedDict
+from datetime import datetime
 
 import numpy
 from scipy.io import wavfile
@@ -209,3 +210,37 @@ class OrderedDequeDict(OrderedDict):
             self.popitem(last=False)
 
         OrderedDict.__setitem__(self, key, value)
+
+
+class CachedOpener:
+
+    FILE_EXPIRY_TIME = 15 * 60 # in seconds
+
+    def __init__(self):
+        self.files = {} # type: Dict[str,Union[str,byte]]
+        self.last_hit = {} # type: Dict[str,datetime]
+
+    def check_files_expiry(self):
+        now = datetime.now()
+        for filepath, last_hit in list(self.last_hit.items()):
+            if (now - last_hit).seconds > self.FILE_EXPIRY_TIME:
+                del self.files[filepath]
+                del self.last_hit[filepath]
+
+    def __call__(self, filepath: str, is_byte: bool):
+        if filepath not in self.files:
+            if is_byte:
+                self.files[filepath] = open(filepath, "rb").read()
+            else:
+                self.files[filepath] = open(filepath, "r").read()
+
+        self.last_hit[filepath] = datetime.now()
+        self.check_files_expiry()
+
+        if is_byte:
+            return BytesIO(self.files[filepath])
+        else:
+            return StringIO(self.files[filepath])
+
+
+cached_open = CachedOpener()
