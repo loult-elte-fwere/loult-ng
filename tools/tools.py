@@ -1,5 +1,6 @@
 import json
 import logging
+import pickle
 import re
 from asyncio import create_subprocess_shell
 from asyncio.subprocess import PIPE
@@ -227,20 +228,21 @@ class CachedOpener:
                 del self.files[filepath]
                 del self.last_hit[filepath]
 
-    def __call__(self, filepath: str, is_byte: bool):
+    def load_byte(self, filepath, read_func):
         if filepath not in self.files:
-            if is_byte:
-                self.files[filepath] = open(filepath, "rb").read()
-            else:
-                self.files[filepath] = open(filepath, "r").read()
+            with open(filepath, "rb") as bytefile:
+                self.files[filepath] = read_func(filepath)
 
         self.last_hit[filepath] = datetime.now()
         self.check_files_expiry()
 
-        if is_byte:
-            return BytesIO(self.files[filepath])
-        else:
-            return StringIO(self.files[filepath])
+    def load_pickle(self, filepath):
+        self.load_byte(filepath, pickle.load)
+        return self.files[filepath]
+
+    def load_wav(self, filepath):
+        self.load_byte(filepath, wavfile.read)
+        return self.files[filepath]
 
 
-cached_open = CachedOpener()
+cached_loader = CachedOpener()

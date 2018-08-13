@@ -1,5 +1,4 @@
 import json
-import pickle
 import random
 from datetime import datetime
 from functools import partial
@@ -14,6 +13,7 @@ from scipy.io.wavfile import read
 
 import tools
 from tools.audio_tools import mix_tracks, get_sounds, BASE_SAMPLING_RATE
+from tools.tools import cached_loader
 from tools.effects.tree import Node, Leaf
 from tools.phonems import PhonemList, Phonem, FrenchPhonems
 from tools.users import VoiceParameters
@@ -31,6 +31,7 @@ class Effect:
     def __init__(self):
         self.creation = datetime.now()
         self._timeout = None
+        self._name = None
 
     @property
     def timeout(self):
@@ -38,7 +39,7 @@ class Effect:
 
     @property
     def name(self):
-        return self.NAME # using a property, in case it gets more fancy than just a class constant
+        return self.NAME if self._name is None else self._name# using a property, in case it gets more fancy than just a class constant
 
     def is_expired(self):
         return (datetime.now() - self.creation).seconds > self.timeout
@@ -52,7 +53,7 @@ class EffectGroup(Effect):
     list of already instanciated effect objects, which are all going to be added the a user's effects
     lists. In practice, it's a simple way to have effects that are both on sound, phonems and text.
 
-    Before returning the list of effects, one has to make sure that the tools return by the 'effects' property
+    Before returning the list of effects, one has to make sure that the tools returned by the 'effects' property
     all have the same timeout time as the effect group that returns them. This can be done by setting the optional
     _timeout instance attribute (*NOT* the TIMEOUT class attribute) of an Effect object"""
 
@@ -152,15 +153,14 @@ class PoiloEffect(ExplicitTextEffect):
 
     def __init__(self):
         super().__init__()
-        with open(self.tree_pickle, "rb") as pkfile:
-            self.rtree = pickle.load(pkfile)
+        self.rtree = cached_loader.load_pickle(self.tree_pickle)
 
     def process(self, text : str):
         splitted = text.strip("?! ,:").split()
         if splitted:
             rhyme = self.rtree.find_rhyme(splitted[-1])
             if rhyme is not None:
-                if splitted[-1][0] in ["aoeiuyéèê"]:
+                if splitted[-1][0] in ["aoeiuyéèêh"]:
                     article = "à l'"
                 else:
                     try:
@@ -179,8 +179,7 @@ class ContradictorEffect(ExplicitTextEffect):
 
     def __init__(self):
         super().__init__()
-        with open(self.TREE_FILEPATH, "rb") as treefile:
-            self.verb_tree = pickle.load(treefile) # type:Node
+        self.verb_tree = cached_loader.load_pickle(self.TREE_FILEPATH)
 
     def process(self, text : str):
         if random.randint(1, 2) == 1:
@@ -662,8 +661,7 @@ class BadCellphoneEffect(AudioEffect):
         self.signal = signal_strength if signal_strength is not None else random.randint(1, 3)
         self._name = "%i barres de rézo" % self.signal
         self.hpfreq, self.lpfreq, self.overdrive, self.gain = self._params_table[self.signal]
-        with open(self._interference_filepath, "rb") as sndfile:
-            rate, self.interf_fx = read(sndfile)
+        rate, self.interf_fx = cached_loader.load_wav(self._interference_filepath)
 
     @property
     def name(self):
@@ -782,8 +780,7 @@ class GodSpeakingEffect(EffectGroup):
 
         def __init__(self):
             super().__init__()
-            with open(self._sound_file, "rb") as sndfile:
-                self.rate, self.track_data = read(sndfile)
+            self.rate, self.track_data = cached_loader.load_wav(self._sound_file)
 
         def process(self, wave_data: np.ndarray):
             padding_time = self.rate * 2
