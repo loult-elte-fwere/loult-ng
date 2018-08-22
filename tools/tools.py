@@ -10,6 +10,8 @@ from shlex import quote
 from struct import pack
 from typing import Union
 from collections import OrderedDict
+from os import path
+from functools import lru_cache
 
 import numpy
 from scipy.io import wavfile
@@ -194,6 +196,14 @@ def prepare_text_for_tts(text : str, lang : str) -> str:
 
 def encode_json(data):
     return json.dumps(data, ensure_ascii=False).encode('utf-8')
+
+
+@lru_cache()
+def open_sound_file(relative_path):
+    """Opens a wav file from a path relative to the current directory."""
+    full_path = path.join(path.dirname(path.realpath(__file__)), relative_path)
+    with open(full_path, "rb") as sound_file:
+        return sound_file.read()
 
 
 class OrderedDequeDict(OrderedDict):

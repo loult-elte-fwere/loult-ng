@@ -1,15 +1,74 @@
-from autobahn.asyncio.websocket import WebSocketServerProtocol
+import json
+import logging
+from asyncio import ensure_future
+from collections import OrderedDict
+from collections import defaultdict
+from copy import deepcopy
+from datetime import datetime
+from hashlib import md5
+from os import urandom
+from re import sub
+from time import time as timestamp
+from typing import List
+
+from autobahn.websocket.types import ConnectionDeny
+
+from config import TIME_BETWEEN_CONNECTIONS
+from salt import SALT
+from .tools import encode_json
+
+
+class Route:
+
+    def __init__(self, field: str, value: str, handler_class):
+        self.field = field
+        self.value = value
+        self.handler_class = handler_class
+
+
+class RoutingTable:
+    """Takes care of the actual routing"""
+
+    def __init__(self, loult_state, server_protocol, routes, binary_route):
+        self.server = server_protocol
+        self.routing_dict = defaultdict(dict)
+        for route in routes:
+            self.routing_dict[route.field][route.value] = route.handler_class(loult_state, server_protocol)
+        self.binary_route = binary_route(loult_state, server_protocol)
+
+    async def route_json(self, msg_data: dict):
+        for field, values in self.routing_dict.items():
+            if field in msg_data:
+                if msg_data[field] in values:
+                    handler = values[msg_data[field]]
+                    return await handler.handle(msg_data)
+
+        self.server.logger.warning("Could not route message")
+
+    async def route_binary(self, payload: bytes):
+        return await self.binary_route.handle(payload)
+
 
 class ClientRouter:
+    """Only used for registering routes, which are then passed on to the routing
+    table which actually instanciates handlers that process messages"""
 
     def __init__(self):
-        pass
+        self.routes = [] #type: List[Route]
+        self.binary_route = None
 
-    def add_route(self, field : str, value : str, handler):
-        pass
+    def add_route(self, field : str, value : str, handler_class):
+        self.routes.append(Route(field, value, handler_class))
 
-    def set_binary_route(self, handler):
-        pass
+    def set_binary_route(self, handler_class):
+        self.binary_route = handler_class
+
+    def get_router(self, loultstate, server_protocol):
+        return RoutingTable(loultstate, server_protocol, self.routes, self.binary_route)
+
+
+class UnauthorizedCookie(Exception):
+    pass
 
 
 class ClientLogAdapter(logging.LoggerAdapter):
@@ -28,13 +87,24 @@ class ClientLogAdapter(logging.LoggerAdapter):
         return msg, kwargs
 
 
-class BaseLoultClient(WebSocketServerProtocol):
+class LoultServerProtocol:
+    router = None
+    channel_n = None
+    channel_obj = None
+    client_logger = None
+    cnx = False
+    cookie = None
+    ip = None
+    lasttxt = None
+    loult_state = None
+    sendend = None
+    user = None
 
-    def __init__(self, router: ClientRouter, loult):
-        self.router = router
+    def __init__(self):
         if self.client_logger is None or self.loult_state is None:
             raise NotImplementedError('You must override "logger" and "state".')
         self.logger = ClientLogAdapter(self.client_logger, self)
+        self.routing_table = self.router.get_routing_table(self.loult_state, self)
         super().__init__()
 
     def onConnect(self, request):
@@ -76,6 +146,12 @@ class BaseLoultClient(WebSocketServerProtocol):
 
         return None, retn
 
+    def send_json(self, **kwargs):
+        self.sendMessage(encode_json(kwargs), isBinary=False)
+
+    def send_binary(self, payload):
+        self.sendMessage(payload, isBinary=True)
+
     def onOpen(self):
         """Triggered once the WSS is opened. Mainly consists of registering the user in the channel, and
         sending the channel's information (connected users and the backlog) to the user"""
@@ -98,4 +174,32 @@ class BaseLoultClient(WebSocketServerProtocol):
 
     def onMessage(self, payload, isBinary):
         """Triggered when a user sends any type of message to the server"""
-        pass
+        async def auto_close(coroutine):
+            try:
+                return await coroutine
+            except Exception as err:
+                self.sendClose(code=4000, reason=str(err))
+                self.logger.error('raised an exception "%s"' % err)
+                self.logger.debug(err, exc_info=True)
+
+        if isBinary:
+            ensure_future(auto_close(self.routing_table.route_binary(payload)))
+
+        else:
+            try:
+                msg = json.loads(payload.decode('utf-8'))
+            except json.JSONDecodeError:
+                return self.sendClose(code=4001, reason='Malformed JSON.')
+
+            ensure_future(auto_close(self.routing_table.route_json(msg)))
+
+    def onClose(self, wasClean, code, reason):
+        """Triggered when the WS connection closes. Mainly consists of deregistering the user"""
+        if self.cnx:
+            # This lets moderators ban an user even after their disconnection
+            self.loult_state.ip_backlog.append((self.user.user_id, self.ip))
+            self.channel_obj.channel_leave(self, self.user)
+
+        msg = 'left with reason "{}"'.format(reason) if reason else 'left'
+
+        self.logger.info(msg)

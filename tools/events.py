@@ -4,7 +4,7 @@ import asyncio
 from time import time as timestamp
 import random
 
-from poke import LoultServerState
+from tools.state import LoultServerState
 from tools.effects.effects import AutotuneEffect, ReverbManEffect, SkyblogEffect, RobotVoiceEffect, \
     AngryRobotVoiceEffect, PitchShiftEffect, GrandSpeechMasterEffect, VisualEffect, VoiceCloneEffect, \
     VoiceSpeedupEffect, BadCellphoneEffect, RythmicEffect
