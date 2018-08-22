@@ -7,6 +7,8 @@ import numpy
 from numpy import pad
 from scipy.io.wavfile import read
 
+from tools.tools import cached_loader
+
 BASE_SAMPLING_RATE = 16000
 
 def mix_tracks(track1, track2, offset=None, align=None):
@@ -66,7 +68,7 @@ def get_sounds(dir: str) -> List[numpy.ndarray]:
     sounds = []
     for filename in listdir(dir):
         realpath = path.join(dir, filename)
-        rate, data = read(realpath)
+        rate, data = cached_loader.load_wav(realpath)
         sounds.append(data)
     return sounds
 

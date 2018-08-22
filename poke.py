@@ -1,36 +1,34 @@
 #!/usr/bin/python3
 #-*- encoding: Utf-8 -*-
 import logging
-from asyncio import get_event_loop, ensure_future, gather
+from asyncio import get_event_loop, ensure_future, gather, set_event_loop_policy, get_event_loop_policy
 from datetime import datetime, timedelta, time
 from itertools import chain
 
 from tools.ban import Ban, BanFail
 from tools.client import ClientRouter, LoultServerProtocol
+from tools.state import LoultServerState
 from tools.handlers import MessageHandler, BinaryHandler, TrashHandler, BanHandler, ShadowbanHandler, \
     NoRenderMsgHandler, AttackHandler, PrivateMessageHandler, MoveHandler
-from tools.state import LoultServerState
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
     logger = logging.getLogger('server')
 
 ## uncomment once https://github.com/MagicStack/uvloop/issues/93 is closed
-#    try:
-#        asyncio_policy = get_event_loop_policy()
-#        import uvloop
-#        # Make sure to set uvloop as the default before importing anything
-#        # from autobahn else it won't use uvloop
-#        set_event_loop_policy(uvloop.EventLoopPolicy())
-#        logger.info("uvloop's event loop succesfully activated.")
-#    except:
-#        set_event_loop_policy(asyncio_policy)
-#        logger.info("Failed to use uvloop, falling back to asyncio's event loop.")
-#    finally:
-#        from autobahn.asyncio.websocket import WebSocketServerProtocol, \
-#            WebSocketServerFactory
-    from autobahn.asyncio.websocket import WebSocketServerProtocol, \
-        WebSocketServerFactory
+    try:
+        asyncio_policy = get_event_loop_policy()
+        import uvloop
+        # Make sure to set uvloop as the default before importing anything
+        # from autobahn else it won't use uvloop
+        set_event_loop_policy(uvloop.EventLoopPolicy())
+        logger.info("uvloop's event loop succesfully activated.")
+    except:
+        set_event_loop_policy(asyncio_policy)
+        logger.info("Failed to use uvloop, falling back to asyncio's event loop.")
+    finally:
+        from autobahn.asyncio.websocket import WebSocketServerProtocol, \
+            WebSocketServerFactory
 
     loop = get_event_loop()
     loult_state = LoultServerState()
@@ -38,6 +36,7 @@ if __name__ == "__main__":
     # setting up events
     from tools.events import (EventScheduler, BienChantewEvent, MaledictionEvent, BienDowmiwEvent,
                               UsersVoicesShuffleEvent, TunnelEvent, MusicalEvent, next_occ)
+
     scheduler = EventScheduler(loult_state,
                                [BienChantewEvent(timedelta(days=1), next_occ(datetime.day, time(hour=22, minute=0))),
                                 MaledictionEvent(timedelta(days=1), next_occ(datetime.day, time(hour=4, minute=0))),

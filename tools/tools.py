@@ -1,22 +1,23 @@
 import json
 import logging
+import pickle
 import re
 from asyncio import create_subprocess_shell
 from asyncio.subprocess import PIPE
+from collections import OrderedDict
+from datetime import datetime
+from functools import lru_cache
 from io import BytesIO
 from itertools import chain
+from os import path
 from re import sub
 from shlex import quote
 from struct import pack
-from typing import Union
-from collections import OrderedDict
-from os import path
-from functools import lru_cache
+from typing import Union, Dict
 
 import numpy
-from scipy.io import wavfile
-
 from resampy import resample
+from scipy.io import wavfile
 
 from tools.audio_tools import BASE_SAMPLING_RATE
 from tools.phonems import PhonemList, Phonem
@@ -219,3 +220,38 @@ class OrderedDequeDict(OrderedDict):
             self.popitem(last=False)
 
         OrderedDict.__setitem__(self, key, value)
+
+
+class CachedOpener:
+
+    FILE_EXPIRY_TIME = 15 * 60 # in seconds
+
+    def __init__(self):
+        self.files = {} # type: Dict[str,Union[str,byte]]
+        self.last_hit = {} # type: Dict[str,datetime]
+
+    def check_files_expiry(self):
+        now = datetime.now()
+        for filepath, last_hit in list(self.last_hit.items()):
+            if (now - last_hit).seconds > self.FILE_EXPIRY_TIME:
+                del self.files[filepath]
+                del self.last_hit[filepath]
+
+    def load_byte(self, filepath, read_func):
+        if filepath not in self.files:
+            with open(filepath, "rb") as bytefile:
+                self.files[filepath] = read_func(filepath)
+
+        self.last_hit[filepath] = datetime.now()
+        self.check_files_expiry()
+
+    def load_pickle(self, filepath):
+        self.load_byte(filepath, pickle.load)
+        return self.files[filepath]
+
+    def load_wav(self, filepath):
+        self.load_byte(filepath, wavfile.read)
+        return self.files[filepath]
+
+
+cached_loader = CachedOpener()

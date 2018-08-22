@@ -26,6 +26,10 @@
 				run: msg => msg.replace(/https?:\/\/[^< ]*[^<*.,?! :]/g, '<a href="$&" target="_blank">$&</a>')
 			},*/
 			{
+				test: msg => msg.match(profane_or_url),
+				run: msg => msg.replace(profane_or_url, function(matched) { return matched.includes('http')? `<a href="${matched}" target="_blank">${matched}</a>` : '<span class="pinktext">' + '♥'.repeat(matched.length) + '</span>'; })
+			},
+			{
 				test: msg => msg.includes('**'),
 				run: msg => msg.replace(/\*{2}([^\*]+)\*{2}?/g, '<span class="spoiler">$1</span>')
 			},
@@ -36,10 +40,6 @@
 			{
 				test: msg => msg.startsWith('&gt;'),
 				run: msg => msg.replace(/(.+)/g, '<span class="greentext">$1</span>')
-			},
-			{
-				test: msg => msg.match(profane_or_url),
-				run: msg => msg.replace(profane_or_url, function(matched) { return matched.includes('http')? `<a href="${matched}" target="_blank">${matched}</a>` : '<span class="pinktext">' + '♥'.repeat(matched.length) + '</span>'; })
 			}
 		];
 
@@ -550,6 +550,10 @@
                     break;
 
 					case 'userlist':
+					    // flushing previous user list just in case
+					    for(var i in users)
+				            delUser(i);
+
 						for(var i = 0; i < msg.users.length; i++)
 							addUser(msg.users[i].userid, msg.users[i].params, msg.users[i].profile);
 					break;
