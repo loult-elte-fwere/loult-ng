@@ -4,8 +4,8 @@ resampy>=0.1.5
 scipy>=0.18.1
 six>=1.10.0
 txaio>=2.5.2
-uvloop==0.11.1
+uvloop>=0.11.1
 wheel>=0.29
--e git+https://github.com/hadware/python-audio-effects.git#egg=pysndfx
--e git+https://github.com/hadware/voxpopuli.git#egg=voxpopuli
+pysndfx
+voxpopuli>=0.1.5.1
 -e git+https://github.com/hadware/katalixia.git#egg=katalixia
