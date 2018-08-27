@@ -1,55 +1,15 @@
+import random
 from collections import OrderedDict
 from copy import deepcopy
-from datetime import timedelta, datetime, time, date
-from typing import List, Tuple
-import asyncio
+from datetime import datetime
 from time import time as timestamp
-import random
+from typing import List
 
-from tools.state import LoultServerState
-from tools.effects.effects import AutotuneEffect, ReverbManEffect, SkyblogEffect, RobotVoiceEffect, \
+from tools.effects.effects import AutotuneEffect, ReverbManEffect, RobotVoiceEffect, \
     AngryRobotVoiceEffect, PitchShiftEffect, GrandSpeechMasterEffect, VisualEffect, VoiceCloneEffect, \
     VoiceSpeedupEffect, BadCellphoneEffect, RythmicEffect
+from tools.events.base import PeriodicEvent, PseudoPeriodicEvent, FiniteDurationEventMixin
 from tools.users import User
-
-
-def next_occ(period, occ_time: time):
-    now = datetime.now()
-    today = date.today()
-    if period is datetime.day:
-        if now > datetime.combine(today, occ_time):
-            return datetime.combine(today + timedelta(days=1), occ_time)
-        else:
-            return datetime.combine(today, occ_time)
-
-    elif period is datetime.hour:
-        if now.minute > occ_time.minute:
-            return datetime.combine(today, time(hour=now.hour + 1, minute=occ_time.minute))
-        else:
-            return datetime.combine(today, time(hour=now.hour, minute=occ_time.minute))
-
-
-class Event:
-
-    def __init__(self):
-        self.next_occurence = None
-
-    def update_next_occ(self, now):
-        pass
-
-    async def happen(self, loultstate):
-        pass
-
-
-class PeriodicEvent(Event):
-
-    def __init__(self, period: timedelta, first_occ: datetime=None):
-        super().__init__()
-        self.period = period
-        self.next_occurence = first_occ if first_occ is not None else datetime.now()
-
-    def update_next_occ(self, now):
-        self.next_occurence += self.period
 
 
 class SayHi(PeriodicEvent):
@@ -127,42 +87,6 @@ class MaledictionEvent(EffectEvent):
                                   event_type="curse",
                                   date=timestamp() * 1000,
                                   msg="%s a été touché par la maledictionw!" % user.poke_params.pokename)
-
-
-class PseudoPeriodicEvent(Event):
-
-    def __init__(self, pseudo_period: timedelta, variance: timedelta, first_occ: datetime=None, ):
-        super().__init__()
-        self.pseudo_period = pseudo_period
-        self.variance = variance
-        if first_occ is None:
-            self.next_occurence = datetime.now()
-            self.update_next_occ(None)
-        else:
-            self.next_occurence = first_occ
-
-    def update_next_occ(self, now):
-        new_period_secs = random.gauss(self.pseudo_period.total_seconds(), self.variance.total_seconds())
-        new_period_timedelta = timedelta(seconds=new_period_secs)
-        self.next_occurence += new_period_timedelta
-
-
-class FiniteDurationEventMixin(Event):
-    """Mixin class for events that have a termination trigger"""
-
-    def __init__(self, *args, duration: timedelta):
-        super().__init__(*args)
-        self.duration = duration
-        self.is_happening = False
-
-    def get_finish_time(self, now: datetime):
-        return now + self.duration
-
-    async def finish(self, loultstate):
-        self.is_happening = False
-
-    async def happen(self, loultstate):
-        self.is_happening = True
 
 
 class UsersVoicesShuffleEvent(PseudoPeriodicEvent):
@@ -254,45 +178,3 @@ class UserListModEvent(PseudoPeriodicEvent, FiniteDurationEventMixin):
         super().finish(loultstate)
 
 
-class EventScheduler:
-
-    def __init__(self, loultstate, events: List[Event]):
-        self.loultstate = loultstate
-        self.events = events
-        self.schedule = []  # type:List[Tuple[datetime, Event]]
-
-    def _order_schedule(self):
-        self.schedule.sort(key=lambda x: x[0])
-
-    def _build_scheduler(self):
-        now = datetime.now()
-        for event in self.events:
-            if event.next_occurence < now:
-                event.update_next_occ(now)
-            self.schedule.append((event.next_occurence, event))
-        self._order_schedule()
-
-    async def start(self):
-        self._build_scheduler()
-        while self.schedule:
-            now = datetime.now()
-            event_time, event = self.schedule.pop(0)
-
-            # before sleeping until the event triggers, let's schedule the next occurence of the event
-            if isinstance(event, FiniteDurationEventMixin) and not event.is_happening:
-                self.schedule.append((event.get_finish_time(now), event))
-            else:
-                event.update_next_occ(now)
-                self.schedule.append((event.next_occurence, event))
-
-            # sleeping until the current event happens
-            if (event_time - now).total_seconds() > 0: # if we're "late" then the event happens right away
-                await asyncio.sleep((event_time - now).total_seconds())
-
-            # triggering the event!
-            if isinstance(event, FiniteDurationEventMixin) and event.is_happening:
-                await event.finish(self.loultstate)
-            else:
-                await event.happen(self.loultstate)
-
-            self._order_schedule()
