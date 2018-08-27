@@ -1,5 +1,6 @@
 from asyncio import get_event_loop
 from collections import OrderedDict, deque
+from copy import deepcopy
 from time import time as timestamp
 from typing import Tuple
 
@@ -34,6 +35,13 @@ class Channel:
                 client.sendMessage(msg)
             if binary_payload:
                 client.send_binary(binary_payload)
+
+    def update_userlist(self, users_list : OrderedDict):
+        for user in self.users:
+            my_userlist = deepcopy(users_list)
+            my_userlist[user.user_id]['params']['you'] = True
+            for client in user.clients:
+                client.send_json(type='userlist', users=list(my_userlist.values()))
 
     def channel_leave(self, client: LoultServer, user: User):
         try:

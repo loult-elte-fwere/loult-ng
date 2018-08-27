@@ -1,3 +1,5 @@
+from collections import OrderedDict
+from copy import deepcopy
 from datetime import timedelta, datetime, time, date
 from typing import List, Tuple
 import asyncio
@@ -145,6 +147,24 @@ class PseudoPeriodicEvent(Event):
         self.next_occurence += new_period_timedelta
 
 
+class FiniteDurationEventMixin(Event):
+    """Mixin class for events that have a termination trigger"""
+
+    def __init__(self, *args, duration: timedelta):
+        super().__init__(*args)
+        self.duration = duration
+        self.is_happening = False
+
+    def get_finish_time(self, now: datetime):
+        return now + self.duration
+
+    async def finish(self, loultstate):
+        self.is_happening = False
+
+    async def happen(self, loultstate):
+        self.is_happening = True
+
+
 class UsersVoicesShuffleEvent(PseudoPeriodicEvent):
 
     async def happen(self, loultstate):
@@ -188,6 +208,7 @@ class TunnelEvent(PseudoPeriodicEvent):
 
 
 class MusicalEvent(PseudoPeriodicEvent):
+    """Adds several effects that make everyone a real good singer"""
 
     async def happen(self, loultstate):
         for channel in loultstate.chans.values():
@@ -200,6 +221,38 @@ class MusicalEvent(PseudoPeriodicEvent):
                               event_type="musical",
                               date=timestamp() * 1000,
                               msg="Le loult est une comédie musicale!")
+
+
+class UserListModEvent(PseudoPeriodicEvent, FiniteDurationEventMixin):
+
+    EVENT_TYPE = ""
+
+    @property
+    def event_message(self):
+        return "Gros bazar sur le loult"
+
+    def _fuckup_userlist(self, users_list) -> OrderedDict:
+        pass
+
+    def happen(self, loultstate):
+        for channel in loultstate.chans.values():
+            users_list = OrderedDict([(user_id, deepcopy(user.info))
+                                     for user_id, user in channel.users.items()])
+            channel.update_userlist(self._fuckup_userlist(users_list))
+            channel.broadcast(type="notification",
+                              event_type=self.EVENT_TYPE,
+                              date=timestamp() * 1000,
+                              msg=self.event_message)
+        super().happen(loultstate)
+
+    def finish(self, loultstate):
+        """Reseting the userlist to real value for each user in each channel"""
+        for channel in loultstate.chans.values():
+            users_list = OrderedDict([(user_id, deepcopy(user.info))
+                                     for user_id, user in channel.users.items()])
+            channel.update_userlist(users_list)
+        super().finish(loultstate)
+
 
 class EventScheduler:
 
@@ -224,9 +277,22 @@ class EventScheduler:
         while self.schedule:
             now = datetime.now()
             event_time, event = self.schedule.pop(0)
-            event.update_next_occ(now)
-            self.schedule.append((event.next_occurence, event))
+
+            # before sleeping until the event triggers, let's schedule the next occurence of the event
+            if isinstance(event, FiniteDurationEventMixin) and not event.is_happening:
+                self.schedule.append((event.get_finish_time(now), event))
+            else:
+                event.update_next_occ(now)
+                self.schedule.append((event.next_occurence, event))
+
+            # sleeping until the current event happens
             if (event_time - now).total_seconds() > 0: # if we're "late" then the event happens right away
                 await asyncio.sleep((event_time - now).total_seconds())
-            await event.happen(self.loultstate)
+
+            # triggering the event!
+            if isinstance(event, FiniteDurationEventMixin) and event.is_happening:
+                await event.finish(self.loultstate)
+            else:
+                await event.happen(self.loultstate)
+
             self._order_schedule()
