@@ -240,7 +240,7 @@ class CachedOpener:
     def load_byte(self, filepath, read_func):
         if filepath not in self.files:
             with open(filepath, "rb") as bytefile:
-                self.files[filepath] = read_func(filepath)
+                self.files[filepath] = read_func(bytefile)
 
         self.last_hit[filepath] = datetime.now()
         self.check_files_expiry()
