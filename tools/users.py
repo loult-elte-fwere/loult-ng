@@ -182,6 +182,11 @@ class User:
         self.state = UserState()
         self._info = None
 
+    def reload_params_from_cookie(self):
+        self.voice_params = VoiceParameters.from_cookie_hash(self.cookie_hash)
+        self.poke_params = PokeParameters.from_cookie_hash(self.cookie_hash)
+        self.poke_profile = PokeProfile.from_cookie_hash(self.cookie_hash)
+
     def __hash__(self):
         return self.user_id.__hash__()
 

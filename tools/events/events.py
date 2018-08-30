@@ -1,6 +1,4 @@
 import random
-from collections import OrderedDict
-from copy import deepcopy
 from datetime import datetime
 from time import time as timestamp
 from typing import List
@@ -8,13 +6,13 @@ from typing import List
 from tools.effects.effects import AutotuneEffect, ReverbManEffect, RobotVoiceEffect, \
     AngryRobotVoiceEffect, PitchShiftEffect, GrandSpeechMasterEffect, VisualEffect, VoiceCloneEffect, \
     VoiceSpeedupEffect, BadCellphoneEffect, RythmicEffect
-from tools.events.base import PeriodicEvent, PseudoPeriodicEvent, FiniteDurationEventMixin
+from tools.events.base import PeriodicEvent, PseudoPeriodicEvent, ChannelModEvent
 from tools.users import User
 
 
 class SayHi(PeriodicEvent):
 
-    async def happen(self, loultstate):
+    async def trigger(self, loultstate):
         for channel in loultstate.chans.values():
             user = next(iter(channel.users.values()))
             channel.broadcast(type='msg', userid=user.user_id,
@@ -28,7 +26,7 @@ class BienDowmiwEvent(PeriodicEvent):
         NAME = "fnre du biendowmiw"
         TAG = "biendowmiw"
 
-    async def happen(self, loultstate):
+    async def trigger(self, loultstate):
         for channel in loultstate.chans.values():
             for user in channel.users.values():
                 if random.randint(1,10) == 1:
@@ -57,7 +55,7 @@ class EffectEvent(PeriodicEvent):
 
 class BienChantewEvent(EffectEvent):
 
-    async def happen(self, loultstate):
+    async def trigger(self, loultstate):
         for channel in loultstate.chans.values():
             selected_users = self._select_random_users(channel.users.values())
             for user in selected_users:
@@ -75,7 +73,7 @@ class BienChantewEvent(EffectEvent):
 
 class MaledictionEvent(EffectEvent):
 
-    async def happen(self, loultstate):
+    async def trigger(self, loultstate):
         for channel in loultstate.chans.values():
             selected_users = self._select_random_users(channel.users.values())
             for user in selected_users:
@@ -91,7 +89,7 @@ class MaledictionEvent(EffectEvent):
 
 class UsersVoicesShuffleEvent(PseudoPeriodicEvent):
 
-    async def happen(self, loultstate):
+    async def trigger(self, loultstate):
         for channel in loultstate.chans.values():
             users_lists = list(channel.users.values())
             random.shuffle(users_lists)
@@ -105,7 +103,7 @@ class UsersVoicesShuffleEvent(PseudoPeriodicEvent):
 
 class AmphetamineEvent(PseudoPeriodicEvent):
 
-    async def happen(self, loultstate):
+    async def trigger(self, loultstate):
         for channel in loultstate.chans.values():
             for user in channel.users.values():
                 effect = VoiceSpeedupEffect(factor=2.4)
@@ -119,7 +117,7 @@ class AmphetamineEvent(PseudoPeriodicEvent):
 
 class TunnelEvent(PseudoPeriodicEvent):
 
-    async def happen(self, loultstate):
+    async def trigger(self, loultstate):
         for channel in loultstate.chans.values():
             for user in channel.users.values():
                 effect = BadCellphoneEffect(signal_strength=random.randint(1,2))
@@ -134,7 +132,7 @@ class TunnelEvent(PseudoPeriodicEvent):
 class MusicalEvent(PseudoPeriodicEvent):
     """Adds several effects that make everyone a real good singer"""
 
-    async def happen(self, loultstate):
+    async def trigger(self, loultstate):
         for channel in loultstate.chans.values():
             for user in channel.users.values():
                 effects = [RythmicEffect(), AutotuneEffect(), ReverbManEffect()]
@@ -147,34 +145,27 @@ class MusicalEvent(PseudoPeriodicEvent):
                               msg="Le loult est une comédie musicale!")
 
 
-class UserListModEvent(PseudoPeriodicEvent, FiniteDurationEventMixin):
+class UsersMixup(ChannelModEvent):
 
-    EVENT_TYPE = ""
+    EVENT_TYPE = "users_mixup"
+
+    def __init__(self):
+        super().__init__()
+        self.with_voices = random.randint(0, 1) == 0
 
     @property
     def event_message(self):
-        return "Gros bazar sur le loult"
+        msg =  "Les pokémons se sont tous mélangés!"
+        if self.with_voices:
+            msg += " (et même les voix!)"
+        return msg
 
-    def _fuckup_userlist(self, users_list) -> OrderedDict:
-        pass
-
-    def happen(self, loultstate):
-        for channel in loultstate.chans.values():
-            users_list = OrderedDict([(user_id, deepcopy(user.info))
-                                     for user_id, user in channel.users.items()])
-            channel.update_userlist(self._fuckup_userlist(users_list))
-            channel.broadcast(type="notification",
-                              event_type=self.EVENT_TYPE,
-                              date=timestamp() * 1000,
-                              msg=self.event_message)
-        super().happen(loultstate)
-
-    def finish(self, loultstate):
-        """Reseting the userlist to real value for each user in each channel"""
-        for channel in loultstate.chans.values():
-            users_list = OrderedDict([(user_id, deepcopy(user.info))
-                                     for user_id, user in channel.users.items()])
-            channel.update_userlist(users_list)
-        super().finish(loultstate)
-
-
+    def _fuckup_channel_users(self, channel):
+        users_params = [(user.poke_params, user.poke_profile, user.voice_params)
+                        for user in channel.users.values()]
+        random.shuffle(users_params)
+        for user, (params, profile, voice) in zip(channel.users.values(), users_params):
+            user.poke_params = params
+            user.poke_profile = profile
+            if self.with_voices:
+                user.voice_params = voice

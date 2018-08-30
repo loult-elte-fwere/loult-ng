@@ -36,9 +36,14 @@ class Channel:
             if binary_payload:
                 client.send_binary(binary_payload)
 
-    def update_userlist(self, users_list : OrderedDict):
+    def get_userlist(self):
+        return OrderedDict([(user_id , deepcopy(user.info))
+                            for user_id, user in self.users.items()])
+
+    def update_userlist(self):
+        userlist = self.get_userlist()
         for user in self.users:
-            my_userlist = deepcopy(users_list)
+            my_userlist = deepcopy(userlist)
             my_userlist[user.user_id]['params']['you'] = True
             for client in user.clients:
                 client.send_json(type='userlist', users=list(my_userlist.values()))

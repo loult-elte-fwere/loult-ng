@@ -1,5 +1,8 @@
 import random
+from collections import OrderedDict
+from copy import deepcopy
 from datetime import time, datetime, date, timedelta
+from time import time as timestamp
 
 
 def next_occ(period, occ_time: time):
@@ -30,38 +33,42 @@ class Event:
     def update_next_occ(self, now):
         pass
 
-    async def happen(self, loultstate):
+    async def trigger(self, loultstate):
         pass
 
 
 class PeriodicEvent(Event):
     """Event that happens periodically, with a fixed period"""
 
-    def __init__(self, period: timedelta, first_occ: datetime=None):
+    PERIOD = None  # type:timedelta
+    FIRST_OCC = None  # type:datetime
+
+    def __init__(self):
         super().__init__()
-        self.period = period
-        self.next_occurence = first_occ if first_occ is not None else datetime.now()
+        self.next_occurence = self.FIRST_OCC if self.FIRST_OCC is not None else datetime.now()
 
     def update_next_occ(self, now):
-        self.next_occurence += self.period
+        self.next_occurence += self.PERIOD
 
 
 class PseudoPeriodicEvent(Event):
     """Event that happens pseudo-periodically: the period is randomly generated after
     each occurrence, from a gaussian distribution"""
 
-    def __init__(self, pseudo_period: timedelta, variance: timedelta, first_occ: datetime=None, ):
+    PSEUDO_PERIOD = None  # type:timedelta
+    VARIANCE = None  # type:timedelta
+    FIRST_OCC = None  # type:datetime
+
+    def __init__(self):
         super().__init__()
-        self.pseudo_period = pseudo_period
-        self.variance = variance
-        if first_occ is None:
+        if self.FIRST_OCC is None:
             self.next_occurence = datetime.now()
             self.update_next_occ(None)
         else:
-            self.next_occurence = first_occ
+            self.next_occurence = self.FIRST_OCC
 
     def update_next_occ(self, now):
-        new_period_secs = random.gauss(self.pseudo_period.total_seconds(), self.variance.total_seconds())
+        new_period_secs = random.gauss(self.PSEUDO_PERIOD.total_seconds(), self.VARIANCE.total_seconds())
         new_period_timedelta = timedelta(seconds=new_period_secs)
         self.next_occurence += new_period_timedelta
 
@@ -69,16 +76,59 @@ class PseudoPeriodicEvent(Event):
 class FiniteDurationEventMixin(Event):
     """Mixin class for events that have a termination trigger"""
 
-    def __init__(self, *args, duration: timedelta):
-        super().__init__(*args)
-        self.duration = duration
+    DURATION = None  # type:timedelta
+
+    def __init__(self):
+        super().__init__()
         self.is_happening = False
 
-    def get_finish_time(self, now: datetime):
-        return now + self.duration
+    def update_next_occ(self, now):
+        if self.is_happening:
+            self.next_occurence = now + self.DURATION
+        else:
+            super().update_next_occ(now)
+
+    async def start(self, loultstate):
+        pass
 
     async def finish(self, loultstate):
-        self.is_happening = False
+        pass
 
-    async def happen(self, loultstate):
-        self.is_happening = True
+    async def trigger(self, loultstate):
+        if self.is_happening:
+            await self.finish(loultstate)
+            self.is_happening = False
+        else:
+            await self.start(loultstate)
+            self.is_happening = True
+
+
+class ChannelModEvent(PseudoPeriodicEvent, FiniteDurationEventMixin):
+
+    EVENT_TYPE = ""
+
+    @property
+    def event_message(self):
+        return "Gros bazar sur le loult"
+
+    def _fuckup_channel_users(self, channel):
+        pass
+
+    def start(self, loultstate):
+        for channel in loultstate.chans.values():
+            self._fuckup_channel_users(channel)
+            channel.update_userlist()
+            channel.broadcast(type="notification",
+                              event_type=self.EVENT_TYPE,
+                              date=timestamp() * 1000,
+                              msg=self.event_message)
+        super().trigger(loultstate)
+
+    def finish(self, loultstate):
+        """Reseting the userlist to real value for each user in each channel"""
+        for channel in loultstate.chans.values():
+            for user in channel.users.values():
+                user.reload_params_from_cookie()
+            channel.update_userlist()
+        super().finish(loultstate)
+
