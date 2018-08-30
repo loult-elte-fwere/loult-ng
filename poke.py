@@ -35,16 +35,11 @@ if __name__ == "__main__":
 
     # setting up events
     from tools.events import (EventScheduler, BienChantewEvent, MaledictionEvent, BienDowmiwEvent,
-                              UsersVoicesShuffleEvent, TunnelEvent, MusicalEvent, next_occ)
+                              UsersVoicesShuffleEvent, TunnelEvent, MusicalEvent)
 
     scheduler = EventScheduler(loult_state,
-                               [BienChantewEvent(timedelta(days=1), next_occ(datetime.day, time(hour=22, minute=0))),
-                                MaledictionEvent(timedelta(days=1), next_occ(datetime.day, time(hour=4, minute=0))),
-                                BienDowmiwEvent(timedelta(days=1), next_occ(datetime.day, time(hour=0, minute=0))),
-                                UsersVoicesShuffleEvent(timedelta(hours=4), timedelta(hours=0.5)),
-                                TunnelEvent(timedelta(hours=2), timedelta(hours=0.5)),
-                                MusicalEvent(timedelta(hours=2.5), timedelta(hours=0.5)),
-                                ])
+                               [BienChantewEvent(), MaledictionEvent(), BienDowmiwEvent(), UsersVoicesShuffleEvent(),
+                                TunnelEvent(), MusicalEvent()])
 
     try:
         loop.run_until_complete(Ban.test_ban())

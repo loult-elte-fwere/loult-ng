@@ -1,8 +1,9 @@
 import random
-from datetime import datetime
+from datetime import datetime, timedelta, time
 from time import time as timestamp
 from typing import List
 from os import path
+from .base import next_occ
 
 import yaml
 
@@ -23,6 +24,9 @@ class SayHi(PeriodicEvent):
 
 
 class BienDowmiwEvent(PeriodicEvent):
+
+    PERIOD = timedelta(days=1)
+    FIRST_OCC = next_occ(datetime.day, time(hour=0, minute=0))
 
     class BienDowmiwEffect(VisualEffect):
         TIMEOUT = 10
@@ -57,6 +61,8 @@ class EffectEvent(PeriodicEvent):
 
 
 class BienChantewEvent(EffectEvent):
+    PERIOD = timedelta(days=1)
+    FIRST_OCC = next_occ(datetime.day, time(hour=22, minute=0))
 
     async def trigger(self, loultstate):
         for channel in loultstate.chans.values():
@@ -75,6 +81,8 @@ class BienChantewEvent(EffectEvent):
 
 
 class MaledictionEvent(EffectEvent):
+    PERIOD = timedelta(days=1)
+    FIRST_OCC = next_occ(datetime.day, time(hour=4, minute=0))
 
     async def trigger(self, loultstate):
         for channel in loultstate.chans.values():
@@ -91,6 +99,8 @@ class MaledictionEvent(EffectEvent):
 
 
 class UsersVoicesShuffleEvent(PseudoPeriodicEvent):
+    PSEUDO_PERIOD = timedelta(hours=4)
+    VARIANCE = timedelta(hours=0.5)
 
     async def trigger(self, loultstate):
         for channel in loultstate.chans.values():
@@ -119,6 +129,8 @@ class AmphetamineEvent(PseudoPeriodicEvent):
 
 
 class TunnelEvent(PseudoPeriodicEvent):
+    PSEUDO_PERIOD = timedelta(hours=2)
+    VARIANCE = timedelta(hours=0.5)
 
     async def trigger(self, loultstate):
         for channel in loultstate.chans.values():
@@ -134,6 +146,8 @@ class TunnelEvent(PseudoPeriodicEvent):
 
 class MusicalEvent(PseudoPeriodicEvent):
     """Adds several effects that make everyone a real good singer"""
+    PSEUDO_PERIOD = timedelta(hours=2.5)
+    VARIANCE = timedelta(hours=0.5)
 
     async def trigger(self, loultstate):
         for channel in loultstate.chans.values():
@@ -151,6 +165,8 @@ class MusicalEvent(PseudoPeriodicEvent):
 class UsersMixupEvent(ChannelModEvent):
 
     EVENT_TYPE = "users_mixup"
+    PSEUDO_PERIOD = timedelta(hours=5)
+    VARIANCE = timedelta(hours=0.7)
 
     def __init__(self):
         super().__init__()
@@ -178,6 +194,8 @@ class UsersMixupEvent(ChannelModEvent):
 class CloneArmyEvent(ChannelModEvent):
 
     EVENT_TYPE = "clone_army"
+    PSEUDO_PERIOD = timedelta(hours=5)
+    VARIANCE = timedelta(hours=0.7)
 
     def __init__(self):
         super().__init__()
@@ -201,6 +219,8 @@ class ThemeRenameEvent(ChannelModEvent):
 
     EVENT_TYPE = "theme_rename"
     THEMES_FILE = path.join(path.dirname(path.realpath(__file__)), "data/themes.yml")
+    PSEUDO_PERIOD = timedelta(hours=5)
+    VARIANCE = timedelta(hours=0.7)
 
     def __init__(self):
         super().__init__()

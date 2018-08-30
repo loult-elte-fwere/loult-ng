@@ -103,7 +103,7 @@ class FiniteDurationEventMixin(Event):
             self.is_happening = True
 
 
-class ChannelModEvent(PseudoPeriodicEvent, FiniteDurationEventMixin):
+class ChannelModEvent(FiniteDurationEventMixin, PseudoPeriodicEvent):
 
     EVENT_TYPE = ""
 
