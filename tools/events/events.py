@@ -2,6 +2,9 @@ import random
 from datetime import datetime
 from time import time as timestamp
 from typing import List
+from os import path
+
+import yaml
 
 from tools.effects.effects import AutotuneEffect, ReverbManEffect, RobotVoiceEffect, \
     AngryRobotVoiceEffect, PitchShiftEffect, GrandSpeechMasterEffect, VisualEffect, VoiceCloneEffect, \
@@ -145,13 +148,13 @@ class MusicalEvent(PseudoPeriodicEvent):
                               msg="Le loult est une comédie musicale!")
 
 
-class UsersMixup(ChannelModEvent):
+class UsersMixupEvent(ChannelModEvent):
 
     EVENT_TYPE = "users_mixup"
 
     def __init__(self):
         super().__init__()
-        self.with_voices = random.randint(0, 1) == 0
+        self.with_voices = None # set when the fuckup is called
 
     @property
     def event_message(self):
@@ -161,6 +164,7 @@ class UsersMixup(ChannelModEvent):
         return msg
 
     def _fuckup_channel_users(self, channel):
+        self.with_voices = random.randint(0,1) == 0
         users_params = [(user.poke_params, user.poke_profile, user.voice_params)
                         for user in channel.users.values()]
         random.shuffle(users_params)
@@ -169,3 +173,47 @@ class UsersMixup(ChannelModEvent):
             user.poke_profile = profile
             if self.with_voices:
                 user.voice_params = voice
+
+
+class CloneArmyEvent(ChannelModEvent):
+
+    EVENT_TYPE = "clone_army"
+
+    def __init__(self):
+        super().__init__()
+        self.picked_user = None # defined when the fuckup function is called
+
+    @property
+    def event_message(self):
+        return "Le loult est une armée de clones de %s!" % self.picked_user
+
+    def _fuckup_channel_users(self, channel):
+        picked_usr = random.choice(list(channel.users.values()))
+        self.picked_user = picked_usr.poke_params.pokename + " " + picked_usr.poke_params.poke_adj
+        params, profile, voice = picked_usr.poke_params, picked_usr.poke_profile, picked_usr.voice_params
+        for user in channel.users.values():
+            user.poke_params = params
+            user.poke_profile = profile
+            user.voice_params = voice
+
+
+class ThemeRenameEvent(ChannelModEvent):
+
+    EVENT_TYPE = "theme_rename"
+    THEMES_FILE = path.join(path.dirname(path.realpath(__file__)), "data/themes.yml")
+
+    def __init__(self):
+        super().__init__()
+        with open(self.THEMES_FILE) as themesfile:
+            self.themes = yaml.load(themesfile)
+        self.theme_descr = None # defined when the fuckup function is called
+
+    @property
+    def event_message(self):
+        return "Le loult est devenu %s!" % self.theme_descr
+
+    def _fuckup_channel_users(self, channel):
+        picked_theme = random.choice(self.themes)
+        self.theme_descr = picked_theme["description"]
+        for user in channel.users.values():
+            user.poke_params.pokename = random.choice(picked_theme["names"])

@@ -6,6 +6,7 @@ six>=1.10.0
 txaio>=2.5.2
 uvloop==0.11.1
 wheel>=0.29
+PyYAML
 -e git+https://github.com/hadware/python-audio-effects.git#egg=pysndfx
 -e git+https://github.com/hadware/voxpopuli.git#egg=voxpopuli
 -e git+https://github.com/hadware/katalixia.git#egg=katalixia
