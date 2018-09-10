@@ -5,10 +5,17 @@ La partie client est en HTML/CSS/JS statique et la partie serveur en Python.
 # Installation
 
 * Installez nginx, python3-venv, le synthétiseur vocal mbrola,
-espeak, sox, ainsi que les voix mbrola :
+espeak et sox:
 ```
-sudo apt install git nginx mbrola espeak sox mbrola-fr1 mbrola-us1 mbrola-es1 mbrola-de4 python3 python3-venv python3-dev python3-pip portaudio19-dev build-essential
+sudo apt install git nginx mbrola espeak sox python3 python3-venv python3-dev python3-pip portaudio19-dev build-essential
 sudo ./install/voices_install.py
+```
+
+Il faut aussi installer les voix-mbrola, via le script-outils de voxpopuli.
+Pour installer toutes les voix supportées par le Loult via ce script, lancez:
+
+```bash
+sudo python3 -m vopopuli.voice_install fr us es de
 ```
 
 * Clonez le lou sur votre propre machine :

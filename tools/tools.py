@@ -18,8 +18,7 @@ from typing import Union, Dict
 import numpy
 from resampy import resample
 from scipy.io import wavfile
-
-from tools.phonems import PhonemList, Phonem
+from voxpopuli import PhonemeList, Phoneme
 
 logger = logging.getLogger('tools')
 
@@ -78,7 +77,7 @@ class AudioRenderer:
         wav, err = await process.communicate()
         return self._wav_format(wav)
 
-    async def phonemes_to_audio(self, phonemes : PhonemList, lang : str, voice_params : 'VoiceParameters') -> bytes:
+    async def phonemes_to_audio(self, phonemes : PhonemeList, lang : str, voice_params : 'VoiceParameters') -> bytes:
         """Renders a phonemlist object to audio using mbrola"""
         lang, voice, sex, volume = self._get_additional_params(lang, voice_params)
         audio_synth_string = 'MALLOC_CHECK_=0 mbrola -v %g -e /usr/share/mbrola/%s%d/%s%d - -.wav' \
@@ -89,7 +88,7 @@ class AudioRenderer:
         wav, err = await process.communicate(input=str(phonemes).encode('utf-8'))
         return self._wav_format(wav)
 
-    async def string_to_phonemes(self, text : str, lang : str, voice_params : 'VoiceParameters') -> PhonemList:
+    async def string_to_phonemes(self, text : str, lang : str, voice_params : 'VoiceParameters') -> PhonemeList:
         """Renders an input string to a phonemlist object using espeak"""
         lang, voice, sex, volume = self._get_additional_params(lang, voice_params)
         phonem_synth_string = 'MALLOC_CHECK_=0 espeak -s %d -p %d --pho -q -v mb/mb-%s%d %s ' \
@@ -98,7 +97,7 @@ class AudioRenderer:
         process = await create_subprocess_shell(phonem_synth_string,
                                                 stdout=PIPE, stderr=PIPE)
         phonems, err = await process.communicate()
-        return PhonemList(phonems.decode('utf-8').strip())
+        return PhonemeList(phonems.decode('utf-8').strip())
 
     @staticmethod
     async def to_f32_16k(wav : bytes) -> numpy.ndarray:
@@ -144,11 +143,11 @@ class SpoilerBipEffect(UtilitaryEffect):
 
     def _gen_beep(self, duration : int, lang : str):
         i_phonem = "i:" if lang == "de" else "i" # "i" phonem is not the same i german. Damn krauts
-        return PhonemList(PhonemList([Phonem("b", 103),
-                                      Phonem(i_phonem, duration, [(0, 103 * 3), (80, 103 * 3), (100, 103 * 3)]),
-                                      Phonem("p", 228)]))
+        return PhonemeList(PhonemeList([Phoneme("b", 103),
+                                      Phoneme(i_phonem, duration, [(0, 103 * 3), (80, 103 * 3), (100, 103 * 3)]),
+                                      Phoneme("p", 228)]))
 
-    async def process(self, text: str, lang : str) -> Union[str, PhonemList]:
+    async def process(self, text: str, lang : str) -> Union[str, PhonemeList]:
         """Beeps out parts of the text that are tagged with double asterisks.
         It basicaly replaces the opening and closing asterisk with two opening and closing 'stop words'
         then finds the phonemic form of these two and replaces the phonems inside with an equivalently long beep"""
@@ -163,12 +162,12 @@ class SpoilerBipEffect(UtilitaryEffect):
             # then using a simple state machine (in_beep is the state), replaces the phonems between
             # the right phonemic occurence with the phonems of a beep
             in_beep = False
-            output, buffer = PhonemList([]), PhonemList([])
+            output, buffer = PhonemeList([]), PhonemeList([])
             while phonems:
-                if PhonemList(phonems[:3]).phonemes_str == self._tags_phonems[lang][0] and not in_beep:
-                    in_beep, buffer = True, PhonemList([])
-                    phonems = PhonemList(phonems[3:])
-                elif PhonemList(phonems[:4]).phonemes_str == self._tags_phonems[lang][1] and in_beep:
+                if PhonemeList(phonems[:3]).phonemes_str == self._tags_phonems[lang][0] and not in_beep:
+                    in_beep, buffer = True, PhonemeList([])
+                    phonems = PhonemeList(phonems[3:])
+                elif PhonemeList(phonems[:4]).phonemes_str == self._tags_phonems[lang][1] and in_beep:
                     in_beep = False
                     # creating a beep of the buffer's duration
                     if buffer:

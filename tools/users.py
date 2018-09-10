@@ -14,7 +14,7 @@ from config import FLOOD_DETECTION_WINDOW, BANNED_WORDS, FLOOD_WARNING_TIMEOUT, 
 from tools import pokemons
 
 from tools.tools import AudioRenderer, SpoilerBipEffect, prepare_text_for_tts
-from .phonems import PhonemList
+from voxpopuli import PhonemeList
 
 DATA_FILES_FOLDER = path.join(path.dirname(path.realpath(__file__)), "data/")
 
@@ -240,13 +240,13 @@ class User:
         # apply the beep effect for spoilers
         beeped = await SpoilerBipEffect(self.audio_renderer, voice_params).process(text, lang)
 
-        if isinstance(beeped, PhonemList) or self.state.effects[PhonemicEffect]:
+        if isinstance(beeped, PhonemeList) or self.state.effects[PhonemicEffect]:
 
             modified_phonems = None
-            if isinstance(beeped, PhonemList) and self.state.effects[PhonemicEffect]:
+            if isinstance(beeped, PhonemeList) and self.state.effects[PhonemicEffect]:
                 # if it's already a phonem list, we apply the effect diretcly
                 modified_phonems = self.apply_effects(beeped, self.state.effects[PhonemicEffect])
-            elif isinstance(beeped, PhonemList):
+            elif isinstance(beeped, PhonemeList):
                 # no effects, only the beeped phonem list
                 modified_phonems = beeped
             elif self.state.effects[PhonemicEffect]:

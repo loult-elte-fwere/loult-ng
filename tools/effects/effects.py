@@ -15,7 +15,8 @@ import tools
 from tools.audio_tools import mix_tracks, get_sounds, BASE_SAMPLING_RATE
 from tools.tools import cached_loader
 from tools.effects.tree import Node, Leaf
-from tools.phonems import PhonemList, Phonem, FrenchPhonems
+from voxpopuli import PhonemeList, FrenchPhonemes
+from voxpopuli.phonemes import Phoneme
 from tools.users import VoiceParameters
 from .melody import chord_progressions, get_harmonies
 
@@ -84,7 +85,7 @@ class HiddenTextEffect(TextEffect):
 class PhonemicEffect(Effect):
     """Effect that modifies Phonems before they're sent to mbrola"""
 
-    def process(self, phonems : PhonemList) -> PhonemList:
+    def process(self, phonems : PhonemeList) -> PhonemeList:
         """"""
 
 
@@ -251,16 +252,16 @@ class PhonemicNwwoiwwEffect(PhonemicEffect):
     NAME = "nwwoiww"
     TIMEOUT = 150
 
-    def process(self, phonems : PhonemList):
-        w_phonem = Phonem("w", 103, [])
-        for i, phonem in enumerate(phonems):
-            if phonem.name == "R":
-                phonem.name = "w"
+    def process(self, phonems : PhonemeList):
+        w_phonem = Phoneme("w", 103, [])
+        for i, phoneme in enumerate(phonems):
+            if phoneme.name == "R":
+                phoneme.name = "w"
                 if random.randint(0,1) == 0:
                     for j in range(2):
                         phonems.insert(i, w_phonem)
                 else:
-                    phonem.duration = 206
+                    phoneme.duration = 206
         return phonems
 
 
@@ -268,10 +269,10 @@ class PhonemicFofoteEffect(PhonemicEffect):
     NAME = "fofotage"
     TIMEOUT = 150
 
-    def process(self, phonems : PhonemList):
-        for phonem in phonems:
-            if phonem.name in ["s", "v", "z", "S", "Z"]:
-                phonem.name = "f"
+    def process(self, phonems : PhonemeList):
+        for phoneme in phonems:
+            if phoneme.name in ["s", "v", "z", "S", "Z"]:
+                phoneme.name = "f"
         return phonems
 
 
@@ -283,14 +284,14 @@ class AccentAllemandEffect(PhonemicEffect):
                          "b" : "p", # boule -> poule
                          "g" : "k" } # gant -> kan
 
-    def process(self, phonems : PhonemList):
-        for phonem in phonems:
-            if phonem.name in self._tranlation_table:
-                phonem.name = self._tranlation_table[phonem.name]
-            elif phonem.name in FrenchPhonems.ORALS and random.randint(1,3) == 1:
-                phonem.duration *= 2
-            elif phonem.name == "d" and random.randint(1,2) == 1:
-                phonem.name = "t"
+    def process(self, phonems : PhonemeList):
+        for phoneme in phonems:
+            if phoneme.name in self._tranlation_table:
+                phoneme.name = self._tranlation_table[phoneme.name]
+            elif phoneme.name in FrenchPhonemes.ORALS and random.randint(1,3) == 1:
+                phoneme.duration *= 2
+            elif phoneme.name == "d" and random.randint(1,2) == 1:
+                phoneme.name = "t"
         return phonems
 
 
@@ -298,21 +299,21 @@ class AccentMarseillaisEffect(PhonemicEffect):
     NAME = "du vieux port"
     TIMEOUT = 150
 
-    def process(self, phonems: PhonemList):
-        reconstructed = PhonemList([])
-        ng_phonem = Phonem("N", 100)
-        euh_phonem = Phonem("2", 79)
-        phonems.append(Phonem("_", 10)) # end-silence-padding, just to be safe
-        for i, phonem in enumerate(phonems):
-            if phonem.name in FrenchPhonems.NASAL_WOVELS:
-                reconstructed += [phonem, ng_phonem]
-            elif phonem.name in FrenchPhonems.CONSONANTS - {"w"} and phonems[i+1].name not in FrenchPhonems.VOWELS:
-                reconstructed += [phonem, euh_phonem]
-            elif phonem.name == "o":
-                phonem.name = "O"
-                reconstructed.append(phonem)
+    def process(self, phonems: PhonemeList):
+        reconstructed = PhonemeList([])
+        ng_phonem = Phoneme("N", 100)
+        euh_phonem = Phoneme("2", 79)
+        phonems.append(Phoneme("_", 10)) # end-silence-padding, just to be safe
+        for i, phoneme in enumerate(phonems):
+            if phoneme.name in FrenchPhonemes.NASAL_WOVELS:
+                reconstructed += [phoneme, ng_phonem]
+            elif phoneme.name in FrenchPhonemes.CONSONANTS - {"w"} and phonems[i+1].name not in FrenchPhonemes.VOWELS:
+                reconstructed += [phoneme, euh_phonem]
+            elif phoneme.name == "o":
+                phoneme.name = "O"
+                reconstructed.append(phoneme)
             else:
-                reconstructed.append(phonem)
+                reconstructed.append(phoneme)
         return reconstructed
 
 
@@ -320,18 +321,18 @@ class StutterEffect(PhonemicEffect):
     TIMEOUT = 150
     NAME = "be be te"
 
-    def process(self, phonems : PhonemList):
-        silence = Phonem("_", 61)
-        reconstructed = PhonemList([])
-        for i, phonem in enumerate(phonems):
-            if phonems[i].name in FrenchPhonems.CONSONANTS \
-                    and phonems[i+1].name in FrenchPhonems.VOWELS \
+    def process(self, phonems : PhonemeList):
+        silence = Phoneme("_", 61)
+        reconstructed = PhonemeList([])
+        for i, phoneme in enumerate(phonems):
+            if phonems[i].name in FrenchPhonemes.CONSONANTS \
+                    and phonems[i+1].name in FrenchPhonemes.VOWELS \
                     and random.randint(1,3) == 1:
                     reconstructed += [phonems[i], phonems[i+1]] * 2
-            elif phonem.name in FrenchPhonems.VOWELS and random.randint(1,3) == 1:
-                reconstructed += [phonem, silence, phonem]
+            elif phoneme.name in FrenchPhonemes.VOWELS and random.randint(1,3) == 1:
+                reconstructed += [phoneme, silence, phoneme]
             else:
-                reconstructed.append(phonem)
+                reconstructed.append(phoneme)
         return reconstructed
 
 
@@ -339,7 +340,7 @@ class VocalDyslexia(PhonemicEffect):
     NAME = "dysclesie vocael"
     TIMEOUT = 150
 
-    def process(self, phonems : PhonemList):
+    def process(self, phonems : PhonemeList):
 
         def permutation(i, j, input_list):
             input_list[i], input_list[j] = input_list[j], input_list[i]
@@ -379,10 +380,10 @@ class AutotuneEffect(PhonemicEffect):
             for _ in range(4):
                 yield random.choice(harmonies_ptich)
 
-    def process(self, phonems : PhonemList):
+    def process(self, phonems : PhonemeList):
         notes = self._get_note()
         for pho in phonems:
-            if pho.name in FrenchPhonems.VOWELS:
+            if pho.name in FrenchPhonemes.VOWELS:
                 pitch = next(notes)
                 pho.set_from_pitches_list([pitch] * 2)
                 pho.duration *= 2
@@ -400,12 +401,12 @@ class RythmicEffect(PhonemicEffect):
         self.durations = [0.5, 0.5, 0.5, 0.5, 1, 1, 2, 2]
         random.shuffle(self.durations)
 
-    def process(self, phonems : PhonemList):
+    def process(self, phonems : PhonemeList):
         beat_iterator = cycle(self.durations)
-        for phonem in phonems:
-            if phonem.name in FrenchPhonems.VOWELS:
+        for phoneme in phonems:
+            if phoneme.name in FrenchPhonemes.VOWELS:
                 beat = next(beat_iterator)
-                phonem.duration = int(beat * self.BEAT_TIME)
+                phoneme.duration = int(beat * self.BEAT_TIME)
         return phonems
 
 
@@ -423,15 +424,15 @@ class CrapweEffect(PhonemicEffect):
     def name(self):
         return self._name
 
-    def process(self, phonems: PhonemList):
-        for phonem in phonems:
-            if phonem.name in FrenchPhonems.VOWELS and random.randint(1, 4) >= self.intensity:
-                phonem.duration *= 8
-                if phonem.pitch_modifiers:
-                    orgnl_pitch_avg = mean([pitch for pos, pitch in phonem.pitch_modifiers])
+    def process(self, phonems: PhonemeList):
+        for phoneme in phonems:
+            if phoneme.name in FrenchPhonemes.VOWELS and random.randint(1, 4) >= self.intensity:
+                phoneme.duration *= 8
+                if phoneme.pitch_modifiers:
+                    orgnl_pitch_avg = mean([pitch for pos, pitch in phoneme.pitch_modifiers])
                 else:
                     orgnl_pitch_avg = 150
-                phonem.set_from_pitches_list([orgnl_pitch_avg + ((-1) ** i * 30) for i in range(4)])
+                phoneme.set_from_pitches_list([orgnl_pitch_avg + ((-1) ** i * 30) for i in range(4)])
 
         return phonems
 
@@ -449,11 +450,11 @@ class TurboHangoul(PhonemicEffect):
     def name(self):
         return self._name
 
-    def process(self, phonems: PhonemList):
-        for phonem in phonems:
-            if phonem.name in FrenchPhonems.VOWELS and random.randint(1, 4) <= self.intensity:
-                phonem.duration *= 8
-                phonem.set_from_pitches_list([364 - 10, 364])
+    def process(self, phonems: PhonemeList):
+        for phoneme in phonems:
+            if phoneme.name in FrenchPhonemes.VOWELS and random.randint(1, 4) <= self.intensity:
+                phoneme.duration *= 8
+                phoneme.set_from_pitches_list([364 - 10, 364])
 
         return phonems
 
@@ -462,10 +463,10 @@ class GrandSpeechMasterEffect(PhonemicEffect):
     NAME = "grand maître de l'élocution"
     TIMEOUT = 150
 
-    def process(self, phonems: PhonemList):
-        for phonem in phonems:
-            if phonem.name in FrenchPhonems._all:
-                phonem.duration = int(phonem.duration * (random.random() * 4 + 0.7))
+    def process(self, phonems: PhonemeList):
+        for phoneme in phonems:
+            if phoneme.name in FrenchPhonemes._all:
+                phoneme.duration = int(phoneme.duration * (random.random() * 4 + 0.7))
 
         return phonems
 
@@ -474,11 +475,11 @@ class VowelExchangeEffect(PhonemicEffect):
     NAME = "hein quoi?"
     TIMEOUT = 200
 
-    def process(self, phonems : PhonemList):
-        vowels_list = list(FrenchPhonems.ORALS | FrenchPhonems.NASAL_WOVELS)
-        for phonem in phonems:
-            if phonem.name in FrenchPhonems.ORALS | FrenchPhonems.NASAL_WOVELS and random.randint(1,5) == 1:
-                phonem.name = random.choice(vowels_list)
+    def process(self, phonems : PhonemeList):
+        vowels_list = list(FrenchPhonemes.ORALS | FrenchPhonemes.NASAL_WOVELS)
+        for phoneme in phonems:
+            if phoneme.name in FrenchPhonemes.ORALS | FrenchPhonemes.NASAL_WOVELS and random.randint(1,5) == 1:
+                phoneme.name = random.choice(vowels_list)
         return phonems
 
 
@@ -488,18 +489,18 @@ class PitchRandomizerEffect(PhonemicEffect):
     _multiplier_range = 0.6
     _delimiters_per_phonems = 5
 
-    def process(self, phonems : PhonemList):
+    def process(self, phonems : PhonemeList):
         delimiters = list({random.randint(1, len(phonems))
                            for _ in range(len(phonems) // self._delimiters_per_phonems)})
         delimiters.sort()
         delim_idx = 0
         current_multiplier = 1
-        for i, phonem in enumerate(phonems):
+        for i, phoneme in enumerate(phonems):
             if delim_idx < len(delimiters) and i == delimiters[delim_idx]:
                 delim_idx += 1
                 current_multiplier = random.random() * self._multiplier_range * (1 if random.randint(0,1) else -1) + 1
-            phonem.pitch_modifiers = [(duration, int(pitch * current_multiplier))
-                                      for duration, pitch in phonem.pitch_modifiers]
+            phoneme.pitch_modifiers = [(duration, int(pitch * current_multiplier))
+                                      for duration, pitch in phoneme.pitch_modifiers]
         return phonems
 
 
@@ -507,12 +508,12 @@ class PubertyEffect(PhonemicEffect):
     NAME = "puberté"
     TIMEOUT = 180
 
-    def process(self, phonems: PhonemList):
-        for phonem in phonems:
-            if phonem.name in FrenchPhonems.VOWELS and random.randint(1, 2) == 1:
-                phonem.duration *= 2
+    def process(self, phonems: PhonemeList):
+        for phoneme in phonems:
+            if phoneme.name in FrenchPhonemes.VOWELS and random.randint(1, 2) == 1:
+                phoneme.duration *= 2
                 factor = random.uniform(0.3, 2)
-                phonem.pitch_modifiers = [(pos, int(pitch * factor)) for pos, pitch in phonem.pitch_modifiers]
+                phoneme.pitch_modifiers = [(pos, int(pitch * factor)) for pos, pitch in phoneme.pitch_modifiers]
         return phonems
 
 
