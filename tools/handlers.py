@@ -86,10 +86,10 @@ class MessageHandler(FloodCheckerHandler):
         # user object instance renders both the output sound and output text
         output_msg, wav = await self.user.render_message(msg_data["msg"], msg_data.get("lang", "fr"))
         # estimating the end of the current voice render, to rate limit
-        calc_sendend = max(self.sendend, now) + timedelta(seconds=len(wav) * 8 / 6000000)
+        calc_sendend = max(self.server.sendend, now) + timedelta(seconds=len(wav) * 8 / 6000000)
         synth = calc_sendend < now + timedelta(seconds=2.5)
         if synth:
-            self.sendend = calc_sendend
+            self.server.sendend = calc_sendend
 
         output_msg = escape(output_msg)
 

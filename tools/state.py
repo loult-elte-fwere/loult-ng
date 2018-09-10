@@ -5,7 +5,6 @@ from time import time as timestamp
 from typing import Tuple
 
 from config import MAX_COOKIES_PER_IP, BAN_TIME
-from poke import LoultServer, UnauthorizedCookie
 from tools.tools import encode_json, OrderedDequeDict
 from tools.users import User
 
@@ -21,10 +20,10 @@ class Channel:
         # this is used to track how many cookies we have per connected IP in that channel
         self.ip_cookies_tracker = dict()  # type: Dict[str,Set[bytes]]
 
-    def _signal_user_connect(self, client: LoultServer, user: User):
+    def _signal_user_connect(self, client, user: User):
         client.send_json(type='connect', date=timestamp() * 1000, **user.info)
 
-    def _signal_user_disconnect(self, client: LoultServer, user: User):
+    def _signal_user_disconnect(self, client, user: User):
         client.send_json(type='disconnect', date=timestamp() * 1000,
                          userid=user.user_id)
 
@@ -48,7 +47,7 @@ class Channel:
             for client in user.clients:
                 client.send_json(type='userlist', users=list(my_userlist.values()))
 
-    def channel_leave(self, client: LoultServer, user: User):
+    def channel_leave(self, client, user: User):
         try:
             self.users[user.user_id].clients.remove(client)
 
@@ -69,10 +68,11 @@ class Channel:
         except KeyError:
             pass
 
-    def user_connect(self, new_user : User, client : LoultServer):
+    def user_connect(self, new_user : User, client):
         if client.ip in self.ip_cookies_tracker:
             if client.cookie not in self.ip_cookies_tracker[client.ip]:
                 if len(self.ip_cookies_tracker[client.ip]) >= MAX_COOKIES_PER_IP:
+                    from .client import UnauthorizedCookie
                     raise UnauthorizedCookie()
                 else:
                     self.ip_cookies_tracker[client.ip].add(client.cookie)
@@ -129,7 +129,7 @@ class LoultServerState:
         self.trashed_cookies = set()
         self.ip_last_login = OrderedDequeDict()
 
-    def channel_connect(self, client : LoultServer, user_cookie : str, channel_name : str) -> Tuple[Channel, User]:
+    def channel_connect(self, client, user_cookie : str, channel_name : str) -> Tuple[Channel, User]:
         # if the channel doesn't exist, we instanciate it and add it to the channel dict
         if channel_name not in self.chans:
             self.chans[channel_name] = Channel(channel_name, self)

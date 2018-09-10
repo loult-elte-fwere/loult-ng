@@ -104,7 +104,6 @@ class LoultServerProtocol:
         if self.client_logger is None or self.loult_state is None:
             raise NotImplementedError('You must override "logger" and "state".')
         self.logger = ClientLogAdapter(self.client_logger, self)
-        self.routing_table = self.router.get_routing_table(self.loult_state, self)
         super().__init__()
 
     def onConnect(self, request):
@@ -160,6 +159,9 @@ class LoultServerProtocol:
             self.channel_obj, self.user = self.loult_state.channel_connect(self, self.cookie, self.channel_n)
         except UnauthorizedCookie: # this means the user's cookie was denied
             self.sendClose(code=4005, reason='Too many cookies already connected to your IP')
+
+        # setting up routing table once all objects are functionnal
+        self.routing_table = self.router.get_router(self.loult_state, self)
 
         # copying the channel's userlist info and telling the current JS client which userid is "its own"
         my_userlist = OrderedDict([(user_id , deepcopy(user.info))
