@@ -30,6 +30,7 @@ with open(path.join(DATA_FILES_FOLDER, "villes.json")) as file:
 with open(path.join(DATA_FILES_FOLDER, "sexualite.txt")) as file:
     sexual_orient = file.read().splitlines()
 
+
 class VoiceParameters:
 
     def __init__(self, speed : int, pitch : int, voice_id : int):
@@ -88,7 +89,7 @@ class UserState:
     detection_window = timedelta(seconds=FLOOD_DETECTION_WINDOW)
 
     def __init__(self, banned_words=BANNED_WORDS):
-        from tools import AudioEffect, HiddenTextEffect, ExplicitTextEffect, PhonemicEffect, \
+        from tools.effects import AudioEffect, HiddenTextEffect, ExplicitTextEffect, PhonemicEffect, \
             VoiceEffect
 
         self.effects = {cls: [] for cls in
@@ -100,7 +101,6 @@ class UserState:
         self.has_been_warned = False # User has been warned he shouldn't flood
         self._banned_words = [regex(word) for word in banned_words]
         self.is_shadowbanned = False # User has been shadowbanned
-
 
     def __setattr__(self, name, value):
         object.__setattr__(self, name, value)
