@@ -183,6 +183,7 @@ class User:
         self._info = None
 
     def reload_params_from_cookie(self):
+        self._info = None
         self.voice_params = VoiceParameters.from_cookie_hash(self.cookie_hash)
         self.poke_params = PokeParameters.from_cookie_hash(self.cookie_hash)
         self.poke_profile = PokeProfile.from_cookie_hash(self.cookie_hash)

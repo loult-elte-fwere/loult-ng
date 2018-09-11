@@ -39,7 +39,6 @@ if __name__ == "__main__":
                               UsersVoicesShuffleEvent, TunnelEvent, MusicalEvent, UsersMixupEvent,
                               CloneArmyEvent, ThemeRenameEvent)
 
-    ThemeRenameEvent.FIRST_OCC = datetime.now() + timedelta(seconds=15)
     scheduler = EventScheduler(loult_state,
                                [BienChantewEvent(), MaledictionEvent(), BienDowmiwEvent(), UsersVoicesShuffleEvent(),
                                 TunnelEvent(), MusicalEvent(), UsersMixupEvent(), CloneArmyEvent(),

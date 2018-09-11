@@ -95,7 +95,7 @@ class MaledictionEvent(EffectEvent):
                 channel.broadcast(type="notification",
                                   event_type="curse",
                                   date=timestamp() * 1000,
-                                  msg="%s a été touché par la maledictionw!" % user.poke_params.pokename)
+                                  msg="%s a été touché par la malédictionw!" % user.poke_params.pokename)
 
 
 class UsersVoicesShuffleEvent(PseudoPeriodicEvent):
@@ -225,7 +225,7 @@ class ThemeRenameEvent(ChannelModEvent):
     THEMES_FILE = path.join(path.dirname(path.realpath(__file__)), "data/themes.yml")
     PSEUDO_PERIOD = timedelta(hours=5)
     VARIANCE = timedelta(hours=0.7)
-    DURATION = timedelta(seconds=10)
+    DURATION = timedelta(minutes=10)
 
     def __init__(self):
         super().__init__()

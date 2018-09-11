@@ -122,13 +122,11 @@ class ChannelModEvent(FiniteDurationEventMixin, PseudoPeriodicEvent):
                               event_type=self.EVENT_TYPE,
                               date=timestamp() * 1000,
                               msg=self.event_message)
-            print("Starting event at %s" % str(datetime.now()))
 
     async def finish(self, loultstate):
         """Reseting the userlist to real value for each user in each channel"""
         for channel in loultstate.chans.values():
             for user in channel.users.values():
                 user.reload_params_from_cookie()
-            print("Ending event at %s" % str(datetime.now()))
             channel.update_userlist()
 
