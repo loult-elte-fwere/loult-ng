@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-#-*- encoding: Utf-8 -*-
 import logging
 from asyncio import get_event_loop, ensure_future, gather, set_event_loop_policy, get_event_loop_policy
 from itertools import chain
@@ -10,13 +9,10 @@ from tools.handlers import MessageHandler, BinaryHandler, TrashHandler, BanHandl
     NoRenderMsgHandler, AttackHandler, PrivateMessageHandler, MoveHandler
 from tools.state import LoultServerState
 
-from datetime import datetime, timedelta
-
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
     logger = logging.getLogger('server')
 
-## uncomment once https://github.com/MagicStack/uvloop/issues/93 is closed
     try:
         asyncio_policy = get_event_loop_policy()
         import uvloop
@@ -49,7 +45,7 @@ if __name__ == "__main__":
         loult_state.can_ban = True
     except BanFail:
         loult_state.can_ban = False
-        logger.warning("nft command dosen't work; bans are disabled.")
+        logger.warning("nft command doesn't work; bans are disabled.")
 
     # setting up routing table
     router = ClientRouter()

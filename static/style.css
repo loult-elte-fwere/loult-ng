@@ -314,7 +314,7 @@ ul > li > div {
 }
 
 ul > li > div > div:first-child {
-	font-size: 25px;
+	font-size: 20px;
 	line-height: 30px;
 	padding-bottom: 10px;
 	text-align: center;
@@ -480,7 +480,7 @@ ul > li > div > div:last-child > i {
 	max-width: 680px;
 	max-height: 780px;
 	width: 680px;
-	height: 780px;
+	height: 500px;
 	margin: auto;
 	line-height: 1.5em;
 	font-size: 25px;
@@ -508,7 +508,7 @@ ul > li > div > div:last-child > i {
 }
 
 #window > div:last-child > div {
-	height: 80px;
+	height: 50px;
 	padding: 10px 115px;
 }
 
