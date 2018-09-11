@@ -10,6 +10,8 @@ from tools.handlers import MessageHandler, BinaryHandler, TrashHandler, BanHandl
     NoRenderMsgHandler, AttackHandler, PrivateMessageHandler, MoveHandler
 from tools.state import LoultServerState
 
+from datetime import datetime, timedelta
+
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
     logger = logging.getLogger('server')
@@ -34,11 +36,14 @@ if __name__ == "__main__":
 
     # setting up events
     from tools.events import (EventScheduler, BienChantewEvent, MaledictionEvent, BienDowmiwEvent,
-                              UsersVoicesShuffleEvent, TunnelEvent, MusicalEvent)
+                              UsersVoicesShuffleEvent, TunnelEvent, MusicalEvent, UsersMixupEvent,
+                              CloneArmyEvent, ThemeRenameEvent)
 
+    ThemeRenameEvent.FIRST_OCC = datetime.now() + timedelta(seconds=15)
     scheduler = EventScheduler(loult_state,
                                [BienChantewEvent(), MaledictionEvent(), BienDowmiwEvent(), UsersVoicesShuffleEvent(),
-                                TunnelEvent(), MusicalEvent()])
+                                TunnelEvent(), MusicalEvent(), UsersMixupEvent(), CloneArmyEvent(),
+                                ThemeRenameEvent()])
 
     try:
         loop.run_until_complete(Ban.test_ban())

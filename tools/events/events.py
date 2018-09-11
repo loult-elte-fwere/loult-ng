@@ -167,6 +167,7 @@ class UsersMixupEvent(ChannelModEvent):
     EVENT_TYPE = "users_mixup"
     PSEUDO_PERIOD = timedelta(hours=5)
     VARIANCE = timedelta(hours=0.7)
+    DURATION = timedelta(minutes=10)
 
     def __init__(self):
         super().__init__()
@@ -185,6 +186,7 @@ class UsersMixupEvent(ChannelModEvent):
                         for user in channel.users.values()]
         random.shuffle(users_params)
         for user, (params, profile, voice) in zip(channel.users.values(), users_params):
+            user._info = None
             user.poke_params = params
             user.poke_profile = profile
             if self.with_voices:
@@ -196,6 +198,7 @@ class CloneArmyEvent(ChannelModEvent):
     EVENT_TYPE = "clone_army"
     PSEUDO_PERIOD = timedelta(hours=5)
     VARIANCE = timedelta(hours=0.7)
+    DURATION = timedelta(minutes=10)
 
     def __init__(self):
         super().__init__()
@@ -210,6 +213,7 @@ class CloneArmyEvent(ChannelModEvent):
         self.picked_user = picked_usr.poke_params.pokename + " " + picked_usr.poke_params.poke_adj
         params, profile, voice = picked_usr.poke_params, picked_usr.poke_profile, picked_usr.voice_params
         for user in channel.users.values():
+            user._info = None
             user.poke_params = params
             user.poke_profile = profile
             user.voice_params = voice
@@ -221,6 +225,7 @@ class ThemeRenameEvent(ChannelModEvent):
     THEMES_FILE = path.join(path.dirname(path.realpath(__file__)), "data/themes.yml")
     PSEUDO_PERIOD = timedelta(hours=5)
     VARIANCE = timedelta(hours=0.7)
+    DURATION = timedelta(seconds=10)
 
     def __init__(self):
         super().__init__()
@@ -236,4 +241,5 @@ class ThemeRenameEvent(ChannelModEvent):
         picked_theme = random.choice(self.themes)
         self.theme_descr = picked_theme["description"]
         for user in channel.users.values():
+            user._info = None
             user.poke_params.pokename = random.choice(picked_theme["names"])

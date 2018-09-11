@@ -1,5 +1,6 @@
 from typing import Dict, Union
 
+
 class Leaf:
 
     def __init__(self, word : str):
@@ -19,6 +20,7 @@ class Leaf:
     @property
     def isnull(self):
         return not self.str
+
 
 class Node:
 

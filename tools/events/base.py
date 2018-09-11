@@ -79,8 +79,8 @@ class FiniteDurationEventMixin(Event):
     DURATION = None  # type:timedelta
 
     def __init__(self):
-        super().__init__()
         self.is_happening = False
+        super().__init__()
 
     def update_next_occ(self, now):
         if self.is_happening:
@@ -114,7 +114,7 @@ class ChannelModEvent(FiniteDurationEventMixin, PseudoPeriodicEvent):
     def _fuckup_channel_users(self, channel):
         pass
 
-    def start(self, loultstate):
+    async def start(self, loultstate):
         for channel in loultstate.chans.values():
             self._fuckup_channel_users(channel)
             channel.update_userlist()
@@ -122,13 +122,13 @@ class ChannelModEvent(FiniteDurationEventMixin, PseudoPeriodicEvent):
                               event_type=self.EVENT_TYPE,
                               date=timestamp() * 1000,
                               msg=self.event_message)
-        super().trigger(loultstate)
+            print("Starting event at %s" % str(datetime.now()))
 
-    def finish(self, loultstate):
+    async def finish(self, loultstate):
         """Reseting the userlist to real value for each user in each channel"""
         for channel in loultstate.chans.values():
             for user in channel.users.values():
                 user.reload_params_from_cookie()
+            print("Ending event at %s" % str(datetime.now()))
             channel.update_userlist()
-        super().finish(loultstate)
 

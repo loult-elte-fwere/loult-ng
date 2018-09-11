@@ -41,10 +41,10 @@ class Channel:
 
     def update_userlist(self):
         userlist = self.get_userlist()
-        for user in self.users:
+        for user_id in self.users.keys():
             my_userlist = deepcopy(userlist)
-            my_userlist[user.user_id]['params']['you'] = True
-            for client in user.clients:
+            my_userlist[user_id]['params']['you'] = True
+            for client in self.users[user_id].clients:
                 client.send_json(type='userlist', users=list(my_userlist.values()))
 
     def channel_leave(self, client, user: User):

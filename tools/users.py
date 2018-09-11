@@ -231,7 +231,7 @@ class User:
     async def _vocode(self, text: str, lang: str) -> bytes:
         """Renders a text and a language to a wav bytes object using espeak + mbrola"""
         # if there are voice effects, apply them to the voice renderer's voice and give them to the renderer
-        from tools import VoiceEffect, PhonemicEffect
+        from tools.effects import VoiceEffect, PhonemicEffect
         if self.state.effects[VoiceEffect]:
             voice_params = self.apply_effects(self.voice_params, self.state.effects[VoiceEffect])
         else:
@@ -261,7 +261,7 @@ class User:
             return await self.audio_renderer.string_to_audio(text, lang, voice_params)
 
     async def render_message(self, text: str, lang: str):
-        from tools import ExplicitTextEffect, HiddenTextEffect, AudioEffect
+        from tools.effects import ExplicitTextEffect, HiddenTextEffect, AudioEffect
 
         cleaned_text = text[:500]
         # applying "explicit" effects (visible to the users)
