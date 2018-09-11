@@ -14,7 +14,7 @@ from config import FLOOD_DETECTION_WINDOW, BANNED_WORDS, FLOOD_WARNING_TIMEOUT, 
 from tools import pokemons
 
 from tools.tools import AudioRenderer, SpoilerBipEffect, prepare_text_for_tts
-from .phonems import PhonemList
+from voxpopuli import PhonemeList
 
 DATA_FILES_FOLDER = path.join(path.dirname(path.realpath(__file__)), "data/")
 
@@ -29,6 +29,7 @@ with open(path.join(DATA_FILES_FOLDER, "villes.json")) as file:
 
 with open(path.join(DATA_FILES_FOLDER, "sexualite.txt")) as file:
     sexual_orient = file.read().splitlines()
+
 
 class VoiceParameters:
 
@@ -88,7 +89,7 @@ class UserState:
     detection_window = timedelta(seconds=FLOOD_DETECTION_WINDOW)
 
     def __init__(self, banned_words=BANNED_WORDS):
-        from tools import AudioEffect, HiddenTextEffect, ExplicitTextEffect, PhonemicEffect, \
+        from tools.effects import AudioEffect, HiddenTextEffect, ExplicitTextEffect, PhonemicEffect, \
             VoiceEffect
 
         self.effects = {cls: [] for cls in
@@ -100,7 +101,6 @@ class UserState:
         self.has_been_warned = False # User has been warned he shouldn't flood
         self._banned_words = [regex(word) for word in banned_words]
         self.is_shadowbanned = False # User has been shadowbanned
-
 
     def __setattr__(self, name, value):
         object.__setattr__(self, name, value)
@@ -182,6 +182,12 @@ class User:
         self.state = UserState()
         self._info = None
 
+    def reload_params_from_cookie(self):
+        self._info = None
+        self.voice_params = VoiceParameters.from_cookie_hash(self.cookie_hash)
+        self.poke_params = PokeParameters.from_cookie_hash(self.cookie_hash)
+        self.poke_profile = PokeProfile.from_cookie_hash(self.cookie_hash)
+
     def __hash__(self):
         return self.user_id.__hash__()
 
@@ -226,7 +232,7 @@ class User:
     async def _vocode(self, text: str, lang: str) -> bytes:
         """Renders a text and a language to a wav bytes object using espeak + mbrola"""
         # if there are voice effects, apply them to the voice renderer's voice and give them to the renderer
-        from tools import VoiceEffect, PhonemicEffect
+        from tools.effects import VoiceEffect, PhonemicEffect
         if self.state.effects[VoiceEffect]:
             voice_params = self.apply_effects(self.voice_params, self.state.effects[VoiceEffect])
         else:
@@ -235,13 +241,13 @@ class User:
         # apply the beep effect for spoilers
         beeped = await SpoilerBipEffect(self.audio_renderer, voice_params).process(text, lang)
 
-        if isinstance(beeped, PhonemList) or self.state.effects[PhonemicEffect]:
+        if isinstance(beeped, PhonemeList) or self.state.effects[PhonemicEffect]:
 
             modified_phonems = None
-            if isinstance(beeped, PhonemList) and self.state.effects[PhonemicEffect]:
+            if isinstance(beeped, PhonemeList) and self.state.effects[PhonemicEffect]:
                 # if it's already a phonem list, we apply the effect diretcly
                 modified_phonems = self.apply_effects(beeped, self.state.effects[PhonemicEffect])
-            elif isinstance(beeped, PhonemList):
+            elif isinstance(beeped, PhonemeList):
                 # no effects, only the beeped phonem list
                 modified_phonems = beeped
             elif self.state.effects[PhonemicEffect]:
@@ -256,7 +262,7 @@ class User:
             return await self.audio_renderer.string_to_audio(text, lang, voice_params)
 
     async def render_message(self, text: str, lang: str):
-        from tools import ExplicitTextEffect, HiddenTextEffect, AudioEffect
+        from tools.effects import ExplicitTextEffect, HiddenTextEffect, AudioEffect
 
         cleaned_text = text[:500]
         # applying "explicit" effects (visible to the users)

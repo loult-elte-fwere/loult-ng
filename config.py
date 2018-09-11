@@ -5,7 +5,7 @@ ATTACK_RESTING_TIME = 15
 TIME_BEFORE_TALK = 5
 
 # Time before an IP can attempt a new connection (in seconds)
-TIME_BETWEEN_CONNECTIONS = 30
+TIME_BETWEEN_CONNECTIONS = 5
 
 # in seconds, the time during which a users's message are "remembered"
 FLOOD_DETECTION_WINDOW = 4

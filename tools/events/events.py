@@ -1,58 +1,22 @@
-from datetime import timedelta, datetime, time, date
-from typing import List, Tuple
-import asyncio
-from time import time as timestamp
 import random
+from datetime import datetime, timedelta, time
+from time import time as timestamp
+from typing import List
+from os import path
+from .base import next_occ
 
-from poke import LoultServerState
-from tools.effects.effects import AutotuneEffect, ReverbManEffect, SkyblogEffect, RobotVoiceEffect, \
+import yaml
+
+from tools.effects.effects import AutotuneEffect, ReverbManEffect, RobotVoiceEffect, \
     AngryRobotVoiceEffect, PitchShiftEffect, GrandSpeechMasterEffect, VisualEffect, VoiceCloneEffect, \
     VoiceSpeedupEffect, BadCellphoneEffect, RythmicEffect
+from tools.events.base import PeriodicEvent, PseudoPeriodicEvent, ChannelModEvent
 from tools.users import User
-
-
-def next_occ(period, occ_time: time):
-    now = datetime.now()
-    today = date.today()
-    if period is datetime.day:
-        if now > datetime.combine(today, occ_time):
-            return datetime.combine(today + timedelta(days=1), occ_time)
-        else:
-            return datetime.combine(today, occ_time)
-
-    elif period is datetime.hour:
-        if now.minute > occ_time.minute:
-            return datetime.combine(today, time(hour=now.hour + 1, minute=occ_time.minute))
-        else:
-            return datetime.combine(today, time(hour=now.hour, minute=occ_time.minute))
-
-
-class Event:
-
-    def __init__(self):
-        self.next_occurence = None
-
-    def update_next_occ(self, now):
-        pass
-
-    async def happen(self, loultstate):
-        pass
-
-
-class PeriodicEvent(Event):
-
-    def __init__(self, period: timedelta, first_occ: datetime=None):
-        super().__init__()
-        self.period = period
-        self.next_occurence = first_occ if first_occ is not None else datetime.now()
-
-    def update_next_occ(self, now):
-        self.next_occurence += self.period
 
 
 class SayHi(PeriodicEvent):
 
-    async def happen(self, loultstate):
+    async def trigger(self, loultstate):
         for channel in loultstate.chans.values():
             user = next(iter(channel.users.values()))
             channel.broadcast(type='msg', userid=user.user_id,
@@ -61,12 +25,15 @@ class SayHi(PeriodicEvent):
 
 class BienDowmiwEvent(PeriodicEvent):
 
+    PERIOD = timedelta(days=1)
+    FIRST_OCC = next_occ(datetime.day, time(hour=0, minute=0))
+
     class BienDowmiwEffect(VisualEffect):
         TIMEOUT = 10
         NAME = "fnre du biendowmiw"
         TAG = "biendowmiw"
 
-    async def happen(self, loultstate):
+    async def trigger(self, loultstate):
         for channel in loultstate.chans.values():
             for user in channel.users.values():
                 if random.randint(1,10) == 1:
@@ -94,8 +61,10 @@ class EffectEvent(PeriodicEvent):
 
 
 class BienChantewEvent(EffectEvent):
+    PERIOD = timedelta(days=1)
+    FIRST_OCC = next_occ(datetime.day, time(hour=22, minute=0))
 
-    async def happen(self, loultstate):
+    async def trigger(self, loultstate):
         for channel in loultstate.chans.values():
             selected_users = self._select_random_users(channel.users.values())
             for user in selected_users:
@@ -112,8 +81,10 @@ class BienChantewEvent(EffectEvent):
 
 
 class MaledictionEvent(EffectEvent):
+    PERIOD = timedelta(days=1)
+    FIRST_OCC = next_occ(datetime.day, time(hour=4, minute=0))
 
-    async def happen(self, loultstate):
+    async def trigger(self, loultstate):
         for channel in loultstate.chans.values():
             selected_users = self._select_random_users(channel.users.values())
             for user in selected_users:
@@ -124,30 +95,14 @@ class MaledictionEvent(EffectEvent):
                 channel.broadcast(type="notification",
                                   event_type="curse",
                                   date=timestamp() * 1000,
-                                  msg="%s a été touché par la maledictionw!" % user.poke_params.pokename)
-
-
-class PseudoPeriodicEvent(Event):
-
-    def __init__(self, pseudo_period: timedelta, variance: timedelta, first_occ: datetime=None, ):
-        super().__init__()
-        self.pseudo_period = pseudo_period
-        self.variance = variance
-        if first_occ is None:
-            self.next_occurence = datetime.now()
-            self.update_next_occ(None)
-        else:
-            self.next_occurence = first_occ
-
-    def update_next_occ(self, now):
-        new_period_secs = random.gauss(self.pseudo_period.total_seconds(), self.variance.total_seconds())
-        new_period_timedelta = timedelta(seconds=new_period_secs)
-        self.next_occurence += new_period_timedelta
+                                  msg="%s a été touché par la malédictionw!" % user.poke_params.pokename)
 
 
 class UsersVoicesShuffleEvent(PseudoPeriodicEvent):
+    PSEUDO_PERIOD = timedelta(hours=4)
+    VARIANCE = timedelta(hours=0.5)
 
-    async def happen(self, loultstate):
+    async def trigger(self, loultstate):
         for channel in loultstate.chans.values():
             users_lists = list(channel.users.values())
             random.shuffle(users_lists)
@@ -161,7 +116,7 @@ class UsersVoicesShuffleEvent(PseudoPeriodicEvent):
 
 class AmphetamineEvent(PseudoPeriodicEvent):
 
-    async def happen(self, loultstate):
+    async def trigger(self, loultstate):
         for channel in loultstate.chans.values():
             for user in channel.users.values():
                 effect = VoiceSpeedupEffect(factor=2.4)
@@ -174,8 +129,10 @@ class AmphetamineEvent(PseudoPeriodicEvent):
 
 
 class TunnelEvent(PseudoPeriodicEvent):
+    PSEUDO_PERIOD = timedelta(hours=2)
+    VARIANCE = timedelta(hours=0.5)
 
-    async def happen(self, loultstate):
+    async def trigger(self, loultstate):
         for channel in loultstate.chans.values():
             for user in channel.users.values():
                 effect = BadCellphoneEffect(signal_strength=random.randint(1,2))
@@ -188,8 +145,11 @@ class TunnelEvent(PseudoPeriodicEvent):
 
 
 class MusicalEvent(PseudoPeriodicEvent):
+    """Adds several effects that make everyone a real good singer"""
+    PSEUDO_PERIOD = timedelta(hours=2.5)
+    VARIANCE = timedelta(hours=0.5)
 
-    async def happen(self, loultstate):
+    async def trigger(self, loultstate):
         for channel in loultstate.chans.values():
             for user in channel.users.values():
                 effects = [RythmicEffect(), AutotuneEffect(), ReverbManEffect()]
@@ -201,32 +161,85 @@ class MusicalEvent(PseudoPeriodicEvent):
                               date=timestamp() * 1000,
                               msg="Le loult est une comédie musicale!")
 
-class EventScheduler:
 
-    def __init__(self, loultstate, events: List[Event]):
-        self.loultstate = loultstate
-        self.events = events
-        self.schedule = []  # type:List[Tuple[datetime, Event]]
+class UsersMixupEvent(ChannelModEvent):
 
-    def _order_schedule(self):
-        self.schedule.sort(key=lambda x: x[0])
+    EVENT_TYPE = "users_mixup"
+    PSEUDO_PERIOD = timedelta(hours=5)
+    VARIANCE = timedelta(hours=0.7)
+    DURATION = timedelta(minutes=10)
 
-    def _build_scheduler(self):
-        now = datetime.now()
-        for event in self.events:
-            if event.next_occurence < now:
-                event.update_next_occ(now)
-            self.schedule.append((event.next_occurence, event))
-        self._order_schedule()
+    def __init__(self):
+        super().__init__()
+        self.with_voices = None # set when the fuckup is called
 
-    async def start(self):
-        self._build_scheduler()
-        while self.schedule:
-            now = datetime.now()
-            event_time, event = self.schedule.pop(0)
-            event.update_next_occ(now)
-            self.schedule.append((event.next_occurence, event))
-            if (event_time - now).total_seconds() > 0: # if we're "late" then the event happens right away
-                await asyncio.sleep((event_time - now).total_seconds())
-            await event.happen(self.loultstate)
-            self._order_schedule()
+    @property
+    def event_message(self):
+        msg =  "Les pokémons se sont tous mélangés!"
+        if self.with_voices:
+            msg += " (et même les voix!)"
+        return msg
+
+    def _fuckup_channel_users(self, channel):
+        self.with_voices = random.randint(0,1) == 0
+        users_params = [(user.poke_params, user.poke_profile, user.voice_params)
+                        for user in channel.users.values()]
+        random.shuffle(users_params)
+        for user, (params, profile, voice) in zip(channel.users.values(), users_params):
+            user._info = None
+            user.poke_params = params
+            user.poke_profile = profile
+            if self.with_voices:
+                user.voice_params = voice
+
+
+class CloneArmyEvent(ChannelModEvent):
+
+    EVENT_TYPE = "clone_army"
+    PSEUDO_PERIOD = timedelta(hours=5)
+    VARIANCE = timedelta(hours=0.7)
+    DURATION = timedelta(minutes=10)
+
+    def __init__(self):
+        super().__init__()
+        self.picked_user = None # defined when the fuckup function is called
+
+    @property
+    def event_message(self):
+        return "Le loult est une armée de clones de %s!" % self.picked_user
+
+    def _fuckup_channel_users(self, channel):
+        picked_usr = random.choice(list(channel.users.values()))
+        self.picked_user = picked_usr.poke_params.pokename + " " + picked_usr.poke_params.poke_adj
+        params, profile, voice = picked_usr.poke_params, picked_usr.poke_profile, picked_usr.voice_params
+        for user in channel.users.values():
+            user._info = None
+            user.poke_params = params
+            user.poke_profile = profile
+            user.voice_params = voice
+
+
+class ThemeRenameEvent(ChannelModEvent):
+
+    EVENT_TYPE = "theme_rename"
+    THEMES_FILE = path.join(path.dirname(path.realpath(__file__)), "data/themes.yml")
+    PSEUDO_PERIOD = timedelta(hours=5)
+    VARIANCE = timedelta(hours=0.7)
+    DURATION = timedelta(minutes=10)
+
+    def __init__(self):
+        super().__init__()
+        with open(self.THEMES_FILE) as themesfile:
+            self.themes = yaml.load(themesfile)
+        self.theme_descr = None # defined when the fuckup function is called
+
+    @property
+    def event_message(self):
+        return "Le loult est devenu %s!" % self.theme_descr
+
+    def _fuckup_channel_users(self, channel):
+        picked_theme = random.choice(self.themes)
+        self.theme_descr = picked_theme["description"]
+        for user in channel.users.values():
+            user._info = None
+            user.poke_params.pokename = random.choice(picked_theme["names"])

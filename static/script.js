@@ -185,6 +185,58 @@
 		delete users[userid];
 	};
 
+
+	// Limit the number of messages displayed
+
+	var limitHistory = function () {
+
+		var history = document.getElementById('history');
+		var limit = history.value;
+
+		if (limit == 'full' || typeof limit == 'undefined') {
+			return;
+		}
+
+		// var limit = 20;
+		var hcount = 0;
+		var history = chat.children;
+		
+		// increments counter for each messages, just one time for other type of blocks
+		for (var i = 0; i < history.length; i++) {
+			var cnode = history.item(i);
+			if(cnode.classList.contains('msg') || cnode.classList.contains('backlog')) {
+				for(var j = 2; j <= (cnode.childNodes[1].childElementCount); j++) {
+					hcount++;
+				}
+			}
+			else {
+				hcount++;
+			}	
+		}
+
+		// removes only the oldest message if block contains several ones
+		if(hcount > limit) {
+			var node = history.item(0);
+			if(node.classList.contains('msg')) {
+				// tightly coupled with current html structure
+				var cnode = node.childNodes[1];
+				if(typeof cnode.childNodes[2] !== 'undefined') {
+					cnode.childNodes[1].remove();
+				}
+				else 
+					node.remove();
+			}
+			else { 
+				node.remove();
+			}
+		}
+	};
+
+	var historycfg = { attributes: false, childList: true, subtree: true };
+	var historyObserver = new MutationObserver(limitHistory);
+	historyObserver.observe(chat, historycfg);
+
+
 	// Focus-related functions
 
 	var dontFocus = false;

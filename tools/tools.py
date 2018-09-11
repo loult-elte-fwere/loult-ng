@@ -1,23 +1,24 @@
 import json
 import logging
+import pickle
 import re
 from asyncio import create_subprocess_shell
 from asyncio.subprocess import PIPE
+from collections import OrderedDict
+from datetime import datetime
+from functools import lru_cache
 from io import BytesIO
 from itertools import chain
+from os import path
 from re import sub
 from shlex import quote
 from struct import pack
-from typing import Union
-from collections import OrderedDict
+from typing import Union, Dict
 
 import numpy
-from scipy.io import wavfile
-
 from resampy import resample
-
-from tools.audio_tools import BASE_SAMPLING_RATE
-from tools.phonems import PhonemList, Phonem
+from scipy.io import wavfile
+from voxpopuli import PhonemeList, Phoneme
 
 logger = logging.getLogger('tools')
 
@@ -76,7 +77,7 @@ class AudioRenderer:
         wav, err = await process.communicate()
         return self._wav_format(wav)
 
-    async def phonemes_to_audio(self, phonemes : PhonemList, lang : str, voice_params : 'VoiceParameters') -> bytes:
+    async def phonemes_to_audio(self, phonemes : PhonemeList, lang : str, voice_params : 'VoiceParameters') -> bytes:
         """Renders a phonemlist object to audio using mbrola"""
         lang, voice, sex, volume = self._get_additional_params(lang, voice_params)
         audio_synth_string = 'MALLOC_CHECK_=0 mbrola -v %g -e /usr/share/mbrola/%s%d/%s%d - -.wav' \
@@ -87,7 +88,7 @@ class AudioRenderer:
         wav, err = await process.communicate(input=str(phonemes).encode('utf-8'))
         return self._wav_format(wav)
 
-    async def string_to_phonemes(self, text : str, lang : str, voice_params : 'VoiceParameters') -> PhonemList:
+    async def string_to_phonemes(self, text : str, lang : str, voice_params : 'VoiceParameters') -> PhonemeList:
         """Renders an input string to a phonemlist object using espeak"""
         lang, voice, sex, volume = self._get_additional_params(lang, voice_params)
         phonem_synth_string = 'MALLOC_CHECK_=0 espeak -s %d -p %d --pho -q -v mb/mb-%s%d %s ' \
@@ -96,10 +97,11 @@ class AudioRenderer:
         process = await create_subprocess_shell(phonem_synth_string,
                                                 stdout=PIPE, stderr=PIPE)
         phonems, err = await process.communicate()
-        return PhonemList(phonems.decode('utf-8').strip())
+        return PhonemeList(phonems.decode('utf-8').strip())
 
     @staticmethod
     async def to_f32_16k(wav : bytes) -> numpy.ndarray:
+        from .audio_tools import BASE_SAMPLING_RATE
         # converting the wav to ndarray, which is much easier to use for DSP
         rate, data = wavfile.read(BytesIO(wav))
         # casting the data array to the right format (float32, for usage by pysndfx)
@@ -141,11 +143,11 @@ class SpoilerBipEffect(UtilitaryEffect):
 
     def _gen_beep(self, duration : int, lang : str):
         i_phonem = "i:" if lang == "de" else "i" # "i" phonem is not the same i german. Damn krauts
-        return PhonemList(PhonemList([Phonem("b", 103),
-                                      Phonem(i_phonem, duration, [(0, 103 * 3), (80, 103 * 3), (100, 103 * 3)]),
-                                      Phonem("p", 228)]))
+        return PhonemeList(PhonemeList([Phoneme("b", 103),
+                                      Phoneme(i_phonem, duration, [(0, 103 * 3), (80, 103 * 3), (100, 103 * 3)]),
+                                      Phoneme("p", 228)]))
 
-    async def process(self, text: str, lang : str) -> Union[str, PhonemList]:
+    async def process(self, text: str, lang : str) -> Union[str, PhonemeList]:
         """Beeps out parts of the text that are tagged with double asterisks.
         It basicaly replaces the opening and closing asterisk with two opening and closing 'stop words'
         then finds the phonemic form of these two and replaces the phonems inside with an equivalently long beep"""
@@ -160,12 +162,12 @@ class SpoilerBipEffect(UtilitaryEffect):
             # then using a simple state machine (in_beep is the state), replaces the phonems between
             # the right phonemic occurence with the phonems of a beep
             in_beep = False
-            output, buffer = PhonemList([]), PhonemList([])
+            output, buffer = PhonemeList([]), PhonemeList([])
             while phonems:
-                if PhonemList(phonems[:3]).phonemes_str == self._tags_phonems[lang][0] and not in_beep:
-                    in_beep, buffer = True, PhonemList([])
-                    phonems = PhonemList(phonems[3:])
-                elif PhonemList(phonems[:4]).phonemes_str == self._tags_phonems[lang][1] and in_beep:
+                if PhonemeList(phonems[:3]).phonemes_str == self._tags_phonems[lang][0] and not in_beep:
+                    in_beep, buffer = True, PhonemeList([])
+                    phonems = PhonemeList(phonems[3:])
+                elif PhonemeList(phonems[:4]).phonemes_str == self._tags_phonems[lang][1] and in_beep:
                     in_beep = False
                     # creating a beep of the buffer's duration
                     if buffer:
@@ -196,6 +198,14 @@ def encode_json(data):
     return json.dumps(data, ensure_ascii=False).encode('utf-8')
 
 
+@lru_cache()
+def open_sound_file(relative_path):
+    """Opens a wav file from a path relative to the current directory."""
+    full_path = path.join(path.dirname(path.realpath(__file__)), relative_path)
+    with open(full_path, "rb") as sound_file:
+        return sound_file.read()
+
+
 class OrderedDequeDict(OrderedDict):
 
     def __init__(self, size=100, *args, **kwargs):
@@ -209,3 +219,38 @@ class OrderedDequeDict(OrderedDict):
             self.popitem(last=False)
 
         OrderedDict.__setitem__(self, key, value)
+
+
+class CachedOpener:
+
+    FILE_EXPIRY_TIME = 15 * 60 # in seconds
+
+    def __init__(self):
+        self.files = {} # type: Dict[str,Union[str,byte]]
+        self.last_hit = {} # type: Dict[str,datetime]
+
+    def check_files_expiry(self):
+        now = datetime.now()
+        for filepath, last_hit in list(self.last_hit.items()):
+            if (now - last_hit).seconds > self.FILE_EXPIRY_TIME:
+                del self.files[filepath]
+                del self.last_hit[filepath]
+
+    def load_byte(self, filepath, read_func):
+        if filepath not in self.files:
+            with open(filepath, "rb") as bytefile:
+                self.files[filepath] = read_func(bytefile)
+
+        self.last_hit[filepath] = datetime.now()
+        self.check_files_expiry()
+
+    def load_pickle(self, filepath):
+        self.load_byte(filepath, pickle.load)
+        return self.files[filepath]
+
+    def load_wav(self, filepath):
+        self.load_byte(filepath, wavfile.read)
+        return self.files[filepath]
+
+
+cached_loader = CachedOpener()
