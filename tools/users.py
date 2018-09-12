@@ -115,7 +115,7 @@ class UserState:
         from .effects.effects import EffectGroup, AudioEffect, HiddenTextEffect, ExplicitTextEffect, PhonemicEffect, \
             VoiceEffect
 
-        if isinstance(effect, EffectGroup):  # if the effect is a meta-effect (a group of several tools)
+        if isinstance(effect, EffectGroup):  # if the effect is a meta-effect (a group of several effects)
             added_effects = effect.effects
         else:
             added_effects = [effect]
