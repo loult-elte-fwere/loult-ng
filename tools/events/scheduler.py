@@ -37,6 +37,7 @@ class EventScheduler:
             await event.trigger(self.loultstate)
 
             # scheduling the next occurence of the event the next occurence of the event
+            now = datetime.now()
             event.update_next_occ(now)
             self.schedule.append((event.next_occurence, event))
             self._order_schedule()
