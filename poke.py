@@ -7,8 +7,9 @@ from datetime import datetime, timedelta
 
 from tools.ban import Ban, BanFail
 from tools.client import ClientRouter, LoultServerProtocol
-from tools.handlers import MessageHandler, BinaryHandler, TrashHandler, BanHandler, ShadowbanHandler, \
-    NoRenderMsgHandler, AttackHandler, PrivateMessageHandler, MoveHandler
+from tools.handlers import (MessageHandler, BinaryHandler, TrashHandler, BanHandler, ShadowbanHandler,
+                            NoRenderMsgHandler, AttackHandler, PrivateMessageHandler, MoveHandler,
+                            InventoryListingHandler, ObjectGiveHandler, ObjectUseHandler)
 from tools.state import LoultServerState
 
 if __name__ == "__main__":
@@ -62,6 +63,9 @@ if __name__ == "__main__":
     router.add_route(field="type", value="bot", handler_class=NoRenderMsgHandler)
     for ban_type in Ban.ban_types:
         router.add_route(field="type", value=ban_type, handler_class=BanHandler)
+    router.add_route(field="type", value="inventory", handler_class=InventoryListingHandler)
+    router.add_route(field="type", value="give", handler_class=ObjectGiveHandler)
+    router.add_route(field="type", value="use", handler_class=ObjectUseHandler)
 
 
     class AutobahnLoultServerProtocol(LoultServerProtocol, WebSocketServerProtocol):

@@ -22,3 +22,9 @@ class UserInventory:
 
     def add(self, obj: LoultObject):
         self.objects.append(obj)
+
+    def get_object_by_name(self, obj_name: str):
+        for obj in self.objects:
+            if obj.NAME == obj_name:
+                return obj
+        return None

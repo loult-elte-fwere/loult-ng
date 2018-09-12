@@ -2,6 +2,8 @@ from typing import Dict
 from datetime import datetime, timedelta
 from time import time as timestamp
 from html import escape
+
+from tools.objects.base import ClonableObject
 from .combat import CombatSimulator
 from .ban import Ban, BanFail
 from io import BytesIO
@@ -301,3 +303,43 @@ class TrashHandler(MsgBaseHandler):
         elif msg_data["action"] == "remove":
             self.loult_state.trashed_cookies.remove(trashed_user.cookie_hash)
             self.server.send_json(type="trash", userid=user_id, state="remove_ok")
+
+
+class InventoryListingHandler(MsgBaseHandler):
+
+    async def handle(self, msg_data: Dict):
+        inventory_listing = self.user.state.inventory.get_listing()
+        self.server.send_json(type="inventory_listing",
+                              listing=inventory_listing)
+
+
+class ObjectGiveHandler(MsgBaseHandler):
+
+    async def handle(self, msg_data: Dict):
+        given_obj = self.user.state.inventory.get_object_by_name(msg_data.get("object"))
+        if given_obj is None:
+            self.server.send_json(type="give", response="invalid_name")
+            return
+
+        beneficiary_id, beneficiary = self.channel_obj.get_user_by_name(msg_data.get("target",
+                                                                                     self.user.poke_params.pokename),
+                                                                        msg_data.get("order", 1) - 1)
+        if beneficiary is None:
+            self.server.send_json(type="give", response="invalid_target")
+            return
+
+        beneficiary.state.inventory.add(given_obj)
+        if not isinstance(given_obj, ClonableObject):
+            self.user.state.inventory.remove(given_obj)
+
+        self.channel_obj.broadcast(type="give",
+                                   sender=self.user.user_id,
+                                   receiver=beneficiary_id,
+                                   obj_name=given_obj.name)
+
+
+class ObjectUseHandler(MsgBaseHandler):
+
+    async def handle(self, msg_data: Dict):
+        pass
+
