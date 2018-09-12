@@ -223,8 +223,8 @@ class ThemeRenameEvent(ChannelModEvent):
 
     EVENT_TYPE = "theme_rename"
     THEMES_FILE = path.join(path.dirname(path.realpath(__file__)), "data/themes.yml")
-    PSEUDO_PERIOD = timedelta(hours=5)
-    VARIANCE = timedelta(hours=0.7)
+    PSEUDO_PERIOD = timedelta(hours=3)
+    VARIANCE = timedelta(hours=0.4)
     DURATION = timedelta(minutes=10)
 
     def __init__(self):
