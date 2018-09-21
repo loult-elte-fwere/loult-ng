@@ -9,7 +9,8 @@ from tools.ban import Ban, BanFail
 from tools.client import ClientRouter, LoultServerProtocol
 from tools.handlers import (MessageHandler, BinaryHandler, TrashHandler, BanHandler, ShadowbanHandler,
                             NoRenderMsgHandler, AttackHandler, PrivateMessageHandler, MoveHandler,
-                            InventoryListingHandler, ObjectGiveHandler, ObjectUseHandler)
+                            InventoryListingHandler, ObjectGiveHandler, ObjectUseHandler, ObjectTrashHandler,
+                            ListChannelInventoryHandler, ObjectTakeHandler)
 from tools.state import LoultServerState
 
 if __name__ == "__main__":
@@ -66,6 +67,9 @@ if __name__ == "__main__":
     router.add_route(field="type", value="inventory", handler_class=InventoryListingHandler)
     router.add_route(field="type", value="give", handler_class=ObjectGiveHandler)
     router.add_route(field="type", value="use", handler_class=ObjectUseHandler)
+    router.add_route(field="type", value="trash", handler_class=ObjectTrashHandler)
+    router.add_route(field="type", value="list", handler_class=ListChannelInventoryHandler)
+    router.add_route(field="type", value="take", handler_class=ObjectTakeHandler)
 
 
     class AutobahnLoultServerProtocol(LoultServerProtocol, WebSocketServerProtocol):

@@ -54,6 +54,10 @@ class PokeParameters:
         self.pokename = pokemons.pokemon[self.poke_id]
         self.poke_adj = adjectives[adj_id]
 
+    @property
+    def fullname(self):
+        return "%s %s" % (self.pokename, self.poke_adj)
+
     @classmethod
     def from_cookie_hash(cls, cookie_hash):
         color_rgb = hsv_to_rgb(cookie_hash[4] / 255, 0.8, 0.9)

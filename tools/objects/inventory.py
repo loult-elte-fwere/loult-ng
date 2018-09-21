@@ -11,11 +11,7 @@ class UserInventory:
         self.objects = [] # type: List[LoultObject]
 
     def get_listing(self):
-        sorted_inventory = defaultdict(int)
-        for obj in self.objects:
-            sorted_inventory[type(obj)] += 1
-
-        return ", ".join("%s(%i)" % (obj_type.NAME, count) for obj_type, count in sorted_inventory.items())
+        return ", ".join("%i : %s" % (obj_id, obj.name) for obj_id, obj in enumerate(self.objects))
 
     def remove(self, obj: LoultObject):
         self.objects.remove(obj)
@@ -23,8 +19,8 @@ class UserInventory:
     def add(self, obj: LoultObject):
         self.objects.append(obj)
 
-    def get_object_by_name(self, obj_name: str):
-        for obj in self.objects:
-            if obj.NAME == obj_name:
-                return obj
-        return None
+    def get_objet_by_id(self, obj_id: int):
+        try:
+            return self.objects[obj_id]
+        except IndexError:
+            return None

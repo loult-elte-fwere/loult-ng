@@ -15,6 +15,7 @@ from autobahn.websocket.types import ConnectionDeny
 
 from config import TIME_BETWEEN_CONNECTIONS
 from salt import SALT
+from tools.objects.base import ClonableObject
 from .tools import encode_json
 
 
@@ -201,6 +202,10 @@ class LoultServerProtocol:
             # This lets moderators ban an user even after their disconnection
             self.loult_state.ip_backlog.append((self.user.user_id, self.ip))
             self.channel_obj.channel_leave(self, self.user)
+            # emptying user inventory to the channel's common inventory
+            for obj in self.user.state.inventory:
+                if not isinstance(obj, ClonableObject): # except for clonable object
+                    self.channel_obj.inventory.add(obj)
 
         msg = 'left with reason "{}"'.format(reason) if reason else 'left'
 
