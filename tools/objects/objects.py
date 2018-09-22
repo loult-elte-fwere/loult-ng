@@ -5,7 +5,8 @@ from os import path, listdir
 from time import time as timestamp
 
 from tools.effects.effects import ExplicitTextEffect
-from tools.objects.base import ClonableObject, InertObject, UsableObject, DestructibleObject, TargetedObject
+from tools.objects.base import ClonableObject, InertObject, UsableObject, DestructibleObject, TargetedObject, \
+    userlist_dist
 from tools.tools import cached_loader
 
 
@@ -21,11 +22,85 @@ class SicknessObject(ClonableObject, InertObject):
 
 
 class SimpleInstrument(UsableObject):
-    pass
+    SND_DIR = path.join(path.dirname(path.realpath(__file__)), "data/instruments/")
+    INSTRUMENTS_MAPPING = {"gong": "gong.mp3"}
+    COOLDOWN = 30 # in seconds
+
+    def __init__(self, instrument=None):
+        if instrument is None:
+            instrument = random.choice(list(self.INSTRUMENTS_MAPPING.keys()))
+
+        self.instrument_name = instrument.capitalize()
+        self.fx_filepath = path.join(self.SND_DIR, self.INSTRUMENTS_MAPPING[instrument])
+        self.last_used = datetime.now()
+
+    def name(self):
+        return self.instrument_name
+
+    def use(self, loult_state, server, obj_params):
+        if (datetime.now() - self.last_used).seconds < self.COOLDOWN:
+            return
+
+        server.channel_obj.broadcast(binary_payload=self._load_byte(self.fx_filepath))
+        self.last_used = datetime.now()
 
 
-class Revolver(UsableObject):
-    pass
+class Revolver(UsableObject, TargetedObject):
+    GUNSHOT_FX = path.join(path.dirname(path.realpath(__file__)), "data/gun/gunshot.mp3")
+    EMPTY_FX = path.join(path.dirname(path.realpath(__file__)), "data/gun/empty_mag.mp3")
+    NAME = "Walther PKK"
+
+    def __init__(self, bullets=6):
+        self.remaining_bullets = bullets
+
+    def name(self):
+        if self.remaining_bullets:
+            return self.NAME + " (%i)" % self.remaining_bullets
+        else:
+            return self.NAME + " (vide)"
+
+    def use(self, loult_state, server, obj_params):
+        if self.remaining_bullets <= 0:
+            server.send_json(type="notification",
+                             msg="Plus de munitions!")
+            server.send_binary(self._load_byte(self.EMPTY_FX))
+            return
+
+        adversary_id, adversary = self._acquire_target(server, obj_params)
+        if adversary is None:
+            return
+
+        target_dist = userlist_dist(server.channel_obj, server.user.user_id, adversary_id)
+        if target_dist > 1:
+            return server.send_json(type="notification",
+                                    msg="Trop loin pour tirer!")
+
+        server.channel_obj.broadcast(type="notification",
+                                     msg="%s tire au Colt sur %s"
+                                         % (server.user.poke_params.fullname, adversary.poke_params.fullname),
+                                     binary_payload=self._load_byte(self.GUNSHOT_FX))
+        for client in adversary.clients:
+            client.sendClose(code=4006, reason='Reconnect please')
+
+
+class RevolverCartridges(UsableObject, DestructibleObject):
+    NAME = "Chargeur de pistolet"
+    RELOADING_FX = path.join(path.dirname(path.realpath(__file__)), "data/gun/reloading.mp3")
+
+    def use(self, loult_state, server, obj_params):
+        # searching in the user's inventory for the emptiest gun to be used on
+        users_guns = server.user.state.inventory.search_by_class(Revolver)
+        users_guns = [gun for gun in users_guns if gun.remaining_bullets < 6]
+        if not users_guns:
+            return server.send_json(type="notification",
+                                    msg="Pas de pistolet à recharger dans votre inventaire")
+
+        users_guns.sort(key=lambda x: x.remaining_bullets, reverse=False)
+        emptiest_gun = users_guns[0]
+        emptiest_gun.remaining_bullets = 6
+        server.send_json(type="notification", msg="Pistolet chargé!")
+        server.send_binary(self._load_byte(self.RELOADING_FX))
+        self.should_be_destroyed = True
 
 
 class Sniper(UsableObject, TargetedObject):
@@ -177,3 +252,4 @@ class MagicWand(UsableObject, TargetedObject):
         adversary.state.add_effect(self.DuckEffect())
         server.broadcast(type="notification",
                          msg="%s s'est fait changer en canard" % adversary.poke_params.fullname)
+        self.last_used = datetime.now()

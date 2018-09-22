@@ -24,3 +24,6 @@ class UserInventory:
             return self.objects[obj_id]
         except IndexError:
             return None
+
+    def search_by_class(self, obj_class):
+        return [obj for obj in self.objects if isinstance(obj, obj_class)]

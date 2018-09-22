@@ -1,3 +1,8 @@
+def userlist_dist(channel_obj, userid_1, userid_2):
+    userlist = list(channel_obj.users.keys())
+    return abs(userlist.index(userid_1) - userlist.index(userid_2))
+
+
 class LoultObject:
     NAME = "stuff"
 
@@ -8,6 +13,9 @@ class LoultObject:
     def use(self, loult_state, server, obj_params):
         pass
 
+    def _load_byte(self, filepath):
+        with open(filepath, "rb") as binfile:
+            return binfile.read()
 
 class InertObject(LoultObject):
     """Object that doesn't do anything"""
