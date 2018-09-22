@@ -34,6 +34,7 @@ class SimpleInstrument(UsableObject):
         self.fx_filepath = path.join(self.SND_DIR, self.INSTRUMENTS_MAPPING[instrument])
         self.last_used = datetime.now()
 
+    @property
     def name(self):
         return self.instrument_name
 
@@ -53,6 +54,7 @@ class Revolver(UsableObject, TargetedObject):
     def __init__(self, bullets=6):
         self.remaining_bullets = bullets
 
+    @property
     def name(self):
         if self.remaining_bullets:
             return self.NAME + " (%i)" % self.remaining_bullets
@@ -81,6 +83,7 @@ class Revolver(UsableObject, TargetedObject):
                                      binary_payload=self._load_byte(self.GUNSHOT_FX))
         for client in adversary.clients:
             client.sendClose(code=4006, reason='Reconnect please')
+        self.remaining_bullets -= 1
 
 
 class RevolverCartridges(UsableObject, DestructibleObject):
@@ -103,7 +106,7 @@ class RevolverCartridges(UsableObject, DestructibleObject):
         self.should_be_destroyed = True
 
 
-class Sniper(UsableObject, TargetedObject):
+class SniperRifle(UsableObject, TargetedObject):
     SNIPER_FX = path.join(path.dirname(path.realpath(__file__)), "data/sniper_fx.mp3")
     NAME = "Fusil de précision"
 
@@ -137,6 +140,35 @@ class Sniper(UsableObject, TargetedObject):
         loult_state.ban_cookie(server.cookie)
         server.sendClose(code=4006, reason='reconnect later')
         self.empty = True
+
+
+class SniperBullets(UsableObject, DestructibleObject):
+    NAME = "Balles de sniper"
+    RELOADING_FX = path.join(path.dirname(path.realpath(__file__)), "data/gun/bolt_reloading.mp3")
+
+    def __init__(self, bullets=3):
+        super().__init__()
+        self.remaining_bullets = bullets
+
+    @property
+    def name(self):
+        return self.NAME + "(%i)" % self.remaining_bullets
+
+    def use(self, loult_state, server, obj_params):
+        # searching in the user's inventory for an empty sniper rifle
+        users_guns = server.user.state.inventory.search_by_class(SniperRifle)
+        users_guns = [gun for gun in users_guns if gun.empty]
+        if not users_guns:
+            return server.send_json(type="notification",
+                                    msg="Pas de fusil sniper à recharger dans votre inventaire")
+
+        emptiest_gun = users_guns[0]
+        emptiest_gun.empty = False
+        server.send_json(type="notification", msg="Fusil sniper chargé!")
+        server.send_binary(self._load_byte(self.RELOADING_FX))
+        self.remaining_bullets -= 1
+        if self.remaining_bullets <= 0:
+            self.should_be_destroyed = True
         
 
 class Grenade(UsableObject, DestructibleObject):
@@ -253,3 +285,11 @@ class MagicWand(UsableObject, TargetedObject):
         server.broadcast(type="notification",
                          msg="%s s'est fait changer en canard" % adversary.poke_params.fullname)
         self.last_used = datetime.now()
+
+
+class Scolopamine(UsableObject, DestructibleObject, TargetedObject):
+    NAME = "Scolopamine"
+
+
+class WhiskyBottle(UsableObject, DestructibleObject):
+    NAME = "Bouteille de whisky"

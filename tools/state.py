@@ -8,6 +8,7 @@ from config import MAX_COOKIES_PER_IP, BAN_TIME
 from tools.objects.inventory import UserInventory
 from tools.tools import encode_json, OrderedDequeDict
 from tools.users import User
+from .objects import get_random_object
 
 
 class Channel:
@@ -21,6 +22,9 @@ class Channel:
         # this is used to track how many cookies we have per connected IP in that channel
         self.ip_cookies_tracker = dict()  # type: Dict[str,Set[bytes]]
         self.inventory = UserInventory()
+        # filling the channel's inventory with some random items
+        for _ in range(5):
+            self.inventory.add(get_random_object())
 
     def _signal_user_connect(self, client, user: User):
         client.send_json(type='connect', date=timestamp() * 1000, **user.info)
