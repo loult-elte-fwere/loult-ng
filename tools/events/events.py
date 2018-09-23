@@ -285,7 +285,7 @@ class LynchingEvent(PseudoPeriodicEvent):
     async def trigger(self, loultstate):
         for channel in loultstate.chans.values():
             usr_list = list(channel.users.values())
-            lynched_usr = list.pop(random.randint(0, len(usr_list) - 1))
+            lynched_usr = usr_list.pop(random.randint(0, len(usr_list) - 1))
             for usr in usr_list:
                 usr.state.inventory.add(BaseballBat(lynched_usr.user_id, lynched_usr.poke_params.fullname))
             channel.broadcast(type="notification",

@@ -2,9 +2,9 @@
 import logging
 from asyncio import get_event_loop, ensure_future, gather, set_event_loop_policy, get_event_loop_policy
 from itertools import chain
+import argparse
 
 from datetime import datetime, timedelta
-
 from tools.ban import Ban, BanFail
 from tools.client import ClientRouter, LoultServerProtocol
 from tools.handlers import (MessageHandler, BinaryHandler, TrashHandler, BanHandler, ShadowbanHandler,
@@ -14,7 +14,14 @@ from tools.handlers import (MessageHandler, BinaryHandler, TrashHandler, BanHand
 from tools.state import LoultServerState
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.DEBUG)
+    argparser = argparse.ArgumentParser()
+    argparser.add_argument("-d", "--debug", action="store_true")
+    args = argparser.parse_args()
+
+    if args.debug:
+        logging.basicConfig(level=logging.DEBUG)
+    else:
+        logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger('server')
 
     try:

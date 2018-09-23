@@ -246,14 +246,13 @@ class CachedOpener:
 
         self.last_hit[filepath] = datetime.now()
         self.check_files_expiry()
+        return self.files[filepath]
 
     def load_pickle(self, filepath):
-        self.load_byte(filepath, pickle.load)
-        return self.files[filepath]
+        return self.load_byte(filepath, pickle.load)
 
     def load_wav(self, filepath):
-        self.load_byte(filepath, wavfile.read)
-        return self.files[filepath]
+        return self.load_byte(filepath, wavfile.read)
 
 
 cached_loader = CachedOpener()

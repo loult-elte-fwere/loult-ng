@@ -50,7 +50,7 @@ class TargetedObject(LoultObject):
     def _acquire_target(self, server, obj_params):
         try:
             target = obj_params[0]
-        except KeyError:
+        except IndexError:
             server.send_json(type="notification",
                              msg="Il faut spécifier un nom de pokémon (comme lors d'une attaque),"
                                  "exemple: /use 3 Taupiqueur 2")

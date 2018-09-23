@@ -21,7 +21,7 @@ class DiseaseObject(ClonableObject, InertObject):
 
     @property
     def name(self):
-        return "la %s de %s" % self.disease, self.patient_zero
+        return "la %s de %s" % (self.disease, self.patient_zero)
 
 
 class SimpleInstrument(UsableObject):
@@ -35,7 +35,7 @@ class SimpleInstrument(UsableObject):
 
         self.instrument_name = instrument.capitalize()
         self.fx_filepath = path.join(self.SND_DIR, self.INSTRUMENTS_MAPPING[instrument])
-        self.last_used = datetime.now()
+        self.last_used = datetime(1972, 1 ,1)
 
     @property
     def name(self):
@@ -135,13 +135,15 @@ class SniperRifle(UsableObject, TargetedObject):
         with open(self.SNIPER_FX, "rb") as fx_file:
             sniper_fx = fx_file.read()
         server.channel_obj.broadcast(type="notification",
-                                     msg="%s tire au fusil sniper sur %s",
+                                     msg="%s tire au fusil sniper sur %s"
+                                         % (server.user.poke_params.fullname, adversary.poke_params.fullname),
                                      binary_payload=sniper_fx)
         server.channel_obj.broadcast(type='antiflood', event='banned',
                                      flooder_id=adversary_id,
                                      date=timestamp() * 1000)
         loult_state.ban_cookie(adversary.cookie_hash)
-        server.sendClose(code=4006, reason='reconnect later')
+        for client in adversary.clients:
+            client.sendClose(code=4006, reason='reconnect later')
         self.empty = True
 
 
@@ -236,7 +238,7 @@ class Grenade(UsableObject, DestructibleObject):
 
 
 class BaseballBat(UsableObject, DestructibleObject):
-    FIGHTING_FX_DIR = path.join(path.dirname(path.realpath(__file__)), "fighting/")
+    FIGHTING_FX_DIR = path.join(path.dirname(path.realpath(__file__)), "data/fighting/")
 
     def __init__(self, target_userid, target_username):
         super().__init__()
@@ -292,6 +294,7 @@ class Crown(UsableObject, DestructibleObject):
                 user.state.add_effect(self.ServantEffect(server.user.poke_params.pokename))
         server.channel_obj.broadcast(type="notification",
                                      msg="%s est maintenant le roi du loult" % server.user.poke_params.fullname)
+        self.should_be_destroyed = True
 
 
 class MagicWand(UsableObject, TargetedObject):
@@ -305,7 +308,7 @@ class MagicWand(UsableObject, TargetedObject):
             return re.sub(r"[\w]+","qurk", text)
 
     def __init__(self):
-        self.last_used = datetime.now()
+        self.last_used = datetime(1972, 1, 1)
 
     def use(self, loult_state, server, obj_params):
         if (datetime.now() - self.last_used).seconds < self.COOLDOWN:
@@ -317,8 +320,8 @@ class MagicWand(UsableObject, TargetedObject):
             return
 
         adversary.state.add_effect(self.DuckEffect())
-        server.broadcast(type="notification",
-                         msg="%s s'est fait changer en canard" % adversary.poke_params.fullname)
+        server.channel_obj.broadcast(type="notification",
+                                     msg="%s s'est fait changer en canard" % adversary.poke_params.fullname)
         self.last_used = datetime.now()
 
 
@@ -341,3 +344,7 @@ class Scolopamine(UsableObject, DestructibleObject, TargetedObject):
 
 class WhiskyBottle(UsableObject, DestructibleObject):
     NAME = "Bouteille de whisky"
+
+
+class PolynectarPotion(UsableObject, DestructibleObject, TargetedObject):
+    pass

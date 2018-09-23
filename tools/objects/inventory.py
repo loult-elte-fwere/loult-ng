@@ -11,7 +11,10 @@ class UserInventory:
         self.objects = [] # type: List[LoultObject]
 
     def get_listing(self):
-        return ", ".join("%i : %s" % (obj_id, obj.name) for obj_id, obj in enumerate(self.objects))
+        if self.objects:
+            return ", ".join("%i : %s" % (obj_id, obj.name) for obj_id, obj in enumerate(self.objects))
+        else:
+            return "Queudal"
 
     def remove(self, obj: LoultObject):
         self.objects.remove(obj)
@@ -19,7 +22,7 @@ class UserInventory:
     def add(self, obj: LoultObject):
         self.objects.append(obj)
 
-    def get_objet_by_id(self, obj_id: int):
+    def get_object_by_id(self, obj_id: int):
         try:
             return self.objects[obj_id]
         except IndexError:
