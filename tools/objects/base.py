@@ -52,7 +52,8 @@ class TargetedObject(LoultObject):
             target = obj_params[0]
         except KeyError:
             server.send_json(type="notification",
-                             msg="Il faut spécifier un nom de pokémon (comme lors d'une attaque)")
+                             msg="Il faut spécifier un nom de pokémon (comme lors d'une attaque),"
+                                 "exemple: /use 3 Taupiqueur 2")
             return None, None
 
         try:

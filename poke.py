@@ -37,12 +37,14 @@ if __name__ == "__main__":
     # setting up events
     from tools.events import (EventScheduler, BienChantewEvent, MaledictionEvent, BienDowmiwEvent,
                               UsersVoicesShuffleEvent, TunnelEvent, MusicalEvent, UsersMixupEvent,
-                              CloneArmyEvent, ThemeRenameEvent)
+                              CloneArmyEvent, ThemeRenameEvent, ObjectDropEvent, InfectionEvent,
+                              LynchingEvent, PubBrawlEvent)
 
     scheduler = EventScheduler(loult_state,
                                [BienChantewEvent(), MaledictionEvent(), BienDowmiwEvent(), UsersVoicesShuffleEvent(),
                                 TunnelEvent(), MusicalEvent(), UsersMixupEvent(), CloneArmyEvent(),
-                                ThemeRenameEvent()])
+                                ThemeRenameEvent(), ObjectDropEvent(), InfectionEvent(), LynchingEvent(),
+                                PubBrawlEvent()])
 
     try:
         loop.run_until_complete(Ban.test_ban())

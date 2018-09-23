@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 import random
 import re
 from os import path, listdir
@@ -10,15 +10,18 @@ from tools.objects.base import ClonableObject, InertObject, UsableObject, Destru
 from tools.tools import cached_loader
 
 
-class SicknessObject(ClonableObject, InertObject):
+class DiseaseObject(ClonableObject, InertObject):
 
-    def __init__(self, sickness, patient_zero):
-        self.sickness = sickness
+    DISEASES = ["syphilis", "diarrhée", "chaude-pisse", "gripe aviaire"]
+
+    def __init__(self, patient_zero, disease=None):
+        if disease is None:
+            self.disease = random.choice(self.DISEASES)
         self.patient_zero = patient_zero
 
     @property
     def name(self):
-        return "la %s de %s" % self.sickness, self.patient_zero
+        return "la %s de %s" % self.disease, self.patient_zero
 
 
 class SimpleInstrument(UsableObject):
@@ -51,7 +54,7 @@ class Revolver(UsableObject, TargetedObject):
     EMPTY_FX = path.join(path.dirname(path.realpath(__file__)), "data/gun/empty_mag.mp3")
     NAME = "Walther PKK"
 
-    def __init__(self, bullets=6):
+    def __init__(self, bullets=5):
         self.remaining_bullets = bullets
 
     @property
@@ -100,7 +103,7 @@ class RevolverCartridges(UsableObject, DestructibleObject):
 
         users_guns.sort(key=lambda x: x.remaining_bullets, reverse=False)
         emptiest_gun = users_guns[0]
-        emptiest_gun.remaining_bullets = 6
+        emptiest_gun.remaining_bullets = 5
         server.send_json(type="notification", msg="Pistolet chargé!")
         server.send_binary(self._load_byte(self.RELOADING_FX))
         self.should_be_destroyed = True
@@ -137,7 +140,7 @@ class SniperRifle(UsableObject, TargetedObject):
         server.channel_obj.broadcast(type='antiflood', event='banned',
                                      flooder_id=adversary_id,
                                      date=timestamp() * 1000)
-        loult_state.ban_cookie(server.cookie)
+        loult_state.ban_cookie(adversary.cookie_hash)
         server.sendClose(code=4006, reason='reconnect later')
         self.empty = True
 
@@ -169,6 +172,40 @@ class SniperBullets(UsableObject, DestructibleObject):
         self.remaining_bullets -= 1
         if self.remaining_bullets <= 0:
             self.should_be_destroyed = True
+
+
+class RPG(UsableObject, TargetedObject):
+    NAME = "lance-roquette"
+    RPG_FX = path.join(path.dirname(path.realpath(__file__)), "data/rpg_rocket.mp3")
+
+    def __init__(self):
+        self.empty = False
+
+    @property
+    def name(self):
+        if self.empty:
+            return self.NAME + " (vide)"
+        else:
+            return self.NAME
+
+    def use(self, loult_state, server, obj_params):
+        if self.empty:
+            return server.send_json(type="notification",
+                                    msg="Plus de munitions!")
+
+        adversary_id, adversary = self._acquire_target(server, obj_params)
+        if adversary is None:
+            return
+
+        server.channel_obj.broadcast(type="notification",
+                                     msg="")
+        hit_usrs = [usr for usr in server.channel_obj.users.values()
+                    if userlist_dist(server.channel_obj, adversary_id, usr.user_id) < 2]
+        for user in hit_usrs:
+            for client in user.clients:
+                client.sendClose(code=4006, reason="Reconnect please")
+
+        self.empty = True
         
 
 class Grenade(UsableObject, DestructibleObject):
@@ -194,9 +231,7 @@ class Grenade(UsableObject, DestructibleObject):
                 client.sendClose(code=4006, reason="Reconnect please")
 
         # throwing in an explosion sound
-        with open(self.EXPLOSION_FX, "rb") as fx_file:
-            explosion_fx = fx_file.read()
-        server.channel_obj.broadcast(binary_payload=explosion_fx)
+        server.channel_obj.broadcast(binary_payload=self._load_byte(self.EXPLOSION_FX))
         self.should_be_destroyed = True
 
 
@@ -289,6 +324,19 @@ class MagicWand(UsableObject, TargetedObject):
 
 class Scolopamine(UsableObject, DestructibleObject, TargetedObject):
     NAME = "Scolopamine"
+
+    def use(self, loult_state, server, obj_params):
+        adversary_id, adversary = self._acquire_target(server, obj_params)
+        if adversary is None:
+            return
+
+        server.user.state.inventory.objects += adversary.state.inventory.objects
+        adversary.state.inventory.objects = []
+
+        server.channel_obj.broadcast(type="notification",
+                                     msg="%s a drogué %s et puis a piqué tout son inventaire!"
+                                         % (server.user.poke_params.fullname, adversary.poke_params.fullname))
+        self.should_be_destroyed = True
 
 
 class WhiskyBottle(UsableObject, DestructibleObject):
