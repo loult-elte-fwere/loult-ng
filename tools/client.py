@@ -203,7 +203,7 @@ class LoultServerProtocol:
             self.loult_state.ip_backlog.append((self.user.user_id, self.ip))
             self.channel_obj.channel_leave(self, self.user)
             # emptying user inventory to the channel's common inventory
-            for obj in self.user.state.inventory:
+            for obj in self.user.state.inventory.objects:
                 if not isinstance(obj, ClonableObject): # except for clonable object
                     self.channel_obj.inventory.add(obj)
 
