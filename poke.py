@@ -2,17 +2,26 @@
 import logging
 from asyncio import get_event_loop, ensure_future, gather, set_event_loop_policy, get_event_loop_policy
 from itertools import chain
+import argparse
 
 from datetime import datetime, timedelta
-
 from tools.ban import Ban, BanFail
 from tools.client import ClientRouter, LoultServerProtocol
-from tools.handlers import MessageHandler, BinaryHandler, TrashHandler, BanHandler, ShadowbanHandler, \
-    NoRenderMsgHandler, AttackHandler, PrivateMessageHandler, MoveHandler
+from tools.handlers import (MessageHandler, BinaryHandler, TrashHandler, BanHandler, ShadowbanHandler,
+                            NoRenderMsgHandler, AttackHandler, PrivateMessageHandler, MoveHandler,
+                            InventoryListingHandler, ObjectGiveHandler, ObjectUseHandler, ObjectTrashHandler,
+                            ListChannelInventoryHandler, ObjectTakeHandler)
 from tools.state import LoultServerState
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.DEBUG)
+    argparser = argparse.ArgumentParser()
+    argparser.add_argument("-d", "--debug", action="store_true")
+    args = argparser.parse_args()
+
+    if args.debug:
+        logging.basicConfig(level=logging.DEBUG)
+    else:
+        logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger('server')
 
     try:
@@ -35,12 +44,14 @@ if __name__ == "__main__":
     # setting up events
     from tools.events import (EventScheduler, BienChantewEvent, MaledictionEvent, BienDowmiwEvent,
                               UsersVoicesShuffleEvent, TunnelEvent, MusicalEvent, UsersMixupEvent,
-                              CloneArmyEvent, ThemeRenameEvent)
+                              CloneArmyEvent, ThemeRenameEvent, ObjectDropEvent, InfectionEvent,
+                              LynchingEvent, PubBrawlEvent)
 
     scheduler = EventScheduler(loult_state,
                                [BienChantewEvent(), MaledictionEvent(), BienDowmiwEvent(), UsersVoicesShuffleEvent(),
                                 TunnelEvent(), MusicalEvent(), UsersMixupEvent(), CloneArmyEvent(),
-                                ThemeRenameEvent()])
+                                ThemeRenameEvent(), ObjectDropEvent(), InfectionEvent(), LynchingEvent(),
+                                PubBrawlEvent()])
 
     try:
         loop.run_until_complete(Ban.test_ban())
@@ -62,6 +73,12 @@ if __name__ == "__main__":
     router.add_route(field="type", value="bot", handler_class=NoRenderMsgHandler)
     for ban_type in Ban.ban_types:
         router.add_route(field="type", value=ban_type, handler_class=BanHandler)
+    router.add_route(field="type", value="inventory", handler_class=InventoryListingHandler)
+    router.add_route(field="type", value="give", handler_class=ObjectGiveHandler)
+    router.add_route(field="type", value="use", handler_class=ObjectUseHandler)
+    router.add_route(field="type", value="trash", handler_class=ObjectTrashHandler)
+    router.add_route(field="type", value="list", handler_class=ListChannelInventoryHandler)
+    router.add_route(field="type", value="take", handler_class=ObjectTakeHandler)
 
 
     class AutobahnLoultServerProtocol(LoultServerProtocol, WebSocketServerProtocol):

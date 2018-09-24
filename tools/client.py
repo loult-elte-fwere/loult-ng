@@ -15,6 +15,7 @@ from autobahn.websocket.types import ConnectionDeny
 
 from config import TIME_BETWEEN_CONNECTIONS
 from salt import SALT
+from tools.objects.base import ClonableObject
 from .tools import encode_json
 
 
@@ -116,7 +117,7 @@ class LoultServerProtocol:
                 raise ConnectionDeny(403, 'Wait some time before trying to connect')
         self.loult_state.ip_last_login[self.ip] = datetime.now()
 
-        self.logger.info('attempting a connection')
+        self.logger.debug('attempting a connection')
 
         # trying to extract the cookie from the request header. Else, creating a new cookie and
         # telling the client to store it with a Set-Cookie header
@@ -172,7 +173,7 @@ class LoultServerProtocol:
         self.send_json(type='backlog', msgs=self.channel_obj.backlog, date=timestamp() * 1000)
 
         self.cnx = True  # connected!
-        self.logger.info('has fully open a connection')
+        self.logger.debug('has fully open a connection')
 
     def onMessage(self, payload, isBinary):
         """Triggered when a user sends any type of message to the server"""
@@ -182,7 +183,7 @@ class LoultServerProtocol:
             except Exception as err:
                 self.sendClose(code=4000, reason=str(err))
                 self.logger.error('raised an exception "%s"' % err)
-                self.logger.debug(err, exc_info=True)
+                self.logger.error(err, exc_info=True)
 
         if isBinary:
             ensure_future(auto_close(self.routing_table.route_binary(payload)))
@@ -201,7 +202,11 @@ class LoultServerProtocol:
             # This lets moderators ban an user even after their disconnection
             self.loult_state.ip_backlog.append((self.user.user_id, self.ip))
             self.channel_obj.channel_leave(self, self.user)
+            # emptying user inventory to the channel's common inventory
+            for obj in self.user.state.inventory.objects:
+                if not isinstance(obj, ClonableObject): # except for clonable object
+                    self.channel_obj.inventory.add(obj)
 
         msg = 'left with reason "{}"'.format(reason) if reason else 'left'
 
-        self.logger.info(msg)
+        self.logger.debug(msg)

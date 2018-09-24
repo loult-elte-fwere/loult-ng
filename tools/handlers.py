@@ -2,6 +2,8 @@ from typing import Dict
 from datetime import datetime, timedelta
 from time import time as timestamp
 from html import escape
+
+from tools.objects.base import ClonableObject, DestructibleObject
 from .combat import CombatSimulator
 from .ban import Ban, BanFail
 from io import BytesIO
@@ -301,3 +303,84 @@ class TrashHandler(MsgBaseHandler):
         elif msg_data["action"] == "remove":
             self.loult_state.trashed_cookies.remove(trashed_user.cookie_hash)
             self.server.send_json(type="trash", userid=user_id, state="remove_ok")
+
+
+class InventoryListingHandler(MsgBaseHandler):
+
+    async def handle(self, msg_data: Dict):
+        inventory_listing = self.user.state.inventory.get_listing()
+        self.server.send_json(type="notification",
+                              msg="Votre inventaire contient : %s" % inventory_listing)
+
+
+class ObjectGiveHandler(MsgBaseHandler):
+
+    async def handle(self, msg_data: Dict):
+        given_obj = self.user.state.inventory.get_object_by_id(int(msg_data.get("object_id")))
+        if given_obj is None:
+            self.server.send_json(type="object", response="invalid_id")
+            return
+
+        beneficiary_id, beneficiary = self.channel_obj.get_user_by_name(msg_data.get("target",
+                                                                                     self.user.poke_params.pokename),
+                                                                        msg_data.get("order", 1) - 1)
+        if beneficiary is None:
+            self.server.send_json(type="give", response="invalid_target")
+            return
+
+        beneficiary.state.inventory.add(given_obj)
+        if not isinstance(given_obj, ClonableObject):
+            self.user.state.inventory.remove(given_obj)
+
+        self.channel_obj.broadcast(type="give",
+                                   response='exchanged',
+                                   sender=self.user.user_id,
+                                   receiver=beneficiary_id,
+                                   obj_name=given_obj.name,
+                                   date=timestamp() * 1000)
+
+
+class ObjectUseHandler(MsgBaseHandler):
+
+    async def handle(self, msg_data: Dict):
+        selected_obj = self.user.state.inventory.get_object_by_id(int(msg_data.get("object_id")))
+        if selected_obj is None:
+            self.server.send_json(type="object", response="invalid_id")
+            return
+        selected_obj.use(self.loult_state, self.server, msg_data['params'])
+        if isinstance(selected_obj, DestructibleObject) and selected_obj.destroy:
+            self.user.state.inventory.remove(selected_obj)
+
+
+class ObjectTrashHandler(MsgBaseHandler):
+
+    async def handle(self, msg_data: Dict):
+        selected_obj = self.user.state.inventory.get_object_by_id(int(msg_data.get("object_id")))
+        if selected_obj is None:
+            self.server.send_json(type="object", response="invalid_id")
+            return
+
+        self.user.state.inventory.remove(selected_obj)
+        self.server.send_json(type="object", response="object_trashed",
+                              object_name=selected_obj.name)
+
+
+class ListChannelInventoryHandler(MsgBaseHandler):
+
+    async def handle(self, msg_data: Dict):
+        self.server.send_json(type="notification",
+                              msg="L'inventaire commun contient: " + self.channel_obj.inventory.get_listing())
+
+
+class ObjectTakeHandler(MsgBaseHandler):
+
+    async def handle(self, msg_data: Dict):
+        selected_obj = self.channel_obj.inventory.get_object_by_id(int(msg_data.get("object_id")))
+        if selected_obj is None:
+            self.server.send_json(type="object", response="invalid_id")
+            return
+
+        self.channel_obj.inventory.remove(selected_obj)
+        self.user.state.inventory.add(selected_obj)
+        self.server.send_json(type="object", response="object_taken",
+                              object_name=selected_obj.name)

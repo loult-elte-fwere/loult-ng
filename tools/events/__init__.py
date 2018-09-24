@@ -1,3 +1,4 @@
 from .events import (BienChantewEvent, BienDowmiwEvent, MaledictionEvent, MusicalEvent, TunnelEvent,
-                     UsersVoicesShuffleEvent, UsersMixupEvent, CloneArmyEvent, ThemeRenameEvent)
+                     UsersVoicesShuffleEvent, UsersMixupEvent, CloneArmyEvent, ThemeRenameEvent,
+                     ObjectDropEvent, InfectionEvent, LynchingEvent, PubBrawlEvent)
 from .scheduler import EventScheduler

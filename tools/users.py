@@ -12,6 +12,7 @@ import json
 from config import FLOOD_DETECTION_WINDOW, BANNED_WORDS, FLOOD_WARNING_TIMEOUT, FLOOD_DETECTION_MSG_PER_SEC, \
     ATTACK_RESTING_TIME
 from tools import pokemons
+from tools.objects.inventory import UserInventory
 
 from tools.tools import AudioRenderer, SpoilerBipEffect, prepare_text_for_tts
 from voxpopuli import PhonemeList
@@ -52,6 +53,10 @@ class PokeParameters:
         self.poke_id = poke_id
         self.pokename = pokemons.pokemon[self.poke_id]
         self.poke_adj = adjectives[adj_id]
+
+    @property
+    def fullname(self):
+        return "%s %s" % (self.pokename, self.poke_adj)
 
     @classmethod
     def from_cookie_hash(cls, cookie_hash):
@@ -101,6 +106,8 @@ class UserState:
         self.has_been_warned = False # User has been warned he shouldn't flood
         self._banned_words = [regex(word) for word in banned_words]
         self.is_shadowbanned = False # User has been shadowbanned
+
+        self.inventory = UserInventory()
 
     def __setattr__(self, name, value):
         object.__setattr__(self, name, value)

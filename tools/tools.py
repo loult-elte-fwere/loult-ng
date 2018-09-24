@@ -236,21 +236,23 @@ class CachedOpener:
                 del self.files[filepath]
                 del self.last_hit[filepath]
 
-    def load_byte(self, filepath, read_func):
+    def load_byte(self, filepath, read_func=None):
         if filepath not in self.files:
             with open(filepath, "rb") as bytefile:
-                self.files[filepath] = read_func(bytefile)
+                if read_func is None:
+                    self.files[filepath] = bytefile.read()
+                else:
+                    self.files[filepath] = read_func(bytefile)
 
         self.last_hit[filepath] = datetime.now()
         self.check_files_expiry()
+        return self.files[filepath]
 
     def load_pickle(self, filepath):
-        self.load_byte(filepath, pickle.load)
-        return self.files[filepath]
+        return self.load_byte(filepath, pickle.load)
 
     def load_wav(self, filepath):
-        self.load_byte(filepath, wavfile.read)
-        return self.files[filepath]
+        return self.load_byte(filepath, wavfile.read)
 
 
 cached_loader = CachedOpener()

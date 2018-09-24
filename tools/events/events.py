@@ -3,6 +3,9 @@ from datetime import datetime, timedelta, time
 from time import time as timestamp
 from typing import List
 from os import path
+
+from tools.objects import get_random_object
+from tools.objects.objects import DiseaseObject, BaseballBat, Revolver
 from .base import next_occ
 
 import yaml
@@ -163,6 +166,7 @@ class MusicalEvent(PseudoPeriodicEvent):
 
 
 class UsersMixupEvent(ChannelModEvent):
+    """All the users's profiles are mixed up, sometimes including their voices"""
 
     EVENT_TYPE = "users_mixup"
     PSEUDO_PERIOD = timedelta(hours=5)
@@ -194,6 +198,7 @@ class UsersMixupEvent(ChannelModEvent):
 
 
 class CloneArmyEvent(ChannelModEvent):
+    """Everyone's a clone of someone"""
 
     EVENT_TYPE = "clone_army"
     PSEUDO_PERIOD = timedelta(hours=5)
@@ -220,6 +225,7 @@ class CloneArmyEvent(ChannelModEvent):
 
 
 class ThemeRenameEvent(ChannelModEvent):
+    """Everyone gets a new name based on a theme"""
 
     EVENT_TYPE = "theme_rename"
     THEMES_FILE = path.join(path.dirname(path.realpath(__file__)), "data/themes.yml")
@@ -243,3 +249,57 @@ class ThemeRenameEvent(ChannelModEvent):
         for user in channel.users.values():
             user._info = None
             user.poke_params.pokename = random.choice(picked_theme["names"])
+
+
+class ObjectDropEvent(PeriodicEvent):
+    """Drops an object on a random connected user"""
+    PERIOD = timedelta(hours=1)
+
+    async def trigger(self, loultstate):
+        for channel in loultstate.chans.values():
+            user = random.choice(list(channel.users.values()))
+            user.state.inventory.add(get_random_object())
+            for client in user.clients:
+                client.send_json(type="notification",
+                                 msg="Vous avez reçu un objet, regardez votre inventaire!")
+
+
+class InfectionEvent(PseudoPeriodicEvent):
+    """Gives an infectuous disease to a random connected user"""
+    PSEUDO_PERIOD = timedelta(hours=6)
+    VARIANCE = timedelta(hours=0.2)
+
+    async def trigger(self, loultstate):
+        for channel in loultstate.chans.values():
+            user = random.choice(list(channel.users.values()))
+            user.state.inventory.add(DiseaseObject(user.poke_params.fullname))
+            channel.broadcast(type="notification",
+                              msg="%s a été infecté!" % user.poke_params.fullname)
+
+
+class LynchingEvent(PseudoPeriodicEvent):
+    """Everyone gets a baseball bat, except for one"""
+    PSEUDO_PERIOD = timedelta(hours=8)
+    VARIANCE = timedelta(hours=0.4)
+
+    async def trigger(self, loultstate):
+        for channel in loultstate.chans.values():
+            usr_list = list(channel.users.values())
+            lynched_usr = usr_list.pop(random.randint(0, len(usr_list) - 1))
+            for usr in usr_list:
+                usr.state.inventory.add(BaseballBat(lynched_usr.user_id, lynched_usr.poke_params.fullname))
+            channel.broadcast(type="notification",
+                              msg="%s va passer un sale quart d'heure!" % lynched_usr.poke_params.fullname)
+
+
+class PubBrawlEvent(PseudoPeriodicEvent):
+    """Everyone gets a gun with 2 bullets"""
+    PSEUDO_PERIOD = timedelta(hours=8)
+    VARIANCE = timedelta(hours=0.4)
+
+    async def trigger(self, loultstate):
+        for channel in loultstate.chans.values():
+            for usr in channel.users.values():
+                usr.state.inventory.add(Revolver(bullets=2))
+            channel.broadcast(type="notification",
+                              msg="Baston générale dans le Loult Saloon!")

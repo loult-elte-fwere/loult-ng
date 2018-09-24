@@ -13,10 +13,10 @@ from pysndfx import AudioEffectsChain
 from scipy.io.wavfile import read
 
 from salt import SALT
-from tools import AudioEffect, PhonemicEffect
+from tools.effects import AudioEffect, PhonemicEffect
 from tools.audio_tools import mix_tracks
 from tools.effects.effects import * # See tools/__init__.py for available effects
-from tools.phonems import PhonemList, FrenchPhonems
+from voxpopuli import PhonemeList, FrenchPhonemes
 from tools.users import User
 
 logging.getLogger().setLevel(logging.DEBUG)
@@ -85,9 +85,9 @@ class SpeechDeformation(PhonemicEffect):
     NAME = "puberté"
     TIMEOUT = 30
 
-    def process(self, phonems : PhonemList):
+    def process(self, phonems : PhonemeList):
         for phonem in phonems:
-            if phonem.name in FrenchPhonems.VOWELS and random.randint(1,2) == 1:
+            if phonem.name in FrenchPhonemes.VOWELS and random.randint(1,2) == 1:
                 phonem.duration *= 2
                 factor = random.uniform(0.3, 2)
                 phonem.pitch_modifiers = [(pos, int(pitch * factor)) for pos, pitch in phonem.pitch_modifiers]
@@ -97,7 +97,7 @@ class SpeechDeformation(PhonemicEffect):
 
 fake_cookie = md5(("622545609233193a39466" + SALT).encode('utf8')).digest()
 user = User(fake_cookie, "wesh", None)
-for effect in [RythmicEffect()]:
+for effect in [AutotuneEffect()]:
     print("Applying effect %s" % effect.name)
     user.state.add_effect(effect)
 

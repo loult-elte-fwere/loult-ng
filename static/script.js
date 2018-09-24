@@ -476,17 +476,47 @@
 						ws.send(JSON.stringify({type: 'msg', msg: trimed.substr(4), lang: trimed.substr(1, 2).toLowerCase()}));
 						underlay.className = 'pulse';
 					}
+					else if(trimed.match(/^\/((?:list)+)$/i)) {
+						ws.send(JSON.stringify({type: 'list'}));
+						underlay.className = 'pulse';
+					}
+					else if(trimed.match(/^\/((?:inv)+)$/i)) {
+						ws.send(JSON.stringify({type: 'inventory'}));
+					}
+					else if(trimed.match(/^\/give\s/i)) {
+						var splitted = trimed.split(' ');
+						ws.send(JSON.stringify({ type : 'give', object_id: parseInt(splitted[1]), target : splitted[2], order : ((splitted.length === 4) ? parseInt(splitted[3]) : 0) }));
+					}
+					else if(trimed.match(/^\/use\s/i)) {
+						var splitted = trimed.split(' ');
+						ws.send(JSON.stringify({ type : 'use', object_id: parseInt(splitted[1]), params : splitted.slice(2) }));
+					}
+					else if(trimed.match(/^\/take\s/i)) {
+						var splitted = trimed.split(' ');
+						ws.send(JSON.stringify({ type : 'take', object_id: parseInt(splitted[1])}));
+					}
+					else if(trimed.match(/^\/trash\s/i)) {
+						var splitted = trimed.split(' ');
+						ws.send(JSON.stringify({ type : 'trash', object_id: parseInt(splitted[1])}));
+					}
 					else if(trimed.match(/^\/vol(?:ume)?\s(?:\d+)$/i) && audio) {
 						volrange.value = Math.min(100, trimed.match(/\d+$/i)[0]);
 						changeVolume();
 					}
+
 					else if(trimed.match(/^\/(?:help|aide)$/i)) {
 						var d = new Date;
-						addLine({name : 'info'}, '/attaque, /attack, /atq, /atk : Lancer une attaque sur quelqu\'un. Exemple : /attaque Miaouss', d, 'part', 'help');
+						addLine({name : 'info'}, '/attaque, /attack, /atq, /atk : Lancer une attaque sur quelqu\'un. Exemple : /attaque Miaouss 2', d, 'part', 'help');
 						addLine({name : 'info'}, '/en, /es, /fr, /de : Envoyer un message dans une autre langue. Exemple : /en Where is Pete Ravi?', d, 'part', 'help');
 						if(audio)
 							addLine({name : 'info'}, '/volume, /vol : Régler le volume rapidement. Exemple : /volume 50', d, 'part', 'help');
 						addLine({name : 'info'}, '/me : Réaliser une action. Exemple: /me essaie la commande /me.', d, 'part', 'help');
+						addLine({name : 'info'}, '/use : Utiliser un object de son inventaire. Exemple: /use 3 Miaouss 2', d, 'part', 'help');
+						addLine({name : 'info'}, '/give : Donner un objet de son inventaire à quelqu\'un d\'autre. Exemple: /give 2 Tauros', d, 'part', 'help');
+						addLine({name : 'info'}, '/inv : Afficher son inventaire.', d, 'part', 'help');
+						addLine({name : 'info'}, '/list : Afficher l\inventaire public du salon', d, 'part', 'help');
+						addLine({name : 'info'}, '/trash : Jeter un objet de son inventaire. Exemple: /trash 3', d, 'part', 'help');
+						addLine({name : 'info'}, '/take : Prendre un object dans l\'inventaire public du salon. Exemple: /take 4', d, 'part', 'help');
 						addLine({name : 'info'}, '> : Indique une citation. Exemple : >Je ne reviendrais plus ici !', d, 'part', 'help');
 						addLine({name : 'info'}, '** ** : Masquer une partie d\'un message. Exemple : Carapuce est un **chic type** !', d, 'part', 'help');
 					}
@@ -598,7 +628,7 @@
 					break;
 
 					case 'notification':
-                        addLine({name : 'info'}, msg.msg, msg.date, 'info');
+                        addLine({name : 'info'}, msg.msg,("date" in msg) ? msg.date : (new Date), 'info');
                     break;
 
 					case 'userlist':
@@ -623,6 +653,35 @@
 					case 'banned':
 						banned = true;
 						ws.close();
+					break;
+
+					// conditions dedicated to objects
+					case 'give':
+					    switch(msg['response']){
+					        case 'invalid_target':
+					            addLine({name : 'info'}, 'Utilisateur récepteur inexistant', (new Date), 'kick', 'invalid');
+					        break;
+
+					        case 'exchanged':
+					            addLine({name : 'info'}, users[msg.sender].name + ' donne ' + msg.obj_name + ' à  ' + users[msg.receiver].name + ".", msg.date, 'log');
+					        break;
+					    }
+					break;
+
+					case 'object':
+					    switch(msg['response']){
+					        case 'invalid_id':
+					            addLine({name : 'info'}, 'Indice d\'objet dans l\'inventaire inexistant', (new Date), 'log', 'invalid');
+					        break;
+
+					        case 'object_trashed':
+					            addLine({name : 'info'}, 'L\'objet ' + msg.object_name + ' a été jeté.', (new Date), 'log');
+					        break;
+
+					        case 'object_taken':
+					            addLine({name : 'info'}, 'L\'objet ' + msg.object_name + ' a pris dans l\'inventaire commun.', (new Date), 'log');
+					        break;
+					    }
 					break;
 				}
 			}
