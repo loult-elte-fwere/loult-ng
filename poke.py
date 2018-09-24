@@ -77,7 +77,7 @@ if __name__ == "__main__":
     router.add_route(field="type", value="give", handler_class=ObjectGiveHandler)
     router.add_route(field="type", value="use", handler_class=ObjectUseHandler)
     router.add_route(field="type", value="trash", handler_class=ObjectTrashHandler)
-    router.add_route(field="type", value="list", handler_class=ListChannelInventoryHandler)
+    router.add_route(field="type", value="channel_inventory", handler_class=ListChannelInventoryHandler)
     router.add_route(field="type", value="take", handler_class=ObjectTakeHandler)
 
 
