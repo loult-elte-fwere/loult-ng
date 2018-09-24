@@ -5,7 +5,8 @@ from typing import List
 from os import path
 
 from tools.objects import get_random_object
-from tools.objects.objects import DiseaseObject, BaseballBat, Revolver, WhiskyBottle
+from tools.objects.objects import DiseaseObject, BaseballBat, Revolver, WhiskyBottle, RevolverCartridges, SniperBullets, \
+    RPGRocket
 from .base import next_occ
 
 import yaml
@@ -301,7 +302,24 @@ class PubBrawlEvent(PseudoPeriodicEvent):
     async def trigger(self, loultstate):
         for channel in loultstate.chans.values():
             for usr in channel.users.values():
-                usr.state.inventory.add(Revolver(bullets=2))
+                if random.randint(0,1):
+                    usr.state.inventory.add(Revolver(bullets=2))
                 usr.state.inventory.add(WhiskyBottle())
             channel.broadcast(type="notification",
                               msg="Baston générale dans le Loult Saloon!")
+
+
+class AmmoDropEvent(PseudoPeriodicEvent):
+    """Drops ammo in the common inventory"""
+    PSEUDO_PERIOD = timedelta(minutes=60)
+    VARIANCE = timedelta(hours=0.1)
+
+    async def trigger(self, loultstate):
+        for channel in loultstate.chans.values():
+            inv = channel.inventory
+            for i in range(random.randint(2, 4)):
+                inv.add(RevolverCartridges())
+            for i in range(random.randint(1, 3)):
+                inv.add(SniperBullets())
+            for i in range(random.randint(1, 3)):
+                inv.add(RPGRocket())

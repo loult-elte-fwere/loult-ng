@@ -294,8 +294,8 @@ class BaseballBat(UsableObject, DestructibleObject):
                                          binary_payload=random.choice(self.sounds))
             self.remaining_hits -= 1
         else:
-            server.channel_obj.broadcast(type="notification",
-                                         msg="Cette batte ne sert qu'à taper %s" % self.target_name)
+            server.send_json(type="notification",
+                             msg="Cette batte ne sert qu'à taper %s" % self.target_name)
 
         # if it's the last hit, notifying and destroying the object
         if self.remaining_hits <= 0:

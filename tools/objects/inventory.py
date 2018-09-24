@@ -20,7 +20,8 @@ class UserInventory:
         self.objects.remove(obj)
 
     def add(self, obj: LoultObject):
-        if obj not in self.objects:
+        # at most 5 items of the same class
+        if obj not in self.objects and len(self.search_by_class(type(obj))) < 5:
             self.objects.append(obj)
 
     def get_object_by_id(self, obj_id: int):

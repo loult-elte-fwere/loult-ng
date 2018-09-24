@@ -329,9 +329,9 @@ class ObjectGiveHandler(MsgBaseHandler):
         if beneficiary is None:
             return self.server.send_json(type="give", response="invalid_target")
 
-        beneficiary.state.inventory.add(given_obj)
         if not isinstance(given_obj, ClonableObject):
             self.user.state.inventory.remove(given_obj)
+        beneficiary.state.inventory.add(given_obj)
 
         self.channel_obj.broadcast(type="give",
                                    response='exchanged',
