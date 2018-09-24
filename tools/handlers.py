@@ -361,6 +361,7 @@ class ObjectTrashHandler(MsgBaseHandler):
             return
 
         self.user.state.inventory.remove(selected_obj)
+        self.channel_obj.inventory.add(selected_obj)
         self.server.send_json(type="object", response="object_trashed",
                               object_name=selected_obj.name)
 
