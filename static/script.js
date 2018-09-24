@@ -476,11 +476,11 @@
 						ws.send(JSON.stringify({type: 'msg', msg: trimed.substr(4), lang: trimed.substr(1, 2).toLowerCase()}));
 						underlay.className = 'pulse';
 					}
-					else if(trimed.match(/^\/((?:list)+)$/i)) {
-						ws.send(JSON.stringify({type: 'list'}));
+					else if(trimed.match(/^\/((?:bank)+)$/i)) {
+						ws.send(JSON.stringify({type: 'channel_inventory'}));
 						underlay.className = 'pulse';
 					}
-					else if(trimed.match(/^\/((?:inv)+)$/i)) {
+					else if(trimed.match(/^\/((?:list)+)$/i)) {
 						ws.send(JSON.stringify({type: 'inventory'}));
 					}
 					else if(trimed.match(/^\/give\s/i)) {
@@ -513,8 +513,8 @@
 						addLine({name : 'info'}, '/me : Réaliser une action. Exemple: /me essaie la commande /me.', d, 'part', 'help');
 						addLine({name : 'info'}, '/use : Utiliser un object de son inventaire. Exemple: /use 3 Miaouss 2', d, 'part', 'help');
 						addLine({name : 'info'}, '/give : Donner un objet de son inventaire à quelqu\'un d\'autre. Exemple: /give 2 Tauros', d, 'part', 'help');
-						addLine({name : 'info'}, '/inv : Afficher son inventaire.', d, 'part', 'help');
-						addLine({name : 'info'}, '/list : Afficher l\inventaire public du salon', d, 'part', 'help');
+						addLine({name : 'info'}, '/list : Afficher son inventaire.', d, 'part', 'help');
+						addLine({name : 'info'}, '/bank : Afficher l\inventaire public du salon', d, 'part', 'help');
 						addLine({name : 'info'}, '/trash : Jeter un objet de son inventaire. Exemple: /trash 3', d, 'part', 'help');
 						addLine({name : 'info'}, '/take : Prendre un object dans l\'inventaire public du salon. Exemple: /take 4', d, 'part', 'help');
 						addLine({name : 'info'}, '> : Indique une citation. Exemple : >Je ne reviendrais plus ici !', d, 'part', 'help');
