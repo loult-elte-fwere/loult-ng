@@ -5,7 +5,7 @@ from typing import List
 from os import path
 
 from tools.objects import get_random_object
-from tools.objects.objects import DiseaseObject, BaseballBat, Revolver
+from tools.objects.objects import DiseaseObject, BaseballBat, Revolver, WhiskyBottle
 from .base import next_occ
 
 import yaml
@@ -251,9 +251,10 @@ class ThemeRenameEvent(ChannelModEvent):
             user.poke_params.pokename = random.choice(picked_theme["names"])
 
 
-class ObjectDropEvent(PeriodicEvent):
+class ObjectDropEvent(PseudoPeriodicEvent):
     """Drops an object on a random connected user"""
-    PERIOD = timedelta(hours=1)
+    PSEUDO_PERIOD = timedelta(hours=1)
+    VARIANCE = timedelta(hours=0.1)
 
     async def trigger(self, loultstate):
         for channel in loultstate.chans.values():
@@ -301,5 +302,6 @@ class PubBrawlEvent(PseudoPeriodicEvent):
         for channel in loultstate.chans.values():
             for usr in channel.users.values():
                 usr.state.inventory.add(Revolver(bullets=2))
+                usr.state.inventory.add(WhiskyBottle())
             channel.broadcast(type="notification",
                               msg="Baston générale dans le Loult Saloon!")

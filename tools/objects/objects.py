@@ -439,3 +439,30 @@ class Microphone(UsableObject):
                                      binary_payload=self._load_byte(self.MIKEDROP_FX))
         for client in server.user.clients:
             client.sendClose(code=4006, reason='Mike drop, bitch')
+
+
+class C4(InertObject):
+    NAME = "C4"
+
+
+class Detonator(UsableObject):
+    NAME = "Détonateur"
+    EXPLOSION_FX = path.join(path.dirname(path.realpath(__file__)), "data/explosion.mp3")
+
+    def use(self, loult_state, server, obj_params):
+        blown_up_users = []
+        for user in server.channel_obj.users.values:
+            if user.state.inventory.search_by_class(C4):
+                user.state.inventory.remove_by_class(C4)
+                server.channel_obj.broadcast(type='antiflood', event='banned',
+                                             flooder_id=user.user_id,
+                                             date=timestamp() * 1000)
+                loult_state.ban_cookie(user.user_id.cookie_hash)
+                for client in user.clients:
+                    client.sendClose(code=4006, reason='reconnect later')
+            blown_up_users.append(user.poke_params.fullname)
+        if blown_up_users:
+            server.channel_obj.broadcast(type="notification",
+                                         msg="%s a fait sauter %s!"
+                                             % (server.user.poke_params.fullname, ", ".join(blown_up_users)),
+                                         binary_payload=self._load_byte(self.EXPLOSION_FX))
