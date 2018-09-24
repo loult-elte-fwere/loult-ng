@@ -23,7 +23,7 @@ class Channel:
         self.ip_cookies_tracker = dict()  # type: Dict[str,Set[bytes]]
         self.inventory = UserInventory()
         # filling the channel's inventory with some random items
-        for _ in range(5):
+        for _ in range(10):
             self.inventory.add(get_random_object())
 
     def _signal_user_connect(self, client, user: User):

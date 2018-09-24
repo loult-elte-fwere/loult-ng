@@ -316,17 +316,18 @@ class InventoryListingHandler(MsgBaseHandler):
 class ObjectGiveHandler(MsgBaseHandler):
 
     async def handle(self, msg_data: Dict):
-        given_obj = self.user.state.inventory.get_object_by_id(int(msg_data.get("object_id")))
+        try:
+            given_obj = self.user.state.inventory.get_object_by_id(int(msg_data.get("object_id")))
+        except TypeError:
+            return self.server.send_json(type="object", response="invalid_id")
         if given_obj is None:
-            self.server.send_json(type="object", response="invalid_id")
-            return
+            return self.server.send_json(type="object", response="invalid_id")
 
         beneficiary_id, beneficiary = self.channel_obj.get_user_by_name(msg_data.get("target",
                                                                                      self.user.poke_params.pokename),
                                                                         msg_data.get("order", 1) - 1)
         if beneficiary is None:
-            self.server.send_json(type="give", response="invalid_target")
-            return
+            return self.server.send_json(type="give", response="invalid_target")
 
         beneficiary.state.inventory.add(given_obj)
         if not isinstance(given_obj, ClonableObject):
@@ -343,10 +344,14 @@ class ObjectGiveHandler(MsgBaseHandler):
 class ObjectUseHandler(MsgBaseHandler):
 
     async def handle(self, msg_data: Dict):
-        selected_obj = self.user.state.inventory.get_object_by_id(int(msg_data.get("object_id")))
+        try:
+            selected_obj = self.user.state.inventory.get_object_by_id(int(msg_data.get("object_id")))
+        except TypeError:
+            return self.server.send_json(type="object", response="invalid_id")
+
         if selected_obj is None:
-            self.server.send_json(type="object", response="invalid_id")
-            return
+            return self.server.send_json(type="object", response="invalid_id")
+
         selected_obj.use(self.loult_state, self.server, msg_data['params'])
         if isinstance(selected_obj, DestructibleObject) and selected_obj.destroy:
             self.user.state.inventory.remove(selected_obj)
@@ -374,14 +379,27 @@ class ListChannelInventoryHandler(MsgBaseHandler):
 
 
 class ObjectTakeHandler(MsgBaseHandler):
+    RATE_LIMIT = 5 # in seconds
+
+    def __init__(self, server_state, my_server):
+        super().__init__(server_state, my_server)
+        self.last_take = datetime(1972, 1, 1)
 
     async def handle(self, msg_data: Dict):
-        selected_obj = self.channel_obj.inventory.get_object_by_id(int(msg_data.get("object_id")))
-        if selected_obj is None:
-            self.server.send_json(type="object", response="invalid_id")
-            return
+        try:
+            selected_obj = self.channel_obj.inventory.get_object_by_id(int(msg_data.get("object_id")))
+        except TypeError:
+            return self.server.send_json(type="object", response="invalid_id")
 
-        self.channel_obj.inventory.remove(selected_obj)
-        self.user.state.inventory.add(selected_obj)
-        self.server.send_json(type="object", response="object_taken",
-                              object_name=selected_obj.name)
+        if selected_obj is None:
+            return self.server.send_json(type="object", response="invalid_id")
+
+        if (datetime.now() - self.last_take).seconds > self.RATE_LIMIT:
+            self.channel_obj.inventory.remove(selected_obj)
+            self.user.state.inventory.add(selected_obj)
+            self.server.send_json(type="object", response="object_taken",
+                                  object_name=selected_obj.name)
+            self.last_take = datetime.now()
+        else:
+            self.server.send_json(type="notification",
+                                  msg="Attendez un peu avant de piller la banque!")
