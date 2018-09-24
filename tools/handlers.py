@@ -394,7 +394,7 @@ class ObjectTakeHandler(MsgBaseHandler):
         if selected_obj is None:
             return self.server.send_json(type="object", response="invalid_id")
 
-        if (datetime.now() - self.last_take).seconds < self.RATE_LIMIT:
+        if (datetime.now() - self.last_take).seconds > self.RATE_LIMIT:
             self.channel_obj.inventory.remove(selected_obj)
             self.user.state.inventory.add(selected_obj)
             self.server.send_json(type="object", response="object_taken",
