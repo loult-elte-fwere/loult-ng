@@ -451,18 +451,42 @@ class Detonator(UsableObject):
 
     def use(self, loult_state, server, obj_params):
         blown_up_users = []
-        for user in server.channel_obj.users.values:
+        for user in server.channel_obj.users.values():
             if user.state.inventory.search_by_class(C4):
                 user.state.inventory.remove_by_class(C4)
                 server.channel_obj.broadcast(type='antiflood', event='banned',
                                              flooder_id=user.user_id,
                                              date=timestamp() * 1000)
-                loult_state.ban_cookie(user.user_id.cookie_hash)
+                loult_state.ban_cookie(user.cookie_hash)
                 for client in user.clients:
                     client.sendClose(code=4006, reason='reconnect later')
-            blown_up_users.append(user.poke_params.fullname)
+                blown_up_users.append(user.poke_params.fullname)
         if blown_up_users:
             server.channel_obj.broadcast(type="notification",
                                          msg="%s a fait sauter %s!"
                                              % (server.user.poke_params.fullname, ", ".join(blown_up_users)),
                                          binary_payload=self._load_byte(self.EXPLOSION_FX))
+
+
+class SuicideJacket(UsableObject, DestructibleObject):
+    NAME = "ceinture d'explosif"
+    EXPLOSION_FX = path.join(path.dirname(path.realpath(__file__)), "data/suicide_bomber.mp3")
+
+    def use(self, loult_state, server, obj_params):
+        hit_usrs = [usr for usr in server.channel_obj.users.values()
+                    if userlist_dist(server.channel_obj, server.user.user_id, usr.user_id) < 3
+                    and usr is not server.user]
+        server.channel_obj.broadcast(type="notification",
+                                     msg="%s s'est fait sauter, emportant avec lui %s"
+                                         % (server.user.poke_params.fullname
+                                            , ", ".join([usr.poke_params.fullname for usr in hit_usrs])),
+                                     binary_payload=self._load_byte(self.EXPLOSION_FX))
+        for user in hit_usrs:
+            for client in user.clients:
+                client.sendClose(code=4006, reason="Reconnect please")
+        server.channel_obj.broadcast(type='antiflood', event='banned',
+                                     flooder_id=server.user.user_id,
+                                     date=timestamp() * 1000)
+        loult_state.ban_cookie(server.user.cookie_hash)
+        for client in server.user.clients:
+            client.sendClose(code=4006, reason='reconnect later')
