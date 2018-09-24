@@ -431,6 +431,7 @@ class PolynectarPotion(UsableObject, DestructibleObject, TargetedObject):
 
 class Microphone(UsableObject):
     MIKEDROP_FX = path.join(path.dirname(path.realpath(__file__)), "data/mikedrop.mp3")
+    NAME = 'micro'
 
     def use(self, loult_state, server, obj_params):
         server.channel_obj.broadcast(type="notification",
