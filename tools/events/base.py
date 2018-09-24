@@ -62,8 +62,7 @@ class PseudoPeriodicEvent(Event):
     def __init__(self):
         super().__init__()
         if self.FIRST_OCC is None:
-            self.next_occurence = datetime.now()
-            self.update_next_occ(None)
+            self.next_occurence = datetime.now() + timedelta(minutes=random.randint(30, 150))
         else:
             self.next_occurence = self.FIRST_OCC
 

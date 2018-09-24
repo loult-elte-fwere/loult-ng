@@ -253,7 +253,7 @@ class ThemeRenameEvent(ChannelModEvent):
 
 class ObjectDropEvent(PseudoPeriodicEvent):
     """Drops an object on a random connected user"""
-    PSEUDO_PERIOD = timedelta(hours=1)
+    PSEUDO_PERIOD = timedelta(minutes=45)
     VARIANCE = timedelta(hours=0.1)
 
     async def trigger(self, loultstate):
@@ -295,7 +295,7 @@ class LynchingEvent(PseudoPeriodicEvent):
 
 class PubBrawlEvent(PseudoPeriodicEvent):
     """Everyone gets a gun with 2 bullets"""
-    PSEUDO_PERIOD = timedelta(hours=8)
+    PSEUDO_PERIOD = timedelta(hours=6)
     VARIANCE = timedelta(hours=0.4)
 
     async def trigger(self, loultstate):

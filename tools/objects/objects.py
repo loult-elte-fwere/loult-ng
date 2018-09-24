@@ -25,6 +25,18 @@ class DiseaseObject(ClonableObject, InertObject):
         return "la %s de %s" % (self.disease, self.patient_zero)
 
 
+class Flower(InertObject):
+    FLOWERS = ["rose", "lys blanc", "iris", "chrysanthème", "oeillet", "jonquille", "muguet",
+               "tulipe", "orchidée"]
+
+    def __init__(self):
+        self.flower_name = random.choice(self.FLOWERS)
+
+    @property
+    def name(self):
+        return self.flower_name
+
+
 class SimpleInstrument(UsableObject):
     SND_DIR = path.join(path.dirname(path.realpath(__file__)), "data/instruments/")
     INSTRUMENTS_MAPPING = {"gong": "gong.mp3"}
@@ -490,3 +502,4 @@ class SuicideJacket(UsableObject, DestructibleObject):
         loult_state.ban_cookie(server.user.cookie_hash)
         for client in server.user.clients:
             client.sendClose(code=4006, reason='reconnect later')
+        self.should_be_destroyed = True
