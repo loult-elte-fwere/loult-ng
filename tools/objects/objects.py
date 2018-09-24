@@ -428,3 +428,14 @@ class PolynectarPotion(UsableObject, DestructibleObject, TargetedObject):
         server.channel_obj.update_userlist()
         self.should_be_destroyed = True
 
+
+class Microphone(UsableObject):
+    MIKEDROP_FX = path.join(path.dirname(path.realpath(__file__)), "data/mikedrop.mp3")
+    NAME = 'micro'
+
+    def use(self, loult_state, server, obj_params):
+        server.channel_obj.broadcast(type="notification",
+                                     msg="%s drop le mike!" % server.user.poke_params.fullname,
+                                     binary_payload=self._load_byte(self.MIKEDROP_FX))
+        for client in server.user.clients:
+            client.sendClose(code=4006, reason='Mike drop, bitch')
