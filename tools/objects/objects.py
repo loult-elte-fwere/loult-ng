@@ -133,12 +133,10 @@ class SniperRifle(UsableObject, TargetedObject):
         if adversary is None:
             return
 
-        with open(self.SNIPER_FX, "rb") as fx_file:
-            sniper_fx = fx_file.read()
         server.channel_obj.broadcast(type="notification",
                                      msg="%s tire au fusil sniper sur %s"
                                          % (server.user.poke_params.fullname, adversary.poke_params.fullname),
-                                     binary_payload=sniper_fx)
+                                     binary_payload=self._load_byte(self.SNIPER_FX))
         server.channel_obj.broadcast(type='antiflood', event='banned',
                                      flooder_id=adversary_id,
                                      date=timestamp() * 1000)
@@ -201,7 +199,9 @@ class RPG(UsableObject, TargetedObject):
             return
 
         server.channel_obj.broadcast(type="notification",
-                                     msg="")
+                                     msg="%s tire au bazooka sur %s"
+                                         % (server.user.poke_params.fullname, adversary.poke_params.fullname),
+                                     binary_payload=self._load_byte(self.RPG_FX))
         hit_usrs = [usr for usr in server.channel_obj.users.values()
                     if userlist_dist(server.channel_obj, adversary_id, usr.user_id) < 2]
         for user in hit_usrs:
@@ -424,6 +424,7 @@ class PolynectarPotion(UsableObject, DestructibleObject, TargetedObject):
         usr.poke_params = adversary.poke_params
         usr.voice_params = adversary.voice_params
         usr.poke_profile = adversary.poke_profile
+        usr._info = None
         server.channel_obj.update_userlist()
         self.should_be_destroyed = True
 
