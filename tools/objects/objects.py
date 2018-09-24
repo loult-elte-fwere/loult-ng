@@ -4,7 +4,8 @@ import re
 from os import path, listdir
 from time import time as timestamp
 
-from tools.effects.effects import ExplicitTextEffect
+from tools.effects.effects import ExplicitTextEffect, GrandSpeechMasterEffect, StutterEffect, VocalDyslexia, \
+    VowelExchangeEffect
 from tools.objects.base import ClonableObject, InertObject, UsableObject, DestructibleObject, TargetedObject, \
     userlist_dist
 from tools.tools import cached_loader
@@ -76,7 +77,7 @@ class Revolver(UsableObject, TargetedObject):
             return
 
         target_dist = userlist_dist(server.channel_obj, server.user.user_id, adversary_id)
-        if target_dist > 1:
+        if target_dist > 2:
             return server.send_json(type="notification",
                                     msg="Trop loin pour tirer!")
 
@@ -208,6 +209,24 @@ class RPG(UsableObject, TargetedObject):
                 client.sendClose(code=4006, reason="Reconnect please")
 
         self.empty = True
+
+
+class RPGRocket(UsableObject, DestructibleObject):
+    NAME = "Roquette pour RPG"
+    RELOADING_FX = path.join(path.dirname(path.realpath(__file__)), "data/rpg_reload.mp3")
+
+    def use(self, loult_state, server, obj_params):
+        users_rpg = server.user.state.inventory.search_by_class(RPG)
+        users_rpg = [gun for gun in users_rpg if gun.empty]
+        if not users_rpg:
+            return server.send_json(type="notification",
+                                    msg="Pas de RPG sniper à recharger dans votre inventaire")
+
+        empty_rpg = users_rpg[0]
+        empty_rpg.empty = False
+        server.send_json(type="notification", msg="RPG chargé!")
+        server.send_binary(self._load_byte(self.RELOADING_FX))
+        self.should_be_destroyed = True
         
 
 class Grenade(UsableObject, DestructibleObject):
@@ -313,7 +332,7 @@ class MagicWand(UsableObject, TargetedObject):
     def use(self, loult_state, server, obj_params):
         if (datetime.now() - self.last_used).seconds < self.COOLDOWN:
             return server.send_json(type="notification",
-                                    msg="Plus de mana!")
+                                    msg="Plus de mana dans la baguette, il faut attendre!")
 
         adversary_id, adversary = self._acquire_target(server, obj_params)
         if adversary is None:
@@ -335,6 +354,7 @@ class Scolopamine(UsableObject, DestructibleObject, TargetedObject):
 
         server.user.state.inventory.objects += adversary.state.inventory.objects
         adversary.state.inventory.objects = []
+        adversary.state.add_effect(GrandSpeechMasterEffect())
 
         server.channel_obj.broadcast(type="notification",
                                      msg="%s a drogué %s et puis a piqué tout son inventaire!"
@@ -342,9 +362,68 @@ class Scolopamine(UsableObject, DestructibleObject, TargetedObject):
         self.should_be_destroyed = True
 
 
-class WhiskyBottle(UsableObject, DestructibleObject):
+class WhiskyBottle(UsableObject, DestructibleObject, TargetedObject):
     NAME = "Bouteille de whisky"
+    EFFECTS = [GrandSpeechMasterEffect, StutterEffect, VocalDyslexia, VowelExchangeEffect]
+    FILLING_MAPPING = {0: "vide", 1: "presque vide", 2: "moitié vide",
+                       3: "presque pleine", 4: "pleine"}
+    BOTTLE_FX = path.join(path.dirname(path.realpath(__file__)), "data/broken_bottle.mp3")
+    GULP_FX = path.join(path.dirname(path.realpath(__file__)), "data/gulp.mp3")
+
+    def __init__(self):
+        super().__init__()
+        self.remaining_use = 4
+
+    @property
+    def name(self):
+        return self.NAME + " (%s)" % self.FILLING_MAPPING[self.remaining_use]
+
+    def use(self, loult_state, server, obj_params):
+        # user decides to use it on someone else, meaning throwing it
+        if obj_params:
+            adversary_id, adversary = self._acquire_target(server, obj_params)
+            if adversary is None:
+                return
+
+            target_dist = userlist_dist(server.channel_obj, server.user.user_id, adversary_id)
+            if target_dist > 1:
+                return server.send_json(type="notification",
+                                        msg="Trop loin pour lancer la bouteille dessus!")
+
+            server.channel_obj.broadcast(type="notification",
+                                         msg="%s lance une bouteille de whisky sur %s"
+                                             % (server.user.poke_params.fullname, adversary.poke_params.fullname),
+                                         binary_payload=self._load_byte(self.BOTTLE_FX))
+            for client in adversary.clients:
+                client.sendClose(code=4006, reason='Reconnect please')
+            self.should_be_destroyed = True
+        else:
+            if self.remaining_use <= 0:
+                return server.send_json(type="notification",
+                                        msg="La bouteille est vide!")
+            server.channel_obj.broadcast(type="notification",
+                                         msg="%s se descend du whisky!" % server.user.poke_params.fullname,
+                                         binary_payload=self._load_byte(self.GULP_FX))
+            for effect_type in self.EFFECTS:
+                server.user.state.add_effect(effect_type())
+            self.remaining_use -= 1
 
 
 class PolynectarPotion(UsableObject, DestructibleObject, TargetedObject):
-    pass
+    NAME = "potion polynectar"
+
+    def use(self, loult_state, server, obj_params):
+        adversary_id, adversary = self._acquire_target(server, obj_params)
+        if adversary is None:
+            return
+
+        server.channel_obj.broadcast(type="notification",
+                                     msg="%s a pris l'apparence de %s!"
+                                         % (server.user.poke_params.fullname, adversary.poke_params.fullname))
+        usr = server.user
+        usr.poke_params = adversary.poke_params
+        usr.voice_params = adversary.voice_params
+        usr.poke_profile = adversary.poke_profile
+        server.channel_obj.update_userlist()
+        self.should_be_destroyed = True
+
