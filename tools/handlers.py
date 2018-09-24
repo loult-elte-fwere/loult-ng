@@ -70,7 +70,7 @@ class FloodCheckerHandler(MsgBaseHandler):
             self.user.state.has_been_warned = True
             self.server.send_json(type='antiflood', event='flood_warning',
                            date=timestamp() * 1000)
-            alarm_sound = open_sound_file("tools/data/alerts/alarm.wav")
+            alarm_sound = open_sound_file("data/alerts/alarm.wav")
             self.server.send_binary(alarm_sound)
             self.server.logger.info('has been warned for flooding')
         return True
@@ -366,7 +366,8 @@ class ObjectTrashHandler(MsgBaseHandler):
             return
 
         self.user.state.inventory.remove(selected_obj)
-        self.channel_obj.inventory.add(selected_obj)
+        if not isinstance(obj, ClonableObject):
+            self.channel_obj.inventory.add(selected_obj)
         self.server.send_json(type="object", response="object_trashed",
                               object_name=selected_obj.name)
 
