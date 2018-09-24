@@ -115,7 +115,8 @@ class ChannelModEvent(FiniteDurationEventMixin, PseudoPeriodicEvent):
 
     async def start(self, loultstate):
         for channel in loultstate.chans.values():
-            self._fuckup_channel_users(channel)
+            if len(channel.users) > 0: # for some odd reason this isn't always true...
+                self._fuckup_channel_users(channel)
             channel.update_userlist()
             channel.broadcast(type="notification",
                               event_type=self.EVENT_TYPE,
