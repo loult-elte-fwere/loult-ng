@@ -6,7 +6,7 @@ from os import path
 
 from tools.objects import get_random_object
 from tools.objects.objects import DiseaseObject, BaseballBat, Revolver, WhiskyBottle, RevolverCartridges, SniperBullets, \
-    RPGRocket
+    RPGRocket, RobinHoodsBow, Quiver
 from .base import next_occ
 
 import yaml
@@ -316,10 +316,30 @@ class AmmoDropEvent(PseudoPeriodicEvent):
 
     async def trigger(self, loultstate):
         for channel in loultstate.chans.values():
+            channel.broadcast(type="notification",
+                              msg="Largage de munitions!")
             inv = channel.inventory
-            for i in range(random.randint(2, 4)):
+            for _ in range(random.randint(2, 4)):
                 inv.add(RevolverCartridges())
-            for i in range(random.randint(1, 3)):
+            for _ in range(random.randint(1, 3)):
                 inv.add(SniperBullets())
-            for i in range(random.randint(1, 3)):
+            for _ in range(random.randint(1, 3)):
                 inv.add(RPGRocket())
+
+
+class RobinHoodEvent(PseudoPeriodicEvent):
+    """Someone become robin hood, savior of the poor"""
+    PSEUDO_PERIOD = timedelta(hours=6)
+    VARIANCE = timedelta(hours=0.4)
+
+    async def trigger(self, loultstate):
+        for channel in loultstate.chans.values():
+            user = random.choice(list(channel.users.values()))
+            channel.broadcast(type="notification",
+                              msg="%s est robin du Loult!" % user.poke_params.fullname)
+            user.state.inventory.add(RobinHoodsBow())
+            user.state.inventory.add(Quiver(arrows=5))
+            user.poke_params.pokename = "Robin"
+            user.poke_params.poke_adj = "du Loult"
+            user._info = None
+            channel.update_userlist()

@@ -10,6 +10,10 @@ class LoultObject:
     def name(self):
         return self.NAME
 
+    @property
+    def destroy(self):
+        return False
+
     def use(self, loult_state, server, obj_params):
         pass
 

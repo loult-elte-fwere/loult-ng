@@ -1,17 +1,16 @@
-from typing import Dict
 from datetime import datetime, timedelta
-from time import time as timestamp
 from html import escape
-
-from tools.objects.base import ClonableObject, DestructibleObject
-from .combat import CombatSimulator
-from .ban import Ban, BanFail
 from io import BytesIO
+from time import time as timestamp
+from typing import Dict
+
 from scipy.io import wavfile
 
-from config import ATTACK_RESTING_TIME, BAN_TIME, MOD_COOKIES, SOUND_BROADCASTER_COOKIES, MAX_COOKIES_PER_IP, \
-    TIME_BEFORE_TALK, TIME_BETWEEN_CONNECTIONS
+from config import ATTACK_RESTING_TIME, MOD_COOKIES, SOUND_BROADCASTER_COOKIES, TIME_BEFORE_TALK
+from tools.objects.base import ClonableObject
 from tools.tools import open_sound_file
+from .ban import Ban, BanFail
+from .combat import CombatSimulator
 
 
 class BaseHandler:
@@ -353,8 +352,7 @@ class ObjectUseHandler(MsgBaseHandler):
             return self.server.send_json(type="object", response="invalid_id")
 
         selected_obj.use(self.loult_state, self.server, msg_data['params'])
-        if isinstance(selected_obj, DestructibleObject) and selected_obj.destroy:
-            self.user.state.inventory.remove(selected_obj)
+        self.user.state.inventory.destroy_used_objects()
 
 
 class ObjectTrashHandler(MsgBaseHandler):

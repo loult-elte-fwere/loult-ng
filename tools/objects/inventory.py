@@ -1,7 +1,7 @@
 from typing import List
 import random
 
-from .base import LoultObject
+from .base import LoultObject, DestructibleObject
 
 
 class UserInventory:
@@ -37,3 +37,6 @@ class UserInventory:
 
     def remove_by_class(self, obj_class):
         self.objects = [obj for obj in self.objects if not isinstance(obj, obj_class)]
+
+    def destroy_used_objects(self):
+        self.objects = [obj for obj in self.objects if not obj.destroy]
