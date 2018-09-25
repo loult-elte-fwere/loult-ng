@@ -62,7 +62,7 @@ class PseudoPeriodicEvent(Event):
     def __init__(self):
         super().__init__()
         if self.FIRST_OCC is None:
-            self.next_occurence = datetime.now() + timedelta(minutes=random.randint(30, 150))
+            self.next_occurence = datetime.now() + timedelta(minutes=random.randint(10, 150))
         else:
             self.next_occurence = self.FIRST_OCC
 
@@ -115,8 +115,7 @@ class ChannelModEvent(FiniteDurationEventMixin, PseudoPeriodicEvent):
 
     async def start(self, loultstate):
         for channel in loultstate.chans.values():
-            if len(channel.users) > 0: # for some odd reason this isn't always true...
-                self._fuckup_channel_users(channel)
+            self._fuckup_channel_users(channel)
             channel.update_userlist()
             channel.broadcast(type="notification",
                               event_type=self.EVENT_TYPE,
@@ -129,4 +128,5 @@ class ChannelModEvent(FiniteDurationEventMixin, PseudoPeriodicEvent):
             for user in channel.users.values():
                 user.reload_params_from_cookie()
             channel.update_userlist()
+
 

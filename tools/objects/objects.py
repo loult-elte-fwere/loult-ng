@@ -1,6 +1,7 @@
 from datetime import datetime
 import random
 import re
+from itertools import cycle
 from os import path, listdir
 from time import time as timestamp
 
@@ -73,7 +74,7 @@ class Revolver(UsableObject, TargetedObject):
     @property
     def name(self):
         if self.remaining_bullets:
-            return self.NAME + " (%i)" % self.remaining_bullets
+            return self.NAME + " (%s)" % ("▮" * self.remaining_bullets)
         else:
             return self.NAME + " (vide)"
 
@@ -84,20 +85,20 @@ class Revolver(UsableObject, TargetedObject):
             server.send_binary(self._load_byte(self.EMPTY_FX))
             return
 
-        adversary_id, adversary = self._acquire_target(server, obj_params)
-        if adversary is None:
+        target_id, target = self._acquire_target(server, obj_params)
+        if target is None:
             return
 
-        target_dist = userlist_dist(server.channel_obj, server.user.user_id, adversary_id)
+        target_dist = userlist_dist(server.channel_obj, server.user.user_id, target_id)
         if target_dist > 2:
             return server.send_json(type="notification",
                                     msg="Trop loin pour tirer!")
 
         server.channel_obj.broadcast(type="notification",
                                      msg="%s tire au Colt sur %s"
-                                         % (server.user.poke_params.fullname, adversary.poke_params.fullname),
+                                         % (server.user.poke_params.fullname, target.poke_params.fullname),
                                      binary_payload=self._load_byte(self.GUNSHOT_FX))
-        for client in adversary.clients:
+        for client in target.clients:
             client.sendClose(code=4006, reason='Reconnect please')
         self.remaining_bullets -= 1
 
@@ -141,19 +142,19 @@ class SniperRifle(UsableObject, TargetedObject):
             return server.send_json(type="notification",
                              msg="Plus de munitions!")
 
-        adversary_id, adversary = self._acquire_target(server, obj_params)
-        if adversary is None:
+        target_id, target = self._acquire_target(server, obj_params)
+        if target is None:
             return
 
         server.channel_obj.broadcast(type="notification",
                                      msg="%s tire au fusil sniper sur %s"
-                                         % (server.user.poke_params.fullname, adversary.poke_params.fullname),
+                                         % (server.user.poke_params.fullname, target.poke_params.fullname),
                                      binary_payload=self._load_byte(self.SNIPER_FX))
         server.channel_obj.broadcast(type='antiflood', event='banned',
-                                     flooder_id=adversary_id,
+                                     flooder_id=target_id,
                                      date=timestamp() * 1000)
-        loult_state.ban_cookie(adversary.cookie_hash)
-        for client in adversary.clients:
+        loult_state.ban_cookie(target.cookie_hash)
+        for client in target.clients:
             client.sendClose(code=4006, reason='reconnect later')
         self.empty = True
 
@@ -168,7 +169,7 @@ class SniperBullets(UsableObject, DestructibleObject):
 
     @property
     def name(self):
-        return self.NAME + "(%i)" % self.remaining_bullets
+        return self.NAME + " (%s)" % ("▮" * self.remaining_bullets)
 
     def use(self, loult_state, server, obj_params):
         # searching in the user's inventory for an empty sniper rifle
@@ -206,16 +207,16 @@ class RPG(UsableObject, TargetedObject):
             return server.send_json(type="notification",
                                     msg="Plus de munitions!")
 
-        adversary_id, adversary = self._acquire_target(server, obj_params)
-        if adversary is None:
+        target_id, target = self._acquire_target(server, obj_params)
+        if target is None:
             return
 
         server.channel_obj.broadcast(type="notification",
                                      msg="%s tire au bazooka sur %s"
-                                         % (server.user.poke_params.fullname, adversary.poke_params.fullname),
+                                         % (server.user.poke_params.fullname, target.poke_params.fullname),
                                      binary_payload=self._load_byte(self.RPG_FX))
         hit_usrs = [usr for usr in server.channel_obj.users.values()
-                    if userlist_dist(server.channel_obj, adversary_id, usr.user_id) < 2]
+                    if userlist_dist(server.channel_obj, target_id, usr.user_id) < 2]
         for user in hit_usrs:
             for client in user.clients:
                 client.sendClose(code=4006, reason="Reconnect please")
@@ -346,13 +347,13 @@ class MagicWand(UsableObject, TargetedObject):
             return server.send_json(type="notification",
                                     msg="Plus de mana dans la baguette, il faut attendre!")
 
-        adversary_id, adversary = self._acquire_target(server, obj_params)
-        if adversary is None:
+        target_id, target = self._acquire_target(server, obj_params)
+        if target is None:
             return
 
-        adversary.state.add_effect(self.DuckEffect())
+        target.state.add_effect(self.DuckEffect())
         server.channel_obj.broadcast(type="notification",
-                                     msg="%s s'est fait changer en canard" % adversary.poke_params.fullname)
+                                     msg="%s s'est fait changer en canard" % target.poke_params.fullname)
         self.last_used = datetime.now()
 
 
@@ -360,17 +361,17 @@ class Scolopamine(UsableObject, DestructibleObject, TargetedObject):
     NAME = "Scolopamine"
 
     def use(self, loult_state, server, obj_params):
-        adversary_id, adversary = self._acquire_target(server, obj_params)
-        if adversary is None:
+        target_id, target = self._acquire_target(server, obj_params)
+        if target is None:
             return
 
-        server.user.state.inventory.objects += adversary.state.inventory.objects
-        adversary.state.inventory.objects = []
-        adversary.state.add_effect(GrandSpeechMasterEffect())
+        server.user.state.inventory.objects += target.state.inventory.objects
+        target.state.inventory.objects = []
+        target.state.add_effect(GrandSpeechMasterEffect())
 
         server.channel_obj.broadcast(type="notification",
                                      msg="%s a drogué %s et puis a piqué tout son inventaire!"
-                                         % (server.user.poke_params.fullname, adversary.poke_params.fullname))
+                                         % (server.user.poke_params.fullname, target.poke_params.fullname))
         self.should_be_destroyed = True
 
 
@@ -393,20 +394,20 @@ class WhiskyBottle(UsableObject, DestructibleObject, TargetedObject):
     def use(self, loult_state, server, obj_params):
         # user decides to use it on someone else, meaning throwing it
         if obj_params:
-            adversary_id, adversary = self._acquire_target(server, obj_params)
-            if adversary is None:
+            target_id, target = self._acquire_target(server, obj_params)
+            if target is None:
                 return
 
-            target_dist = userlist_dist(server.channel_obj, server.user.user_id, adversary_id)
+            target_dist = userlist_dist(server.channel_obj, server.user.user_id, target_id)
             if target_dist > 1:
                 return server.send_json(type="notification",
                                         msg="Trop loin pour lancer la bouteille dessus!")
 
             server.channel_obj.broadcast(type="notification",
                                          msg="%s lance une bouteille de whisky sur %s"
-                                             % (server.user.poke_params.fullname, adversary.poke_params.fullname),
+                                             % (server.user.poke_params.fullname, target.poke_params.fullname),
                                          binary_payload=self._load_byte(self.BOTTLE_FX))
-            for client in adversary.clients:
+            for client in target.clients:
                 client.sendClose(code=4006, reason='Reconnect please')
             self.should_be_destroyed = True
         else:
@@ -425,17 +426,17 @@ class PolynectarPotion(UsableObject, DestructibleObject, TargetedObject):
     NAME = "potion polynectar"
 
     def use(self, loult_state, server, obj_params):
-        adversary_id, adversary = self._acquire_target(server, obj_params)
-        if adversary is None:
+        target_id, target = self._acquire_target(server, obj_params)
+        if target is None:
             return
 
         server.channel_obj.broadcast(type="notification",
                                      msg="%s a pris l'apparence de %s!"
-                                         % (server.user.poke_params.fullname, adversary.poke_params.fullname))
+                                         % (server.user.poke_params.fullname, target.poke_params.fullname))
         usr = server.user
-        usr.poke_params = adversary.poke_params
-        usr.voice_params = adversary.voice_params
-        usr.poke_profile = adversary.poke_profile
+        usr.poke_params = target.poke_params
+        usr.voice_params = target.voice_params
+        usr.poke_profile = target.poke_profile
         usr._info = None
         server.channel_obj.update_userlist()
         self.should_be_destroyed = True
@@ -503,3 +504,120 @@ class SuicideJacket(UsableObject, DestructibleObject):
         for client in server.user.clients:
             client.sendClose(code=4006, reason='reconnect later')
         self.should_be_destroyed = True
+
+
+class LinkCostume(UsableObject):
+    NAME = "costume de Link"
+
+    def use(self, loult_state, server, obj_params):
+        if hasattr(server.user, "has_link_costume"):
+            return server.send_json(type="notification",
+                                    msg="Vous ne pouvez pas enfiler deux fois d'affilée le costume!")
+
+        params = server.user.poke_params
+        params.img_id = "link"
+        params.pokename = "Link"
+        server.user._info = None
+        server.user.has_link_costume = True
+        server.channel_obj.update_userlist()
+        server.channel_obj.broadcast(type="notification",
+                                     msg="%s enfile un costume de Link" % server.user.poke_params.fullname)
+
+
+class RobinHoodsBow(UsableObject, TargetedObject):
+    NAME = "arc de robin des bois"
+    BOW_FX = path.join(path.dirname(path.realpath(__file__)), "data/bow_fire.mp3")
+
+    def use(self, loult_state, server, obj_params):
+        target_id, target = self._acquire_target(server, obj_params)
+        if target is None:
+            return
+
+        usrs = list(server.channel_obj.users.values())
+        usrs.remove(target)
+        usrs.remove(server.user)
+        target_objs = list(target.state.inventory.objects)
+
+        quivers = server.user.state.inventory.search_by_class(Quiver)
+        if not quivers:
+            return server.send_json(type="notification",
+                                    msg="Il vous faut un carquois avec des flèches pour pouvoir tirer à l'arc!")
+        quiver = quivers[0]
+        quiver.arrows -= 1
+
+        if usrs:
+            usrs.sort(key=lambda x: len(x.state.inventory.objects), reverse=False)
+            for usr in cycle(usrs):
+                if target_objs:
+                    obj = target_objs.pop()
+                    target.state.inventory.remove(obj)
+                    usr.state.inventory.add(obj)
+                else:
+                    break
+        else:
+            for obj in target_objs:
+                target.state.inventory.remove(obj)
+                server.channel_obj.inventory.add(obj)
+        server.channel_obj.broadcast(type="notification",
+                                     msg="%s vole à %s pour donner aux pauvres"
+                                         % (server.user.poke_params.fullname, target.poke_params.fullname),
+                                     binary_payload=self._load_byte(self.BOW_FX))
+
+
+class Quiver(InertObject, DestructibleObject):
+    NAME = "carquois"
+
+    def __init__(self, arrows=3):
+        super().__init__()
+        self.arrows = arrows
+
+    @property
+    def name(self):
+        if self.arrows:
+            return self.NAME + " (%s)" % ("➹" * self.arrows)
+        else:
+            return self.NAME
+
+    @property
+    def destroy(self):
+        return self.arrows <= 0
+
+
+class RectalExam(UsableObject, TargetedObject, DestructibleObject):
+    NAME = "examen rectal"
+
+    def use(self, loult_state, server, obj_params):
+        target_id, target = self._acquire_target(server, obj_params)
+        if target is None:
+            return
+
+        from ..objects import get_random_object
+        rdm_objects = [get_random_object() for _ in range(random.randint(2,4))]
+        for obj in rdm_objects:
+            server.user.state.inventory.add(obj)
+        names_list = ", ".join(obj.name for obj in rdm_objects)
+
+        if target is server.user:
+            msg = "%s a sorti %s de son cul!" % (server.user.poke_params.fullname, names_list)
+        else:
+            msg = "%s fouille dans le cul de %s et trouve %s! " \
+                  % (server.user.poke_params.fullname, target.poke_params.fullname, names_list)
+
+        server.channel_obj.broadcast(type="notification", msg=msg)
+        self.should_be_destroyed = True
+
+
+class WealthDetector(UsableObject, TargetedObject):
+    NAME = "détecteur de richesse"
+    
+    def use(self, loult_state, server, obj_params):
+        target_id, target = self._acquire_target(server, obj_params)
+        if target is None:
+            return
+
+        server.channel_obj.broadcast(type="notification",
+                                     msg="%s utilise le détecteur de richesse sur %s"
+                                         % (server.user.poke_params.fullname, target.poke_params.fullname))
+        server.send_json(type="notification",
+                         msg="%s a %i objets dans son inventaire"
+                             % (target.poke_params.fullname, len(target.state.inventory.objects)))

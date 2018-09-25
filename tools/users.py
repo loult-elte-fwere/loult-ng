@@ -53,6 +53,7 @@ class PokeParameters:
         self.poke_id = poke_id
         self.pokename = pokemons.pokemon[self.poke_id]
         self.poke_adj = adjectives[adj_id]
+        self.img_id = str(self.poke_id).zfill(3)
 
     @property
     def fullname(self):
@@ -212,7 +213,7 @@ class User:
                 'userid': self.user_id,
                 'params': {
                     'name': self.poke_params.pokename,
-                    'img': str(self.poke_params.poke_id).zfill(3),
+                    'img': self.poke_params.img_id,
                     'color': self.poke_params.color,
                     'adjective': self.poke_params.poke_adj
                 },

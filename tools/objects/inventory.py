@@ -1,14 +1,16 @@
 from typing import List
+import random
 
-from collections import defaultdict
-
-from .base import LoultObject
+from .base import LoultObject, DestructibleObject
 
 
 class UserInventory:
 
     def __init__(self):
         self.objects = [] # type: List[LoultObject]
+        if random.randint(1, 10) == 1:
+            from ..objects import get_random_object
+            self.add(get_random_object())
 
     def get_listing(self):
         if self.objects:
@@ -35,3 +37,6 @@ class UserInventory:
 
     def remove_by_class(self, obj_class):
         self.objects = [obj for obj in self.objects if not isinstance(obj, obj_class)]
+
+    def destroy_used_objects(self):
+        self.objects = [obj for obj in self.objects if not obj.destroy]

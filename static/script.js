@@ -69,9 +69,9 @@
 					img2 = document.createElement('img'),
 					img3 = document.createElement('img');
 
-				img1.src = '/pokemon/' + pkmn.img + '.gif';
-				img2.src = '/img/pokemon/' + pkmn.img + '.gif';
-				img3.src = '/dev/pokemon/' + pkmn.img + '.png';
+				img1.src = '/img/pokemon/small/' + pkmn.img + '.gif';
+				img2.src = '/img/pokemon/medium/' + pkmn.img + '.gif';
+				img3.src = '/img/pokemon/big/' + pkmn.img + '.png';
 				pic.appendChild(img1);
 				pic.appendChild(img2);
 				pic.appendChild(img3);
@@ -122,7 +122,7 @@
 		var row = document.createElement('li');
 		row.appendChild(document.createTextNode(params.name));
 		row.style.color = params.color;
-		row.style.backgroundImage = 'url("/pokemon/' + params.img + '.gif")';
+		row.style.backgroundImage = 'url("/img/pokemon/small/' + params.img + '.gif")';
 
 		if(!params.you) {
 			var i = document.createElement('i');
@@ -142,7 +142,7 @@
 			};
 		}
 		else {
-			underlay.style.backgroundImage = 'url("/dev/pokemon/' + params.img + '.png")';
+			underlay.style.backgroundImage = 'url("/img/pokemon/big/' + params.img + '.png")';
 			you = userid;
 		}
 
@@ -155,7 +155,7 @@
 		l.className = 'material-icons';
 		l.appendChild(document.createTextNode('my_location'));
 
-		pimg.src = '/img/pokemon/' + params.img + '.gif';
+		pimg.src = '/img/pokemon/medium/' + params.img + '.gif';
 		idiv.appendChild(pimg);
 
 		phead.style.backgroundImage = 'linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0) 35px, rgba(' + parseInt(params.color.slice(1, 3), 16) + ', ' + parseInt(params.color.slice(3, 5), 16) + ', ' + parseInt(params.color.slice(5, 7), 16) + ', 0.2) 35px, ' + params.color + ' 100%)';
