@@ -1,6 +1,5 @@
 from typing import List
-
-from collections import defaultdict
+import random
 
 from .base import LoultObject
 
@@ -9,6 +8,9 @@ class UserInventory:
 
     def __init__(self):
         self.objects = [] # type: List[LoultObject]
+        if random.randint(1, 10) == 1:
+            from ..objects import get_random_object
+            self.add(get_random_object())
 
     def get_listing(self):
         if self.objects:

@@ -68,8 +68,8 @@ class Channel:
                 for client in self.clients:
                     self._signal_user_disconnect(client, user)
 
-                # if no one's connected dans the backlog is empty, we delete the channel from the register
-                if not self.clients and not self.backlog:
+                # if no one's connected, we delete the channel from the register
+                if not self.clients:
                     del self.loult_state.chans[self.name]
         except KeyError:
             pass
