@@ -364,7 +364,7 @@ class ObjectTrashHandler(MsgBaseHandler):
             return
 
         self.user.state.inventory.remove(selected_obj)
-        if not isinstance(obj, ClonableObject):
+        if not isinstance(selected_obj, ClonableObject):
             self.channel_obj.inventory.add(selected_obj)
         self.server.send_json(type="object", response="object_trashed",
                               object_name=selected_obj.name)
