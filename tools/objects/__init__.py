@@ -9,7 +9,7 @@ from .objects import (Grenade, SniperRifle, Revolver, RevolverCartridges, Sniper
 AVAILABLE_OBJECTS = [Grenade, SniperBullets, SniperRifle, Revolver, RevolverCartridges, MagicWand,
                      Crown, SimpleInstrument, Scolopamine, WhiskyBottle, PolynectarPotion, RPG,
                      RPGRocket, Microphone, C4, Detonator, SuicideJacket, Flower, Quiver,
-                     WealthDetector, RectalExam]
+                     WealthDetector, RectalExam, LinkCostume]
 
 
 def get_random_object() -> LoultObject:
