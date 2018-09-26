@@ -95,7 +95,7 @@ class Revolver(UsableObject, TargetedObject):
                                     msg="Trop loin pour tirer!")
 
         server.channel_obj.broadcast(type="notification",
-                                     msg="%s tire au Colt sur %s"
+                                     msg="%s tire au pistolet sur %s"
                                          % (server.user.poke_params.fullname, target.poke_params.fullname),
                                      binary_payload=self._load_byte(self.GUNSHOT_FX))
         for client in target.clients:
