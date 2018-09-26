@@ -180,6 +180,8 @@ class LoultServerProtocol:
         async def auto_close(coroutine):
             try:
                 return await coroutine
+            except OSError:
+                exit(1)
             except Exception as err:
                 self.sendClose(code=4000, reason=str(err))
                 self.logger.error('raised an exception "%s"' % err)

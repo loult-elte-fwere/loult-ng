@@ -533,6 +533,9 @@ class RobinHoodsBow(UsableObject, TargetedObject):
         if target is None:
             return
 
+        if server.user is target:
+            return server.send_json(type="notification", msg="Impossible d'utiliser l'arc sur soi-même")
+
         usrs = list(server.channel_obj.users.values())
         usrs.remove(target)
         usrs.remove(server.user)
