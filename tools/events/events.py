@@ -302,7 +302,7 @@ class PubBrawlEvent(PseudoPeriodicEvent):
     async def trigger(self, loultstate):
         for channel in loultstate.chans.values():
             for usr in channel.users.values():
-                if random.randint(0,1):
+                if random.randint(0, 1):
                     usr.state.inventory.add(Revolver(bullets=2))
                 usr.state.inventory.add(WhiskyBottle())
             channel.broadcast(type="notification",
@@ -321,7 +321,7 @@ class AmmoDropEvent(PseudoPeriodicEvent):
             inv = channel.inventory
             for _ in range(random.randint(2, 4)):
                 inv.add(RevolverCartridges())
-            for _ in range(random.randint(1, 3)):
+            for _ in range(random.randint(0, 2)):
                 inv.add(SniperBullets())
             for _ in range(random.randint(1, 3)):
                 inv.add(RPGRocket())

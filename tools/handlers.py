@@ -6,7 +6,7 @@ from typing import Dict
 
 from scipy.io import wavfile
 
-from config import ATTACK_RESTING_TIME, MOD_COOKIES, SOUND_BROADCASTER_COOKIES, TIME_BEFORE_TALK
+from config import ATTACK_RESTING_TIME, MOD_COOKIES, SOUND_BROADCASTER_COOKIES, TIME_BEFORE_TALK, MAX_ITEMS_IN_INVENTORY
 from tools.objects.base import ClonableObject
 from tools.tools import open_sound_file
 from .ban import Ban, BanFail
@@ -328,6 +328,10 @@ class ObjectGiveHandler(MsgBaseHandler):
         if beneficiary is None:
             return self.server.send_json(type="give", response="invalid_target")
 
+        if len(beneficiary.state.inventory.objects) >= MAX_ITEMS_IN_INVENTORY:
+            return self.server.send_json(type="notification",
+                                         msg="Déjà trop d'objets dans l'inventaire de votre ami!")
+
         if not isinstance(given_obj, ClonableObject):
             self.user.state.inventory.remove(given_obj)
         beneficiary.state.inventory.add(given_obj)
@@ -385,6 +389,9 @@ class ObjectTakeHandler(MsgBaseHandler):
         self.last_take = datetime(1972, 1, 1)
 
     async def handle(self, msg_data: Dict):
+        if len(self.user.state.inventory.objects) >= MAX_ITEMS_IN_INVENTORY:
+            return self.server.send_json(type="notification",
+                                         msg="Déjà trop d'objets dans votre inventaire!")
         try:
             selected_obj = self.channel_obj.inventory.get_object_by_id(int(msg_data.get("object_id")))
         except TypeError:
