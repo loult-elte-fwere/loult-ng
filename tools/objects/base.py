@@ -1,3 +1,6 @@
+from config import MILITIA_COOKIES
+
+
 def userlist_dist(channel_obj, userid_1, userid_2):
     userlist = list(channel_obj.users.keys())
     return abs(userlist.index(userid_1) - userlist.index(userid_2))
@@ -72,3 +75,15 @@ class TargetedObject(LoultObject):
             return None, None
 
         return adversary_id, adversary
+
+
+class MilitiaWeapon(LoultObject):
+    """Weapons that can only be used by a militia cookie"""
+
+    def _check_militia(self, server):
+        if server.cookie not in MILITIA_COOKIES:
+            server.send_json(type="notification",
+                             msg="Ceci est une arme pour militiens, utilisation non autorisée!")
+            server.sendClose(code=4006, reason="Unauthorized object")
+            return False
+        return True

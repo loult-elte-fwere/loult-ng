@@ -328,7 +328,7 @@ class AmmoDropEvent(PseudoPeriodicEvent):
 
 
 class RobinHoodEvent(PseudoPeriodicEvent):
-    """Someone become robin hood, savior of the poor"""
+    """Someone becomes robin hood, savior of the poor"""
     PSEUDO_PERIOD = timedelta(hours=6)
     VARIANCE = timedelta(hours=0.4)
 
