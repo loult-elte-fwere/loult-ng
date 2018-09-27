@@ -254,7 +254,7 @@ class ThemeRenameEvent(ChannelModEvent):
 
 class ObjectDropEvent(PseudoPeriodicEvent):
     """Drops an object on a random connected user"""
-    PSEUDO_PERIOD = timedelta(minutes=45)
+    PSEUDO_PERIOD = timedelta(minutes=60)
     VARIANCE = timedelta(hours=0.1)
 
     async def trigger(self, loultstate):
@@ -302,7 +302,7 @@ class PubBrawlEvent(PseudoPeriodicEvent):
     async def trigger(self, loultstate):
         for channel in loultstate.chans.values():
             for usr in channel.users.values():
-                if random.randint(0,1):
+                if random.randint(0, 1):
                     usr.state.inventory.add(Revolver(bullets=2))
                 usr.state.inventory.add(WhiskyBottle())
             channel.broadcast(type="notification",
@@ -311,8 +311,8 @@ class PubBrawlEvent(PseudoPeriodicEvent):
 
 class AmmoDropEvent(PseudoPeriodicEvent):
     """Drops ammo in the common inventory"""
-    PSEUDO_PERIOD = timedelta(minutes=60)
-    VARIANCE = timedelta(hours=0.1)
+    PSEUDO_PERIOD = timedelta(hours=2.5)
+    VARIANCE = timedelta(hours=0.2)
 
     async def trigger(self, loultstate):
         for channel in loultstate.chans.values():
@@ -321,7 +321,7 @@ class AmmoDropEvent(PseudoPeriodicEvent):
             inv = channel.inventory
             for _ in range(random.randint(2, 4)):
                 inv.add(RevolverCartridges())
-            for _ in range(random.randint(1, 3)):
+            for _ in range(random.randint(0, 2)):
                 inv.add(SniperBullets())
             for _ in range(random.randint(1, 3)):
                 inv.add(RPGRocket())

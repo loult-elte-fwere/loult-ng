@@ -45,3 +45,9 @@ NFTABLES_OUTPUT = 'filter'
 
 # maximum number of simultaneously connected cookies an IP can have
 MAX_COOKIES_PER_IP = 2
+
+# Number of objects by default in the channel inventory when a channel is created
+CHANNEL_SETUP_INVENTORY_COUNT = 10
+
+# Max number of items in inventory (limits take or give)
+MAX_ITEMS_IN_INVENTORY = 15

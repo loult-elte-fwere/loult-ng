@@ -514,14 +514,14 @@ class LinkCostume(UsableObject):
             return server.send_json(type="notification",
                                     msg="Vous ne pouvez pas enfiler deux fois d'affilée le costume!")
 
+        server.channel_obj.broadcast(type="notification",
+                                     msg="%s enfile un costume de Link" % server.user.poke_params.fullname)
         params = server.user.poke_params
         params.img_id = "link"
         params.pokename = "Link"
         server.user._info = None
         server.user.has_link_costume = True
         server.channel_obj.update_userlist()
-        server.channel_obj.broadcast(type="notification",
-                                     msg="%s enfile un costume de Link" % server.user.poke_params.fullname)
 
 
 class RobinHoodsBow(UsableObject, TargetedObject):
