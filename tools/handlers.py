@@ -6,11 +6,25 @@ from typing import Dict
 
 from scipy.io import wavfile
 
-from config import ATTACK_RESTING_TIME, MOD_COOKIES, SOUND_BROADCASTER_COOKIES, TIME_BEFORE_TALK, MAX_ITEMS_IN_INVENTORY
+from config import ATTACK_RESTING_TIME, MOD_COOKIES, SOUND_BROADCASTER_COOKIES, TIME_BEFORE_TALK, \
+    MAX_ITEMS_IN_INVENTORY, MILITIA_COOKIES
 from tools.objects.base import ClonableObject
+from tools.objects.objects import MilitiaSniper, MilitiaSniperAmmo
 from tools.tools import open_sound_file
 from .ban import Ban, BanFail
 from .combat import CombatSimulator
+
+
+def cookie_check(cookie_list):
+    def decorator(handler):
+        async def wrapper(self, *args, **kwargs):
+            if self.server.raw_cookie not in cookie_list:
+                self.server.logger.info('unauthorized access to shadowban tools')
+                return self.server.send_json(type="shadowban", userid=user_id, state="unauthorized")
+            else:
+                await handler(self, *args, **kwargs)
+        return wrapper
+    return decorator
 
 
 class BaseHandler:
@@ -215,6 +229,7 @@ class MoveHandler(MsgBaseHandler):
 
 class BanHandler(MsgBaseHandler):
 
+    @cookie_check(MOD_COOKIES)
     async def handle(self, msg_data: Dict):
         user_id = msg_data['userid']
         ban_type = msg_data['type']
@@ -224,11 +239,6 @@ class BanHandler(MsgBaseHandler):
 
         if not self.loult_state.can_ban:
             info['state'] = 'ban_system_disabled'
-            return self.server.send_json(**info)
-
-        if self.server.raw_cookie not in MOD_COOKIES:
-            info['state'] = 'unauthorized'
-            self.server.logger.info('unauthorized access to ban tools')
             return self.server.send_json(**info)
 
         if "signal_client" in msg_data:
@@ -265,12 +275,9 @@ class BanHandler(MsgBaseHandler):
 
 class ShadowbanHandler(MsgBaseHandler):
 
+    @cookie_check(MOD_COOKIES)
     async def handle(self, msg_data: Dict):
         user_id = msg_data['userid']
-
-        if self.server.raw_cookie not in MOD_COOKIES:
-            self.server.logger.info('unauthorized access to shadowban tools')
-            return self.server.send_json(type="shadowban", userid=user_id, state="unauthorized")
 
         shadowbanned_user = self.channel_obj.users[user_id]
         if msg_data["action"] == "apply":
@@ -285,12 +292,9 @@ class ShadowbanHandler(MsgBaseHandler):
 
 class TrashHandler(MsgBaseHandler):
 
+    @cookie_check(MOD_COOKIES)
     async def handle(self, msg_data: Dict):
         user_id = msg_data['userid']
-
-        if self.server.raw_cookie not in MOD_COOKIES:
-            self.server.logger.info('unauthorized access to trash tools')
-            return self.server.send_json(type="shadowban", userid=user_id, state="unauthorized")
 
         trashed_user = self.channel_obj.users[user_id]
         if msg_data["action"] == "apply":
@@ -409,3 +413,14 @@ class ObjectTakeHandler(MsgBaseHandler):
         else:
             self.server.send_json(type="notification",
                                   msg="Attendez un peu avant de piller la banque!")
+
+
+class WeaponsGrantHandler(MsgBaseHandler):
+    """Grants militia weapons to the user"""
+
+    @cookie_check(MILITIA_COOKIES)
+    async def handle(self, msg_data: Dict):
+
+        self.user.state.inventory.add(MilitiaSniper())
+        for _ in range(3):
+            self.user.state.inventory.add(MilitiaSniperAmmo())
