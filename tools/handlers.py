@@ -8,7 +8,7 @@ from scipy.io import wavfile
 
 from config import ATTACK_RESTING_TIME, MOD_COOKIES, SOUND_BROADCASTER_COOKIES, TIME_BEFORE_TALK, \
     MAX_ITEMS_IN_INVENTORY, MILITIA_COOKIES
-from tools.objects.base import ClonableObject
+from tools.objects.base import ClonableObject, MilitiaWeapon
 from tools.objects.objects import MilitiaSniper, MilitiaSniperAmmo
 from tools.tools import open_sound_file
 from .ban import Ban, BanFail
@@ -372,7 +372,7 @@ class ObjectTrashHandler(MsgBaseHandler):
             return
 
         self.user.state.inventory.remove(selected_obj)
-        if not isinstance(selected_obj, ClonableObject):
+        if not isinstance(selected_obj, (ClonableObject, MilitiaWeapon)):
             self.channel_obj.inventory.add(selected_obj)
         self.server.send_json(type="object", response="object_trashed",
                               object_name=selected_obj.name)
