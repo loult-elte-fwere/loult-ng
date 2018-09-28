@@ -661,6 +661,7 @@ class MilitiaSniper(UsableObject, TargetedObject, MilitiaWeapon):
                                      date=timestamp() * 1000)
         for client in target.clients:
             loult_state.ban_ip(client.ip)
+            client.sendClose(code=4006, reason="Reconnect later.")
 
 
 class MilitiaSniperAmmo(UsableObject, DestructibleObject, MilitiaWeapon):

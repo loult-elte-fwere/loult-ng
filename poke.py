@@ -67,7 +67,6 @@ if __name__ == "__main__":
     router.add_route(field="type", value="private_msg", handler_class=PrivateMessageHandler)
     router.add_route(field="type", value="attack", handler_class=AttackHandler)
     router.add_route(field="type", value="move", handler_class=MoveHandler)
-
     router.add_route(field="type", value="me", handler_class=NoRenderMsgHandler)
     router.add_route(field="type", value="bot", handler_class=NoRenderMsgHandler)
 

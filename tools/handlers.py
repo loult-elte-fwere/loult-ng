@@ -19,8 +19,11 @@ def cookie_check(cookie_list):
     def decorator(handler):
         async def wrapper(self, *args, **kwargs):
             if self.server.raw_cookie not in cookie_list:
-                self.server.logger.info('unauthorized access to shadowban tools')
-                return self.server.send_json(type="shadowban", userid=user_id, state="unauthorized")
+                self.server.logger.info('unauthorized attempt at access to mod tools')
+                self.server.send_json(type="shadowban",
+                                      userid=self.user.user_id,
+                                      state="unauthorized")
+                self.server.sendClose(code=4006, reason="Unauthorized access.")
             else:
                 await handler(self, *args, **kwargs)
         return wrapper

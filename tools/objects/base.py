@@ -81,7 +81,7 @@ class MilitiaWeapon(LoultObject):
     """Weapons that can only be used by a militia cookie"""
 
     def _check_militia(self, server):
-        if server.cookie not in MILITIA_COOKIES:
+        if server.raw_cookie not in MILITIA_COOKIES:
             server.send_json(type="notification",
                              msg="Ceci est une arme pour militiens, utilisation non autorisée!")
             server.sendClose(code=4006, reason="Unauthorized object")

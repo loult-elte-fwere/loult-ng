@@ -195,7 +195,6 @@ class LoultServerProtocol:
                 msg = json.loads(payload.decode('utf-8'))
             except json.JSONDecodeError:
                 return self.sendClose(code=4001, reason='Malformed JSON.')
-
             ensure_future(auto_close(self.routing_table.route_json(msg)))
 
     def onClose(self, wasClean, code, reason):
