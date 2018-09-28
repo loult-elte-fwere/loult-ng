@@ -2,4 +2,5 @@ __pycache__
 salt.py
 *.pyc
 venv/
+config.py
 
