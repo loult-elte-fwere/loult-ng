@@ -124,12 +124,21 @@ class Channel:
 
         return None, None
 
+    def disconnect_all_clients(self, user_id=None, ip=None):
+        """Either disconnects all clients for a user, or for an ip"""
+        if user_id is not None:
+            pass
+
+        if ip is not None:
+            pass
+
 
 class LoultServerState:
 
     def __init__(self):
         self.chans = {} # type:Dict[str,Channel]
         self.banned_cookies = set() #type:Set[str]
+        self.banned_ips= set() #type:Set[str]
         self.ip_backlog = deque(maxlen=100) #type: Tuple(str, str)
         self.shadowbanned_cookies = set()
         self.trashed_cookies = set()
@@ -150,3 +159,10 @@ class LoultServerState:
         self.banned_cookies.add(cookie)
         loop = get_event_loop()
         loop.call_later(BAN_TIME * 60, self.banned_cookies.remove, cookie)
+
+    def ban_ip(self, ip: str):
+        if ip in self.banned_ips:
+            return
+        self.banned_ips.add(ip)
+        loop = get_event_loop()
+        loop.call_later(BAN_TIME * 60 * 2, self.banned_ips.remove, ip)

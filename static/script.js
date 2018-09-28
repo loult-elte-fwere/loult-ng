@@ -495,6 +495,10 @@
 						var splitted = trimed.split(' ');
 						ws.send(JSON.stringify({ type : 'take', object_id: parseInt(splitted[1])}));
 					}
+					else if(trimed.match(/^\/mod\s/i)) {
+						var splitted = trimed.split(' ');
+						ws.send(JSON.stringify({ mod : splitted[1], params : splitted.slice(2)}));
+					}
 					else if(trimed.match(/^\/trash\s/i)) {
 						var splitted = trimed.split(' ');
 						ws.send(JSON.stringify({ type : 'trash', object_id: parseInt(splitted[1])}));

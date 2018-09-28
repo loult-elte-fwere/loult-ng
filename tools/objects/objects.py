@@ -8,7 +8,7 @@ from time import time as timestamp
 from tools.effects.effects import ExplicitTextEffect, GrandSpeechMasterEffect, StutterEffect, VocalDyslexia, \
     VowelExchangeEffect
 from tools.objects.base import ClonableObject, InertObject, UsableObject, DestructibleObject, TargetedObject, \
-    userlist_dist
+    userlist_dist, MilitiaWeapon
 from tools.tools import cached_loader
 
 
@@ -624,3 +624,64 @@ class WealthDetector(UsableObject, TargetedObject):
         server.send_json(type="notification",
                          msg="%s a %i objets dans son inventaire"
                              % (target.poke_params.fullname, len(target.state.inventory.objects)))
+
+
+class MilitiaSniper(UsableObject, TargetedObject, MilitiaWeapon):
+    NAME = "PGM Hecate II"
+    SNIPER_FX = path.join(path.dirname(path.realpath(__file__)), "data/sniper_bolt_action.mp3")
+
+    def __init__(self):
+        self.remaining_bullets = 7
+
+    @property
+    def name(self):
+        if self.remaining_bullets:
+            return self.NAME + " (%s)" % ("▮" * self.remaining_bullets)
+        else:
+            return self.NAME + " (vide)"
+
+    def use(self, loult_state, server, obj_params):
+        if not self._check_militia(server):
+            return
+
+        if self.remaining_bullets <= 0:
+            return server.send_json(type="notification",
+                                    msg="Plus de munitions!")
+
+        target_id, target = self._acquire_target(server, obj_params)
+        if target is None:
+            return
+
+        server.channel_obj.broadcast(type="notification",
+                                     msg="%s tire au fusil sniper calibre .50 sur %s"
+                                         % (server.user.poke_params.fullname, target.poke_params.fullname),
+                                     binary_payload=self._load_byte(self.SNIPER_FX))
+        server.channel_obj.broadcast(type='antiflood', event='banned',
+                                     flooder_id=target_id,
+                                     date=timestamp() * 1000)
+        for client in target.clients:
+            loult_state.ban_ip(client.ip)
+            client.sendClose(code=4006, reason="Reconnect later.")
+
+
+class MilitiaSniperAmmo(UsableObject, DestructibleObject, MilitiaWeapon):
+    NAME = "Chargeur PGM"
+    RELOADING_FX = path.join(path.dirname(path.realpath(__file__)), "data/gun/reloading.mp3")
+
+    def use(self, loult_state, server, obj_params):
+        if not self._check_militia(server):
+            return
+
+        # searching in the user's inventory for the emptiest gun to be used on
+        users_guns = server.user.state.inventory.search_by_class(MilitiaSniper)
+        users_guns = [gun for gun in users_guns if gun.remaining_bullets < 7]
+        if not users_guns:
+            return server.send_json(type="notification",
+                                    msg="Pas de PGM à recharger dans votre inventaire")
+
+        users_guns.sort(key=lambda x: x.remaining_bullets, reverse=False)
+        emptiest_gun = users_guns[0]
+        emptiest_gun.remaining_bullets = 7
+        server.send_json(type="notification", msg="PGM Hécate II chargé!")
+        server.send_binary(self._load_byte(self.RELOADING_FX))
+        self.should_be_destroyed = True

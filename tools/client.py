@@ -15,7 +15,7 @@ from autobahn.websocket.types import ConnectionDeny
 
 from config import TIME_BETWEEN_CONNECTIONS
 from salt import SALT
-from tools.objects.base import ClonableObject
+from tools.objects.base import ClonableObject, MilitiaWeapon
 from .tools import encode_json
 
 
@@ -131,8 +131,8 @@ class LoultServerProtocol:
         self.raw_cookie = ck
         cookie_hash = md5((ck + SALT).encode('utf8')).digest()
 
-        if cookie_hash in self.loult_state.banned_cookies:
-            raise ConnectionDeny(403, 'temporarily banned for flooding.')
+        if cookie_hash in self.loult_state.banned_cookies or self.ip in self.loult_state.banned_ips:
+            raise ConnectionDeny(403, 'temporarily banned.')
 
         self.cookie = cookie_hash
         #  trashed cookies are automatically redirected to a "trash" channel
@@ -195,7 +195,6 @@ class LoultServerProtocol:
                 msg = json.loads(payload.decode('utf-8'))
             except json.JSONDecodeError:
                 return self.sendClose(code=4001, reason='Malformed JSON.')
-
             ensure_future(auto_close(self.routing_table.route_json(msg)))
 
     def onClose(self, wasClean, code, reason):
@@ -206,7 +205,7 @@ class LoultServerProtocol:
             self.channel_obj.channel_leave(self, self.user)
             # emptying user inventory to the channel's common inventory
             for obj in self.user.state.inventory.objects:
-                if not isinstance(obj, ClonableObject): # except for clonable object
+                if not isinstance(obj, (ClonableObject, MilitiaWeapon)): # except for clonable object
                     self.channel_obj.inventory.add(obj)
 
         msg = 'left with reason "{}"'.format(reason) if reason else 'left'
