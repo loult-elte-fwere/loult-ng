@@ -703,7 +703,7 @@ class Cigarettes(UsableObject, DestructibleObject):
 
     @property
     def name(self):
-        return self.NAME + " (%i)" % self.cigarettes
+        return self.brand + " (%i)" % self.cigarettes
 
     @property
     def destroy(self):
