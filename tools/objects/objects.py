@@ -759,3 +759,41 @@ class Lighter(UsableObject):
             return
         server.channel_obj.broadcast(binary_payload=self._load_byte(self.CIG_FX))
         self.last_use = datetime.now()
+
+
+class MollyChute(UsableObject, DestructibleObject):
+    NAME = "paras de MD"
+
+    class LoveEffect(ExplicitTextEffect):
+        NAME = "un paras"
+        love_sentence = ["Attendez je vais kiffer le son là",
+                         "J'ai envie de vous faire un calin à tous",
+                         "Je peux t'embrasser %s?",
+                         "Vous êtes tous vraiment trop sympa en fait",
+                         "C'est tout doux quand je te caresse les cheveux %s",
+                         "Arrêtez de vous dire des trucs méchants moi je vous aime tous",
+                         "Franchement le monde est trop beau",
+                         "T'es vraiment trop sympa en fait %s",
+                         "C'est vraiment la plus belle soirée de ma vie"]
+        TIMEOUT = 300
+
+        def __init__(self, users_names):
+            super().__init__()
+            self.users = users_names
+
+        def process(self, text: str):
+            if random.randint(1, 3) == 1:
+                sentence = random.choice(self.love_sentence)
+                if "%s" in sentence:
+                    return sentence % random.choice(self.users)
+                else:
+                    return sentence
+            else:
+                return text
+
+    def use(self, loult_state, server, obj_params):
+        efct = self.LoveEffect([usr.poke_params.pokename for usr in server.channel_obj.users.values()])
+        server.user.state.add_effect(efct)
+        server.channel_obj.broadcast(type="notification",
+                                     msg="%s prend de la MD!" % server.user.poke_params.fullname)
+        self.should_be_destroyed = True

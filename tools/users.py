@@ -189,12 +189,25 @@ class User:
         self.clients = [client]
         self.state = UserState()
         self._info = None
+        self.is_moderator, self.is_militia = None, None
+
+    def set_moderator(self):
+        self.is_moderator = True
+        self.poke_profile.job = "Modérateur"
+
+    def set_militia(self):
+        self.is_militia = True
+        self.poke_profile.job = "Milicien"
 
     def reload_params_from_cookie(self):
         self._info = None
         self.voice_params = VoiceParameters.from_cookie_hash(self.cookie_hash)
         self.poke_params = PokeParameters.from_cookie_hash(self.cookie_hash)
         self.poke_profile = PokeProfile.from_cookie_hash(self.cookie_hash)
+        if self.is_moderator:
+            self.poke_profile.job = "Modérateur"
+        elif self.is_militia:
+            self.poke_profile.job = "Milicien"
 
     def __hash__(self):
         return self.user_id.__hash__()
