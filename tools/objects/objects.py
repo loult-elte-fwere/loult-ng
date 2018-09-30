@@ -647,13 +647,25 @@ class MilitiaSniper(UsableObject, TargetedObject, MilitiaWeapon):
         if not self._check_militia(server):
             return
 
-        if self.remaining_bullets <= 0:
-            return server.send_json(type="notification",
-                                    msg="Plus de munitions!")
+        try:
+            is_aiming = obj_params[0] == "aim"
+            if is_aiming:
+                obj_params.pop(0)
+        except IndexError:
+            is_aiming = False
 
         target_id, target = self._acquire_target(server, obj_params)
         if target is None:
             return
+
+        if is_aiming:
+            return server.channel_obj.broadcast(type="notification",
+                                                msg="Un point rouge lumineux se ballade sur le front de %s"
+                                                    % target.poke_params.fullname)
+
+        if self.remaining_bullets <= 0:
+            return server.send_json(type="notification",
+                                    msg="Plus de munitions!")
 
         server.channel_obj.broadcast(type="notification",
                                      msg="%s tire au fusil sniper calibre .50 sur %s"
