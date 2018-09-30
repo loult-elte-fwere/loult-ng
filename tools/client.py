@@ -163,9 +163,9 @@ class LoultServerProtocol:
 
         # small touch of perfection
         if self.raw_cookie in MOD_COOKIES:
-            self.user.poke_profile.job = "Modérateur"
+            self.user.set_moderator()
         elif self.raw_cookie in MILITIA_COOKIES:
-            self.user.poke_profile.job = "Militien"
+            self.user.set_militia()
 
         # setting up routing table once all objects are functionnal
         self.routing_table = self.router.get_router(self.loult_state, self)
