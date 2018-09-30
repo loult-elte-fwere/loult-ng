@@ -182,7 +182,7 @@ class SpoilerBipEffect(UtilitaryEffect):
             return text
 
 
-links_translation = {'fr': 'cliquez mes petits chatons',
+links_translation = {'fr': 'cliquez bande de salopes de petits chatons',
                      'de': 'Klick drauf!',
                      'es': 'Clico JAJAJA',
                      'en': "Click it mate"}
