@@ -11,6 +11,8 @@ from tools.objects.base import ClonableObject, InertObject, UsableObject, Destru
     userlist_dist, MilitiaWeapon
 from tools.tools import cached_loader
 
+DATA_PATH = path.join(path.dirname(path.realpath(__file__)), "data")
+
 
 class DiseaseObject(ClonableObject, InertObject):
 
@@ -39,7 +41,7 @@ class Flower(InertObject):
 
 
 class SimpleInstrument(UsableObject):
-    SND_DIR = path.join(path.dirname(path.realpath(__file__)), "data/instruments/")
+    SND_DIR = path.join(DATA_PATH, "instruments/")
     INSTRUMENTS_MAPPING = {"gong": "gong.mp3"}
     COOLDOWN = 30 # in seconds
 
@@ -49,7 +51,7 @@ class SimpleInstrument(UsableObject):
 
         self.instrument_name = instrument.capitalize()
         self.fx_filepath = path.join(self.SND_DIR, self.INSTRUMENTS_MAPPING[instrument])
-        self.last_used = datetime(1972, 1 ,1)
+        self.last_used = datetime(1972, 1, 1)
 
     @property
     def name(self):
@@ -64,8 +66,8 @@ class SimpleInstrument(UsableObject):
 
 
 class Revolver(UsableObject, TargetedObject):
-    GUNSHOT_FX = path.join(path.dirname(path.realpath(__file__)), "data/gun/gunshot.mp3")
-    EMPTY_FX = path.join(path.dirname(path.realpath(__file__)), "data/gun/empty_mag.mp3")
+    GUNSHOT_FX = path.join(DATA_PATH, "gun/gunshot.mp3")
+    EMPTY_FX = path.join(DATA_PATH, "gun/empty_mag.mp3")
     NAME = "Walther PKK"
 
     def __init__(self, bullets=5):
@@ -105,7 +107,7 @@ class Revolver(UsableObject, TargetedObject):
 
 class RevolverCartridges(UsableObject, DestructibleObject):
     NAME = "Chargeur de pistolet"
-    RELOADING_FX = path.join(path.dirname(path.realpath(__file__)), "data/gun/reloading.mp3")
+    RELOADING_FX = path.join(DATA_PATH, "gun/reloading.mp3")
 
     def use(self, loult_state, server, obj_params):
         # searching in the user's inventory for the emptiest gun to be used on
@@ -124,7 +126,7 @@ class RevolverCartridges(UsableObject, DestructibleObject):
 
 
 class SniperRifle(UsableObject, TargetedObject):
-    SNIPER_FX = path.join(path.dirname(path.realpath(__file__)), "data/sniper_fx.mp3")
+    SNIPER_FX = path.join(DATA_PATH, "sniper_fx.mp3")
     NAME = "Fusil de précision"
 
     def __init__(self):
@@ -150,10 +152,6 @@ class SniperRifle(UsableObject, TargetedObject):
                                      msg="%s tire au fusil sniper sur %s"
                                          % (server.user.poke_params.fullname, target.poke_params.fullname),
                                      binary_payload=self._load_byte(self.SNIPER_FX))
-        server.channel_obj.broadcast(type='antiflood', event='banned',
-                                     flooder_id=target_id,
-                                     date=timestamp() * 1000)
-        loult_state.ban_cookie(target.cookie_hash)
         for client in target.clients:
             client.sendClose(code=4006, reason='reconnect later')
         self.empty = True
@@ -161,7 +159,7 @@ class SniperRifle(UsableObject, TargetedObject):
 
 class SniperBullets(UsableObject, DestructibleObject):
     NAME = "Balles de sniper"
-    RELOADING_FX = path.join(path.dirname(path.realpath(__file__)), "data/gun/bolt_reloading.mp3")
+    RELOADING_FX = path.join(DATA_PATH, "gun/bolt_reloading.mp3")
 
     def __init__(self, bullets=3):
         super().__init__()
@@ -190,7 +188,7 @@ class SniperBullets(UsableObject, DestructibleObject):
 
 class RPG(UsableObject, TargetedObject):
     NAME = "lance-roquette"
-    RPG_FX = path.join(path.dirname(path.realpath(__file__)), "data/rpg_rocket.mp3")
+    RPG_FX = path.join(DATA_PATH, "rpg_rocket.mp3")
 
     def __init__(self):
         self.empty = False
@@ -226,7 +224,7 @@ class RPG(UsableObject, TargetedObject):
 
 class RPGRocket(UsableObject, DestructibleObject):
     NAME = "Roquette pour RPG"
-    RELOADING_FX = path.join(path.dirname(path.realpath(__file__)), "data/rpg_reload.mp3")
+    RELOADING_FX = path.join(DATA_PATH, "rpg_reload.mp3")
 
     def use(self, loult_state, server, obj_params):
         users_rpg = server.user.state.inventory.search_by_class(RPG)
@@ -243,8 +241,8 @@ class RPGRocket(UsableObject, DestructibleObject):
         
 
 class Grenade(UsableObject, DestructibleObject):
-    UNPIN_FX = path.join(path.dirname(path.realpath(__file__)), "data/grenade_unpin.mp3")
-    EXPLOSION_FX = path.join(path.dirname(path.realpath(__file__)), "data/grenade_explosion.mp3")
+    UNPIN_FX = path.join(DATA_PATH, "grenade_unpin.mp3")
+    EXPLOSION_FX = path.join(DATA_PATH, "grenade_explosion.mp3")
     NAME = "Grenade"
 
     def use(self, loult_state, server, obj_params):
@@ -270,7 +268,7 @@ class Grenade(UsableObject, DestructibleObject):
 
 
 class BaseballBat(UsableObject, DestructibleObject):
-    FIGHTING_FX_DIR = path.join(path.dirname(path.realpath(__file__)), "data/fighting/")
+    FIGHTING_FX_DIR = path.join(DATA_PATH, "fighting/")
 
     def __init__(self, target_userid, target_username):
         super().__init__()
@@ -380,8 +378,8 @@ class WhiskyBottle(UsableObject, DestructibleObject, TargetedObject):
     EFFECTS = [GrandSpeechMasterEffect, StutterEffect, VocalDyslexia, VowelExchangeEffect]
     FILLING_MAPPING = {0: "vide", 1: "presque vide", 2: "moitié vide",
                        3: "presque pleine", 4: "pleine"}
-    BOTTLE_FX = path.join(path.dirname(path.realpath(__file__)), "data/broken_bottle.mp3")
-    GULP_FX = path.join(path.dirname(path.realpath(__file__)), "data/gulp.mp3")
+    BOTTLE_FX = path.join(DATA_PATH, "broken_bottle.mp3")
+    GULP_FX = path.join(DATA_PATH, "gulp.mp3")
 
     def __init__(self):
         super().__init__()
@@ -443,7 +441,7 @@ class PolynectarPotion(UsableObject, DestructibleObject, TargetedObject):
 
 
 class Microphone(UsableObject):
-    MIKEDROP_FX = path.join(path.dirname(path.realpath(__file__)), "data/mikedrop.mp3")
+    MIKEDROP_FX = path.join(DATA_PATH, "mikedrop.mp3")
     NAME = 'micro'
 
     def use(self, loult_state, server, obj_params):
@@ -460,17 +458,13 @@ class C4(InertObject):
 
 class Detonator(UsableObject):
     NAME = "Détonateur"
-    EXPLOSION_FX = path.join(path.dirname(path.realpath(__file__)), "data/explosion.mp3")
+    EXPLOSION_FX = path.join(DATA_PATH, "explosion.mp3")
 
     def use(self, loult_state, server, obj_params):
         blown_up_users = []
         for user in server.channel_obj.users.values():
             if user.state.inventory.search_by_class(C4):
                 user.state.inventory.remove_by_class(C4)
-                server.channel_obj.broadcast(type='antiflood', event='banned',
-                                             flooder_id=user.user_id,
-                                             date=timestamp() * 1000)
-                loult_state.ban_cookie(user.cookie_hash)
                 for client in user.clients:
                     client.sendClose(code=4006, reason='reconnect later')
                 blown_up_users.append(user.poke_params.fullname)
@@ -483,7 +477,7 @@ class Detonator(UsableObject):
 
 class SuicideJacket(UsableObject, DestructibleObject):
     NAME = "ceinture d'explosif"
-    EXPLOSION_FX = path.join(path.dirname(path.realpath(__file__)), "data/suicide_bomber.mp3")
+    EXPLOSION_FX = path.join(DATA_PATH, "suicide_bomber.mp3")
 
     def use(self, loult_state, server, obj_params):
         hit_usrs = [usr for usr in server.channel_obj.users.values()
@@ -506,27 +500,36 @@ class SuicideJacket(UsableObject, DestructibleObject):
         self.should_be_destroyed = True
 
 
-class LinkCostume(UsableObject):
-    NAME = "costume de Link"
+class Costume(UsableObject):
+    NAME = "costume"
+    CHARACTERS = ["link", "mario", "wario", "sonic"]
+
+    def __init__(self):
+        self.character = random.choice(self.CHARACTERS) # type:str
+
+    @property
+    def name(self):
+        return self.NAME + " de %s" % self.character.capitalize()
 
     def use(self, loult_state, server, obj_params):
-        if hasattr(server.user, "has_link_costume"):
+        if hasattr(server.user, "costume") and server.user.costume == self.character:
             return server.send_json(type="notification",
                                     msg="Vous ne pouvez pas enfiler deux fois d'affilée le costume!")
 
         server.channel_obj.broadcast(type="notification",
-                                     msg="%s enfile un costume de Link" % server.user.poke_params.fullname)
+                                     msg="%s enfile un costume de %s"
+                                         % (server.user.poke_params.fullname, self.character.capitalize()))
         params = server.user.poke_params
-        params.img_id = "link"
-        params.pokename = "Link"
+        params.img_id = self.character
+        params.pokename = self.character.capitalize()
         server.user._info = None
-        server.user.has_link_costume = True
+        server.user.costume = self.character
         server.channel_obj.update_userlist()
 
 
 class RobinHoodsBow(UsableObject, TargetedObject):
     NAME = "arc de robin des bois"
-    BOW_FX = path.join(path.dirname(path.realpath(__file__)), "data/bow_fire.mp3")
+    BOW_FX = path.join(DATA_PATH, "bow_fire.mp3")
 
     def use(self, loult_state, server, obj_params):
         target_id, target = self._acquire_target(server, obj_params)
@@ -628,7 +631,7 @@ class WealthDetector(UsableObject, TargetedObject):
 
 class MilitiaSniper(UsableObject, TargetedObject, MilitiaWeapon):
     NAME = "PGM Hecate II"
-    SNIPER_FX = path.join(path.dirname(path.realpath(__file__)), "data/sniper_bolt_action.mp3")
+    SNIPER_FX = path.join(DATA_PATH, "sniper_bolt_action.mp3")
 
     def __init__(self):
         self.remaining_bullets = 7
@@ -666,7 +669,7 @@ class MilitiaSniper(UsableObject, TargetedObject, MilitiaWeapon):
 
 class MilitiaSniperAmmo(UsableObject, DestructibleObject, MilitiaWeapon):
     NAME = "Chargeur PGM"
-    RELOADING_FX = path.join(path.dirname(path.realpath(__file__)), "data/gun/reloading.mp3")
+    RELOADING_FX = path.join(DATA_PATH, "gun/reloading.mp3")
 
     def use(self, loult_state, server, obj_params):
         if not self._check_militia(server):
@@ -685,3 +688,55 @@ class MilitiaSniperAmmo(UsableObject, DestructibleObject, MilitiaWeapon):
         server.send_json(type="notification", msg="PGM Hécate II chargé!")
         server.send_binary(self._load_byte(self.RELOADING_FX))
         self.should_be_destroyed = True
+
+
+class Cigarettes(UsableObject, DestructibleObject):
+    NAME = "cigarettes"
+    BRANDS = ["Lucky Loult", "Lucky Loult Menthol", "Mrleboro", "Chesterfnre", "Sheitanes Maïs",
+              "Aguloises"]
+    CIG_FX = path.join(DATA_PATH, "cigarette_lighting.mp3")
+
+    def __init__(self):
+        super().__init__()
+        self.brand = random.choice(self.BRANDS)
+        self.cigarettes = 20
+
+    @property
+    def name(self):
+        return self.NAME + " (%i)" % self.cigarettes
+
+    @property
+    def destroy(self):
+        return self.cigarettes <= 0
+
+    def use(self, loult_state, server, obj_params):
+        if not server.user.state.inventory.search_by_class(Lighter):
+            return server.send_json(type="notification",
+                                    msg="Il vous faut un briquet pour pouvoir allumer une clope!")
+
+        self.cigarettes -= 1
+        server.channel_obj.broadcast(type="notification",
+                                     msg="%s allume une clope et prend un air cool"
+                                         % server.user.poke_params.fullname,
+                                     binary_payload=self._load_byte(self.CIG_FX))
+        if random.randint(1, 10) == 1:
+            server.channel_obj.broadcast(type="notification",
+                                         msg="%s choppe le cancer et meurt sur le champ!"
+                                             % server.user.poke_params.fullname)
+            for client in server.user.clients:
+                client.sendClose(code=4006, reason="Reconnect please.")
+
+
+class Lighter(UsableObject):
+    NAME = "briquet"
+    COOLDOWN = 30 # in seconds
+    CIG_FX = path.join(DATA_PATH, "lighter.mp3")
+
+    def __init__(self):
+        self.last_use = datetime(1972, 1, 1)
+
+    def use(self, loult_state, server, obj_params):
+        if (datetime.now() - self.last_use).seconds < self.COOLDOWN:
+            return
+        server.channel_obj.broadcast(binary_payload=self._load_byte(self.CIG_FX))
+        self.last_use = datetime.now()
