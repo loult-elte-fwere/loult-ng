@@ -29,7 +29,7 @@ BAN_TIME = 1
 BANNED_WORDS = [r"(?i).*\bTrump\b.*", r"(?i).*\bfag(got)?\b.*"]
 
 MOD_COOKIES = ["put your cookies here; not their hashes, not userids, the actual cookies' id key"]
-MILITIA_COOKIES = ["put your cookies here; not their hashes, not userids, the actual cookies' id key"]
+MILITIA_COOKIES = ["wikiwiki"]
 
 # Here are the cookies of users that can broadcast sound to other users. For those users, when they send a
 # wav saound binary, the sound is just passed to other users with no modifications

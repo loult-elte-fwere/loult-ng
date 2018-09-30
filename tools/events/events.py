@@ -321,7 +321,7 @@ class AmmoDropEvent(PseudoPeriodicEvent):
             inv = channel.inventory
             for _ in range(random.randint(2, 4)):
                 inv.add(RevolverCartridges())
-            for _ in range(random.randint(0, 2)):
+            for _ in range(random.randint(1, 2)):
                 inv.add(SniperBullets())
             for _ in range(random.randint(1, 3)):
                 inv.add(RPGRocket())

@@ -13,7 +13,7 @@ from typing import List
 
 from autobahn.websocket.types import ConnectionDeny
 
-from config import TIME_BETWEEN_CONNECTIONS
+from config import TIME_BETWEEN_CONNECTIONS, MOD_COOKIES, MILITIA_COOKIES
 from salt import SALT
 from tools.objects.base import ClonableObject, MilitiaWeapon
 from .tools import encode_json
@@ -160,6 +160,12 @@ class LoultServerProtocol:
             self.channel_obj, self.user = self.loult_state.channel_connect(self, self.cookie, self.channel_n)
         except UnauthorizedCookie: # this means the user's cookie was denied
             self.sendClose(code=4005, reason='Too many cookies already connected to your IP')
+
+        # small touch of perfection
+        if self.raw_cookie in MOD_COOKIES:
+            self.user.poke_profile.job = "Modérateur"
+        elif self.raw_cookie in MILITIA_COOKIES:
+            self.user.poke_profile.job = "Militien"
 
         # setting up routing table once all objects are functionnal
         self.routing_table = self.router.get_router(self.loult_state, self)
