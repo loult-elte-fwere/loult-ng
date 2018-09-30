@@ -631,7 +631,7 @@ class WealthDetector(UsableObject, TargetedObject):
 
 class MilitiaSniper(UsableObject, TargetedObject, MilitiaWeapon):
     NAME = "PGM Hecate II"
-    SNIPER_FX = path.join(DATA_PATH, "sniper_bolt_action.mp3")
+    SNIPER_FX = path.join(DATA_PATH, "sniper_headshot.mp3")
 
     def __init__(self):
         self.remaining_bullets = 7
@@ -665,6 +665,13 @@ class MilitiaSniper(UsableObject, TargetedObject, MilitiaWeapon):
         for client in target.clients:
             loult_state.ban_ip(client.ip)
             client.sendClose(code=4006, reason="Reconnect later.")
+        splashed_usrs = [usr for usr in server.channel_obj.users.values()
+                         if userlist_dist(server.channel_obj, target_id, usr.user_id) < 2
+                         and usr is not target]
+        splashed_usrs = ", ".join(usr.poke_params.fullname for usr in splashed_usrs)
+        server.channel_obj.broadcast(type="notification",
+                                     msg="%s se sont faits éclabousser par de sang et de cervelle de %s"
+                                         % (splashed_usrs, target.poke_params.fullname))
 
 
 class MilitiaSniperAmmo(UsableObject, DestructibleObject, MilitiaWeapon):
