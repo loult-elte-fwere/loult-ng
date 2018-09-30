@@ -14,5 +14,4 @@ AVAILABLE_OBJECTS = [Grenade, SniperBullets, SniperRifle, Revolver, RevolverCart
 
 
 def get_random_object() -> LoultObject:
-    return MollyChute()
     return random.choice(AVAILABLE_OBJECTS)()
