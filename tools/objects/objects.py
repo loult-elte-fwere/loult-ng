@@ -666,7 +666,7 @@ class MilitiaSniper(UsableObject, TargetedObject, MilitiaWeapon):
         if self.remaining_bullets <= 0:
             return server.send_json(type="notification",
                                     msg="Plus de munitions!")
-
+        self.remaining_bullets -= 1
         server.channel_obj.broadcast(type="notification",
                                      msg="%s tire au fusil sniper calibre .50 sur %s"
                                          % (server.user.poke_params.fullname, target.poke_params.fullname),
