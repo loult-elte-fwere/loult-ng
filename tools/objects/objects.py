@@ -231,7 +231,7 @@ class RPGRocket(UsableObject, DestructibleObject):
         users_rpg = [gun for gun in users_rpg if gun.empty]
         if not users_rpg:
             return server.send_json(type="notification",
-                                    msg="Pas de RPG sniper à recharger dans votre inventaire")
+                                    msg="Pas de RPG à recharger dans votre inventaire")
 
         empty_rpg = users_rpg[0]
         empty_rpg.empty = False
@@ -682,7 +682,7 @@ class MilitiaSniper(UsableObject, TargetedObject, MilitiaWeapon):
                          and usr is not target]
         splashed_usrs = ", ".join(usr.poke_params.fullname for usr in splashed_usrs)
         server.channel_obj.broadcast(type="notification",
-                                     msg="%s se sont faits éclabousser par de sang et de cervelle de %s"
+                                     msg="%s se sont faits éclabousser de sang et de cervelle de %s"
                                          % (splashed_usrs, target.poke_params.fullname))
 
 
