@@ -320,8 +320,16 @@ class InventoryListingHandler(MsgBaseHandler):
 
 
 class ObjectGiveHandler(MsgBaseHandler):
+    RATE_LIMIT = 5
+
+    def __init__(self, server_state, my_server):
+        super().__init__(server_state, my_server)
+        self.last_give = datetime(1972, 1, 1)
 
     async def handle(self, msg_data: Dict):
+        if (datetime.now() - self.last_give).seconds > self.RATE_LIMIT:
+            return
+
         try:
             given_obj = self.user.state.inventory.get_object_by_id(int(msg_data.get("object_id")))
         except TypeError:
@@ -349,6 +357,7 @@ class ObjectGiveHandler(MsgBaseHandler):
                                    receiver=beneficiary_id,
                                    obj_name=given_obj.name,
                                    date=timestamp() * 1000)
+        self.last_give = datetime.now()
 
 
 class ObjectUseHandler(MsgBaseHandler):
