@@ -327,7 +327,7 @@ class ObjectGiveHandler(MsgBaseHandler):
         self.last_give = datetime(1972, 1, 1)
 
     async def handle(self, msg_data: Dict):
-        if (datetime.now() - self.last_give).seconds > self.RATE_LIMIT:
+        if (datetime.now() - self.last_give).seconds < self.RATE_LIMIT:
             return
 
         try:
@@ -416,15 +416,15 @@ class ObjectTakeHandler(MsgBaseHandler):
         if selected_obj is None:
             return self.server.send_json(type="object", response="invalid_id")
 
-        if (datetime.now() - self.last_take).seconds > self.RATE_LIMIT:
-            self.channel_obj.inventory.remove(selected_obj)
-            self.user.state.inventory.add(selected_obj)
-            self.server.send_json(type="object", response="object_taken",
-                                  object_name=selected_obj.name)
-            self.last_take = datetime.now()
-        else:
-            self.server.send_json(type="notification",
+        if (datetime.now() - self.last_take).seconds < self.RATE_LIMIT:
+            return self.server.send_json(type="notification",
                                   msg="Attendez un peu avant de piller la banque!")
+
+        self.channel_obj.inventory.remove(selected_obj)
+        self.user.state.inventory.add(selected_obj)
+        self.server.send_json(type="object", response="object_taken",
+                              object_name=selected_obj.name)
+        self.last_take = datetime.now()
 
 
 class WeaponsGrantHandler(MsgBaseHandler):
