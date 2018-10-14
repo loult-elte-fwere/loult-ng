@@ -350,6 +350,12 @@ class MagicWand(UsableObject, TargetedObject):
             return
 
         target.state.add_effect(self.DuckEffect())
+        params = target.poke_params
+        params.img_id = "qurk"
+        params.pokename = "Qurky"
+        server.user._info = None
+        server.channel_obj.update_userlist()
+
         server.channel_obj.broadcast(type="notification",
                                      msg="%s s'est fait changer en canard" % target.poke_params.fullname)
         self.last_used = datetime.now()
