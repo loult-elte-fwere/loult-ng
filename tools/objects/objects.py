@@ -353,7 +353,7 @@ class MagicWand(UsableObject, TargetedObject):
         params = target.poke_params
         params.img_id = "qurk"
         params.pokename = "Qurky"
-        server.user._info = None
+        target._info = None
         server.channel_obj.update_userlist()
 
         server.channel_obj.broadcast(type="notification",
