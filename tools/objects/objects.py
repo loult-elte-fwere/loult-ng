@@ -348,6 +348,8 @@ class MagicWand(UsableObject, TargetedObject):
         target_id, target = self._acquire_target(server, obj_params)
         if target is None:
             return
+        server.channel_obj.broadcast(type="notification",
+                                     msg="%s s'est fait changer en canard" % target.poke_params.fullname)
 
         target.state.add_effect(self.DuckEffect())
         params = target.poke_params
@@ -356,8 +358,7 @@ class MagicWand(UsableObject, TargetedObject):
         target._info = None
         server.channel_obj.update_userlist()
 
-        server.channel_obj.broadcast(type="notification",
-                                     msg="%s s'est fait changer en canard" % target.poke_params.fullname)
+
         self.last_used = datetime.now()
 
 
