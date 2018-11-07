@@ -9,7 +9,7 @@ from scipy.io import wavfile
 from config import ATTACK_RESTING_TIME, MOD_COOKIES, SOUND_BROADCASTER_COOKIES, TIME_BEFORE_TALK, \
     MAX_ITEMS_IN_INVENTORY, MILITIA_COOKIES
 from tools.objects.base import ClonableObject, MilitiaWeapon
-from tools.objects.objects import MilitiaSniper, MilitiaSniperAmmo
+from tools.objects.objects import MilitiaSniper, MilitiaSniperAmmo, Civilisator, Screamer
 from tools.tools import open_sound_file
 from .ban import Ban, BanFail
 from .combat import CombatSimulator
@@ -436,3 +436,5 @@ class WeaponsGrantHandler(MsgBaseHandler):
         self.user.state.inventory.add(MilitiaSniper())
         for _ in range(3):
             self.user.state.inventory.add(MilitiaSniperAmmo())
+        self.user.state.inventory.add(Civilisator())
+        self.user.state.inventory.add(Screamer())

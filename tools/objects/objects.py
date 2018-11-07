@@ -354,7 +354,7 @@ class MagicWand(UsableObject, TargetedObject):
         target.state.add_effect(self.DuckEffect())
         params = target.poke_params
         params.img_id = "qurk"
-        params.pokename = "Qurky"
+        params.pokename = "Qurkee"
         target._info = None
         server.channel_obj.update_userlist()
 
@@ -714,6 +714,36 @@ class MilitiaSniperAmmo(UsableObject, DestructibleObject, MilitiaWeapon):
         server.send_json(type="notification", msg="PGM Hécate II chargé!")
         server.send_binary(self._load_byte(self.RELOADING_FX))
         self.should_be_destroyed = True
+
+
+class ClientSidePunitiveObject(UsableObject, MilitiaWeapon, TargetedObject):
+    EVENT = "none"
+    MSG = ""
+
+    def use(self, loult_state, server, obj_params):
+        if not self._check_militia(server):
+            return
+        target_id, target = self._acquire_target(server, obj_params)
+        if target is None:
+            return
+
+        for client in server.user.clients:
+            client.send_json(type="notification", msg=self.MSG
+                                                      % target.poke_params.fullname)
+        for client in target.clients:
+            client.send_json(type="punish", event=self.EVENT)
+
+
+class Civilisator(ClientSidePunitiveObject):
+    NAME = "Civilizator"
+    EVENT = "taser"
+    MSG = "Civilisation de %s"
+
+
+class Screamer(ClientSidePunitiveObject):
+    NAME = "SCR34-MR"
+    EVENT = "cactus"
+    MSG = "Redirection vers un site adapté pour %s"
 
 
 class Cigarettes(UsableObject, DestructibleObject):
