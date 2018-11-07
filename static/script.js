@@ -687,6 +687,31 @@
 					        break;
 					    }
 					break;
+
+					case 'punish':
+					switch(msg['event']){
+					    case 'taser':
+					        ws.close();
+					        banned = true;
+					        function sleep(ms) {
+                              return new Promise(resolve => setTimeout(resolve, ms));
+                            }
+                            async function tase(){
+                                while(true){
+                                    addLine({name : 'info'}, 'CIVILISE TOI FILS DE PUTE', (new Date), 'kick', 'antiflood');
+                                    await sleep(10)
+                                }
+					        }
+					        tase();
+					    break;
+
+					    case 'cactus':
+					        ws.close();
+					        ws = null;
+					        window.location.replace("http://0xad.net/cactus/");
+					        cactus = true;
+                        break;
+					}
 				}
 			}
 			else if(!lastMuted && audio && volume.gain.value > 0) {
