@@ -1,0 +1,38 @@
+version: '2.0'
+
+services:
+
+  loult-ng:
+    container_name: loult-ng
+    image: loult/loult-ng 
+    expose:
+      - 9000
+    volumes:
+      - '/srv/www/loult-ng/data:/var/www'
+    ports:
+      - "9000:9000"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "500k"
+        max-file: "4"
+    
+  nginx:
+    image: nginx
+    container_name: nginx
+#   restart: always
+    volumes:
+      - /srv/nginx:/etc/nginx
+      - /srv/ssl:/etc/ssl
+      - /srv/www/home:/usr/share/nginx/html
+    depends_on:
+      - loult-ng
+    ports:
+      - 80:80
+      - 443:443
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "500k"
+        max-file: "4"
+
