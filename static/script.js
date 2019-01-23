@@ -117,7 +117,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		users[userid] = params;
 
 		if(ambtn.checked && muted.indexOf(userid) === -1)
-			muted.push(userid);
+			if(!params.you) muted.push(userid);
 
 		var row = document.createElement('li');
 		row.appendChild(document.createTextNode(params.name));
@@ -193,7 +193,6 @@ document.addEventListener('DOMContentLoaded', function() {
 	}
 
 	// Limit the number of messages displayed
-
 	var limitHistory = function () {
 		var limit = hist.value;
 
