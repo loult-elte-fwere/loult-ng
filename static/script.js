@@ -1,4 +1,4 @@
-﻿document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function() {
 	var audio = (window.AudioContext || typeof webkitAudioContext !== 'undefined'),
 		userlist = document.getElementById('userlist'),
 		underlay = document.getElementById('underlay'),
@@ -185,13 +185,17 @@
 		delete users[userid];
 	};
 
+	hist = document.getElementById('history'),
+	hist.value = localStorage.history ? localStorage.history : 'full';
+
+	hist.onchange = function() {
+		localStorage.history = hist.value;
+	}
 
 	// Limit the number of messages displayed
 
 	var limitHistory = function () {
-
-		var history = document.getElementById('history');
-		var limit = history.value;
+		var limit = hist.value;
 
 		if (limit == 'full' || typeof limit == 'undefined') {
 			return;
