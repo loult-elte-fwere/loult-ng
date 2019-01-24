@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		waitTime = 1000,
 		banned = false,
 		users = {},
-		muted = [],
+		muted = JSON.parse(localStorage.getItem('mutedUsers')) ? JSON.parse(localStorage.getItem('mutedUsers')) : [],
 		you = null,
 		count = 0,
 		lastMsg,
@@ -139,6 +139,7 @@ document.addEventListener('DOMContentLoaded', function() {
 					muted.push(userid);
 					i.innerHTML = 'volume_off';
 				}
+				localStorage.setItem('mutedUsers', JSON.stringify(muted));
 			};
 		}
 		else {
