@@ -187,7 +187,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	};
 
 	hist = document.getElementById('history'),
-	hist.value = localStorage.history ? localStorage.history : 'full';
+	hist.value = localStorage.getItem('history') ? localStorage.getItem('history') : 'full';
 
 	hist.onchange = function() {
 		localStorage.history = hist.value;
@@ -195,7 +195,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 	// Limit the number of messages displayed
 	var limitHistory = function () {
-		var limit = hist.value;
+		var limit = localStorage.getItem('history');
 
 		if (limit == 'full' || typeof limit == 'undefined') {
 			return;
@@ -279,6 +279,12 @@ document.addEventListener('DOMContentLoaded', function() {
 		colors = document.getElementById('color'),
 		fonts = document.getElementById('font'),
 		settings = theme.split(' ');
+
+	ambtn.checked = localStorage.getItem('automute') == 'true' ? true : false;
+	
+	ambtn.onchange = function() {
+		localStorage.setItem('automute', ambtn.checked);
+	}
 
 	var openWindow = function() {
 		dontFocus = true;
