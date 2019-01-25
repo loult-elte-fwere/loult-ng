@@ -4,9 +4,10 @@ from time import time as timestamp
 from typing import List
 from os import path
 
-from tools.objects import get_random_object
-from tools.objects.objects import DiseaseObject, BaseballBat, Revolver, WhiskyBottle, RevolverCartridges, SniperBullets, \
-    RPGRocket, RobinHoodsBow, Quiver
+from tools.objects import get_random_object, Revolver, RevolverCartridges, \
+    SniperBullets, RPGRocket, Quiver, C4, Detonator
+from tools.objects.objects import DiseaseObject, BaseballBat, WhiskyBottle
+from tools.objects.weapons import RobinHoodsBow
 from .base import next_occ
 
 import yaml
@@ -302,29 +303,27 @@ class PubBrawlEvent(PseudoPeriodicEvent):
     async def trigger(self, loultstate):
         for channel in loultstate.chans.values():
             for usr in channel.users.values():
-                if random.randint(0, 1):
-                    usr.state.inventory.add(Revolver(bullets=2))
                 usr.state.inventory.add(WhiskyBottle())
             channel.broadcast(type="notification",
-                              msg="Baston générale dans le Loult Saloon!")
+                              msg="Tournée générale dans le Loult Saloon!")
 
 
-class AmmoDropEvent(PseudoPeriodicEvent):
+class FireworksEvent(PseudoPeriodicEvent):
     """Drops ammo in the common inventory"""
     PSEUDO_PERIOD = timedelta(hours=2.5)
     VARIANCE = timedelta(hours=0.2)
 
     async def trigger(self, loultstate):
         for channel in loultstate.chans.values():
-            channel.broadcast(type="notification",
-                              msg="Largage de munitions!")
-            inv = channel.inventory
-            for _ in range(random.randint(2, 4)):
-                inv.add(RevolverCartridges())
-            for _ in range(random.randint(1, 2)):
-                inv.add(SniperBullets())
-            for _ in range(random.randint(1, 3)):
-                inv.add(RPGRocket())
+            usr_list = list(channel.users.values())
+            detonator_usr = usr_list.pop(random.randint(0, len(usr_list) - 1))
+            detonator_usr.state.inventory.add(Detonator())
+            for _ in range(0, 5):
+                rnd_usr = random.choice(usr_list)
+                rnd_usr.state.inventory.add(C4())
+            for client in detonator_usr.state.clients:
+                client.send_json(type="notification",
+                                 msg="Vous avez reçu un détonateur. Utilisez-le pour déclencher un beau feu d'artifice")
 
 
 class RobinHoodEvent(PseudoPeriodicEvent):

@@ -1,16 +1,18 @@
 import random
 from .base import LoultObject
-from .objects import (Grenade, SniperRifle, Revolver, RevolverCartridges, SniperBullets, MagicWand,
+from .objects import (MagicWand,
                       Crown, SimpleInstrument, Scolopamine, WhiskyBottle, PolynectarPotion,
-                      RPG, RPGRocket, Microphone, C4, Detonator, SuicideJacket, Flower,
-                      Costume, Quiver, WealthDetector, RectalExam, Cigarettes, Lighter,
+                      Microphone, C4, Detonator, SuicideJacket, Flower,
+                      Costume, WealthDetector, RectalExam, Cigarettes, Lighter,
                       MollyChute)
+from tools.objects.weapons import Revolver, RevolverCartridges, SniperRifle, \
+    SniperBullets, RPG, RPGRocket, Grenade, Quiver
 
 # objects which can be given to users and are not specifically linked to any events
-AVAILABLE_OBJECTS = [Grenade, SniperBullets, SniperRifle, Revolver, RevolverCartridges, MagicWand,
-                     Crown, SimpleInstrument, Scolopamine, WhiskyBottle, PolynectarPotion, RPG,
-                     RPGRocket, Microphone, C4, Detonator, SuicideJacket, Flower, Quiver,
-                     WealthDetector, RectalExam, Costume, Cigarettes, Lighter, MollyChute]
+AVAILABLE_OBJECTS = [MagicWand, Crown, SimpleInstrument, Scolopamine,
+                     WhiskyBottle, PolynectarPotion,  Microphone, C4,
+                     Detonator, SuicideJacket, Flower, Quiver, WealthDetector,
+                     RectalExam, Costume, Cigarettes, Lighter, MollyChute]
 
 
 def get_random_object() -> LoultObject:
