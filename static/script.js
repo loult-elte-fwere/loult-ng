@@ -197,7 +197,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	var limitHistory = function () {
 		var limit = localStorage.getItem('history');
 
-		if (limit == 'full' || typeof limit == 'undefined') {
+                if (limit == 'full' || typeof limit === 'undefined' || !limit) {
 			return;
 		}
 
