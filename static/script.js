@@ -1,4 +1,4 @@
-﻿document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function() {
 	var audio = (window.AudioContext || typeof webkitAudioContext !== 'undefined'),
 		userlist = document.getElementById('userlist'),
 		underlay = document.getElementById('underlay'),
@@ -8,7 +8,7 @@
 		waitTime = 1000,
 		banned = false,
 		users = {},
-		muted = [],
+		muted = JSON.parse(localStorage.getItem('mutedUsers')) ? JSON.parse(localStorage.getItem('mutedUsers')) : [],
 		you = null,
 		count = 0,
 		lastMsg,
@@ -117,7 +117,7 @@
 		users[userid] = params;
 
 		if(ambtn.checked && muted.indexOf(userid) === -1)
-			muted.push(userid);
+			if(!params.you) muted.push(userid);
 
 		var row = document.createElement('li');
 		row.appendChild(document.createTextNode(params.name));
@@ -139,6 +139,7 @@
 					muted.push(userid);
 					i.innerHTML = 'volume_off';
 				}
+				localStorage.setItem('mutedUsers', JSON.stringify(muted));
 			};
 		}
 		else {
@@ -185,15 +186,18 @@
 		delete users[userid];
 	};
 
+	hist = document.getElementById('history'),
+	hist.value = localStorage.getItem('history') ? localStorage.getItem('history') : 'full';
+
+	hist.onchange = function() {
+		localStorage.history = hist.value;
+	}
 
 	// Limit the number of messages displayed
-
 	var limitHistory = function () {
+		var limit = localStorage.getItem('history');
 
-		var history = document.getElementById('history');
-		var limit = history.value;
-
-		if (limit == 'full' || typeof limit == 'undefined') {
+                if (limit == 'full' || typeof limit === 'undefined' || !limit) {
 			return;
 		}
 
@@ -275,6 +279,12 @@
 		colors = document.getElementById('color'),
 		fonts = document.getElementById('font'),
 		settings = theme.split(' ');
+
+	ambtn.checked = localStorage.getItem('automute') == 'true' ? true : false;
+	
+	ambtn.onchange = function() {
+		localStorage.setItem('automute', ambtn.checked);
+	}
 
 	var openWindow = function() {
 		dontFocus = true;
