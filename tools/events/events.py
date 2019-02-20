@@ -321,7 +321,7 @@ class FireworksEvent(PseudoPeriodicEvent):
             for _ in range(0, 5):
                 rnd_usr = random.choice(usr_list)
                 rnd_usr.state.inventory.add(C4())
-            for client in detonator_usr.state.clients:
+            for client in detonator_usr.clients:
                 client.send_json(type="notification",
                                  msg="Vous avez reçu un détonateur. Utilisez-le pour déclencher un beau feu d'artifice")
 
