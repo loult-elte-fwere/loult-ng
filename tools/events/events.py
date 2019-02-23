@@ -317,6 +317,10 @@ class FireworksEvent(PseudoPeriodicEvent):
         for channel in loultstate.chans.values():
             usr_list = list(channel.users.values())
             detonator_usr = usr_list.pop(random.randint(0, len(usr_list) - 1))
+            # if the user is alone in the channel, it's "aborted"
+            if not usr_list:
+                continue
+
             detonator_usr.state.inventory.add(Detonator())
             for _ in range(0, 5):
                 rnd_usr = random.choice(usr_list)
