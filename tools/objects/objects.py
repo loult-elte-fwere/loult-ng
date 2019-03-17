@@ -5,7 +5,7 @@ from os import path, listdir
 from time import time as timestamp
 
 from tools.effects.effects import ExplicitTextEffect, GrandSpeechMasterEffect, StutterEffect, VocalDyslexia, \
-    VowelExchangeEffect
+    VowelExchangeEffect, FlowerEffect
 from tools.objects.base import ClonableObject, InertObject, UsableObject, DestructibleObject, TargetedObject, \
     userlist_dist
 from tools.tools import cached_loader
@@ -27,16 +27,30 @@ class DiseaseObject(ClonableObject, InertObject):
         return "la %s de %s" % (self.disease, self.patient_zero)
 
 
-class Flower(InertObject):
+class Flower(UsableObject, DestructibleObject):
     FLOWERS = ["rose", "lys blanc", "iris", "chrysanthème", "oeillet", "jonquille", "muguet",
                "tulipe", "orchidée"]
 
     def __init__(self):
+        super().__init__()
         self.flower_name = random.choice(self.FLOWERS)
+        self.remaining_uses = int(random.uniform(3, 6))
 
     @property
     def name(self):
         return self.flower_name
+
+    def use(self, loult_state, server, obj_params):
+        if self.remaining_uses == 0:
+            msg = "cette fleur est complètement fanée."
+            server.send_json(type="notification", msg=msg)
+            self.should_be_destroyed = True
+        else:
+            name = server.user.poke_params.fullname
+            msg = "{name} met une fleur dans ses cheveux, c twe miwmiw."
+            server.channel_obj.broadcast(type="notification", msg=msg.format(name=name))
+            server.user.state.add_effect(FlowerEffect)
+            self.remaining_uses -= 1
 
 
 class SimpleInstrument(UsableObject):

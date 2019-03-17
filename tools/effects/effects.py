@@ -139,6 +139,24 @@ class SnebwewEffect(ExplicitTextEffect):
 
         return reconstructed
 
+class FlowerEffect(ExplicitTextEffect):
+    """Insert flower emojis between words"""
+    NAME = "fleuwiw"
+    TIMEOUT = 800
+
+    flowers = ["\U0001f337", "\U0001f338", "\U0001f339", "\U0001f33a","\U0001f33b", "\U0001f33c"]
+
+    def process(self, text: str) -> str:
+        # We'll try to have neither too few nor too many flowers.
+        probability = random.uniform(0.3, 0.6)
+        result = []
+        # The empty string accounts for the possibility to insert an emoji at the end.
+        for token in text.split() + ['']:
+            if probability <= random.uniform(0, 1):
+                result.append(random.choice(self.flowers))
+            result.append(token)
+        return " ".join(result[:-1]) # slice to avoid trailing whitespace
+
 
 class PoiloEffect(ExplicitTextEffect):
     NAME = "poil au snèbwèw"
