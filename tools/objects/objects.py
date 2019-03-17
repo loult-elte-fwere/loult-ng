@@ -49,7 +49,7 @@ class Flower(UsableObject, DestructibleObject):
             name = server.user.poke_params.fullname
             msg = "{name} met une fleur dans ses cheveux, c twe miwmiw."
             server.channel_obj.broadcast(type="notification", msg=msg.format(name=name))
-            server.user.state.add_effect(FlowerEffect)
+            server.user.state.add_effect(FlowerEffect())
             self.remaining_uses -= 1
 
 
