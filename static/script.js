@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	};
 
 	var addLine = function(pkmn, txt, datemsg, rowclass, uid) {
-		var atBottom = (chat.scrollTop === (chat.scrollHeight - chat.offsetHeight)),
+		var atBottom = (chat.scrollTop >= (chat.scrollHeight - chat.offsetHeight)-50),
 			text = document.createElement('div'),
 			uid = uid || null;
 		text.innerHTML = txt;
