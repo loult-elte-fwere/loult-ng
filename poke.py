@@ -1,10 +1,9 @@
 #!/usr/bin/python3
+import argparse
 import logging
 from asyncio import get_event_loop, ensure_future, gather, set_event_loop_policy, get_event_loop_policy
 from itertools import chain
-import argparse
 
-from datetime import datetime, timedelta
 from tools.ban import Ban, BanFail
 from tools.client import ClientRouter, LoultServerProtocol
 from tools.handlers import (MessageHandler, BinaryHandler, TrashHandler, BanHandler, ShadowbanHandler,
@@ -43,13 +42,13 @@ if __name__ == "__main__":
 
     # setting up events
     from tools.events import (EventScheduler, BienChantewEvent, MaledictionEvent,
-                              UsersVoicesShuffleEvent, TunnelEvent, MusicalEvent,
+                              UsersVoicesShuffleEvent, MusicalEvent,
                               CloneArmyEvent, ThemeRenameEvent, ObjectDropEvent, InfectionEvent,
                               LynchingEvent, PubBrawlEvent, FireworksEvent, RobinHoodEvent)
 
     scheduler = EventScheduler(loult_state,
                                [BienChantewEvent(), MaledictionEvent(), UsersVoicesShuffleEvent(),
-                                TunnelEvent(), MusicalEvent(), CloneArmyEvent(),
+                                MusicalEvent(), CloneArmyEvent(),
                                 ThemeRenameEvent(), ObjectDropEvent(), InfectionEvent(), LynchingEvent(),
                                 PubBrawlEvent(), FireworksEvent(), RobinHoodEvent()])
 

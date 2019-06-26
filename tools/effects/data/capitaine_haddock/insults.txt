@@ -4,7 +4,7 @@ amiral de bateau-lavoir
 amphitryon
 anacoluthe
 analphabète
-analphabète  diplômé
+analphabète diplômé
 animal
 anthracite
 anthropophage
@@ -17,7 +17,6 @@ arlequin
 ascenseur
 astronaute d'eau douce
 athlète complet
-Au large !
 autocrate
 autodidacte
 Aztèques
@@ -180,8 +179,7 @@ gangster
 garde-côtes à la mie de pain
 gargarisme
 garnement
-gibier de 
-potence
+gibier de potence
 goujat
 graine de vaurien
 graisse de hérisson
@@ -268,7 +266,6 @@ moussaillon
 moussaillon de malheur
 moussaillon du diable
 mufle
-MRKRPXZKRMTFRZ
 Mussolini de carnaval
 naufrageur
 négrier

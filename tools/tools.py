@@ -42,6 +42,7 @@ class AudioRenderer:
 
     volumes_presets = {'fr1': 1.17138, 'fr2': 1.60851, 'fr3': 1.01283, 'fr4': 1.0964, 'fr5': 2.64384, 'fr6': 1.35412,
                        'fr7': 1.96092, 'us1': 1.658, 'us2': 1.7486, 'us3': 3.48104, 'es1': 3.26885, 'es2': 1.84053}
+    PHONEMES_MAX_DURATION = 1000 # 1 second in milliseconds
 
     def _get_additional_params(self, lang, voice_params : 'VoiceParameters'):
         """Uses the msg's lang field to figure out the voice, sex, and volume of the synth"""
@@ -64,6 +65,10 @@ class AudioRenderer:
         function sets the wav's RIFF header to their actual values"""
         return wav[:4] + pack('<I', len(wav) - 8) + wav[8:40] + pack('<I', len(wav) - 44) + wav[44:]
 
+    def _cap_phonemes(self, phonemes: PhonemeList):
+        for pho in phonemes:
+            pho.duration = min(pho.duration, self.PHONEMES_MAX_DURATION)
+
     async def string_to_audio(self, text : str, lang : str, voice_params : 'VoiceParameters') -> bytes:
         """Renders directly a string to audio using an espeak -> mbrola pipeline
         (output is a wav bytes object)"""
@@ -85,6 +90,8 @@ class AudioRenderer:
         logger.debug("Running mbrola command %s" % audio_synth_string)
         process = await create_subprocess_shell(audio_synth_string, stdout=PIPE,
                                                 stdin=PIPE, stderr=PIPE)
+        # capping phonemes lengths to prevent some effects of making super long sounds
+        self._cap_phonemes(phonemes)
         wav, err = await process.communicate(input=str(phonemes).encode('utf-8'))
         return self._wav_format(wav)
 

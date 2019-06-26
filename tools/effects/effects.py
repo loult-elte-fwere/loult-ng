@@ -1,5 +1,6 @@
 import json
 import random
+from copy import deepcopy
 from datetime import datetime
 from functools import partial
 from itertools import cycle
@@ -158,39 +159,6 @@ class FlowerEffect(ExplicitTextEffect):
         return " ".join(result[:-1]) # slice to avoid trailing whitespace
 
 
-class PoiloEffect(ExplicitTextEffect):
-    NAME = "poil au snèbwèw"
-    TIMEOUT = 180
-
-    tree_pickle = path.join(path.dirname(path.realpath(__file__)),
-                            "data/pwezie/rhyme_tree.pckl")
-
-    article_mapping = {("m", "s") : "au",
-                       ("m", "p") : "aux",
-                       ("f", "s") : "à la",
-                       ("f", "p") : "aux"}
-
-    def __init__(self):
-        super().__init__()
-        self.rtree = cached_loader.load_pickle(self.tree_pickle)
-
-    def process(self, text : str):
-        splitted = text.strip("?! ,:").split()
-        if splitted:
-            rhyme = self.rtree.find_rhyme(splitted[-1])
-            if rhyme is not None:
-                if splitted[-1][0] in ["aoeiuyéèêh"]:
-                    article = "à l'"
-                else:
-                    try:
-                        article = self.article_mapping[(rhyme.data["genre"], rhyme.data["nombre"])]
-                    except KeyError:
-                        article = "au"
-                return text + " poil %s %s" % (article, rhyme.text)
-
-        return text # default to "pass"
-
-
 class ContradictorEffect(ExplicitTextEffect):
     NAME = "contradicteur"
     TIMEOUT = 600
@@ -219,11 +187,44 @@ class ContradictorEffect(ExplicitTextEffect):
             return text
 
 
+class CaptainHaddockEffect(ExplicitTextEffect):
+    NAME = "mille million de milles sabords"
+    TIMEOUT = 200
+    INSULTS_FILEPATH = path.join(path.dirname(path.realpath(__file__)), "data/capitaine_haddock/insults.txt")
+
+    def __init__(self):
+        super().__init__()
+        with open(self.INSULTS_FILEPATH) as insults_file:
+            self.insults = insults_file.read().split("\n")
+
+    def process(self, text: str) -> str:
+        return "%s, %s %s!" % (
+            text.strip("!,.:?"),
+            random.choice(["bande de", "espèces de", "espèce de"]),
+            random.choice(self.insults)
+        )
+
+
 class TouretteEffect(HiddenTextEffect):
     """Randomly inserts insults in between words"""
     NAME = "syndrome de tourette"
     TIMEOUT = 120
-    available_swears = ["pute", "salope", "chier", "kk", "chienne", "merde", "cul", "bite", "chatte", "suce"]
+    available_words = {
+        "tourette" : ["pute", "salope", "chier", "kk", "chienne", "merde", "cul", "bite", "chatte", "suce"],
+        "bibw": ["jtm", "t miw miw", "onw", "jvm", "biswe bidwe", "plein d'amouw", "bibwe", "t chwe"]}
+
+    def __init__(self, disease: str = None):
+        super().__init__()
+        if disease is None:
+            disease = random.choice(["tourette", "bibwe"])
+
+        if disease == "tourette":
+            self.NAME = "syndrome de tourette"
+        elif disease == "bibwe":
+            self.NAME = "bibwe du loult"
+        else:
+            raise ValueError()
+        self.words = self.available_words[disease]
 
     def process(self, text: str):
         # the variable is called splitted because it pisses off this australian cunt that mboevink is
@@ -232,7 +233,7 @@ class TouretteEffect(HiddenTextEffect):
         for word in space_splitted:
             reconstructed += " " + word + " "
             if random.randint(1,6) == 1:
-                reconstructed += " ".join([random.choice(self.available_swears)
+                reconstructed += " ".join([random.choice(self.words)
                                            for i in range(random.randint(1,4))])
         return reconstructed
 
@@ -546,7 +547,8 @@ class VoiceSpeedupEffect(VoiceEffect):
         super().__init__()
         self.factor = random.uniform(1.5, 2.4) if factor is None else factor
 
-    def process(self, voice_params : VoiceParameters):
+    def process(self, voice_params: VoiceParameters):
+        voice_params = deepcopy(voice_params)
         voice_params.speed = int(self.factor * voice_params.speed)
         return voice_params
 

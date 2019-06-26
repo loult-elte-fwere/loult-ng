@@ -6,7 +6,7 @@ from os import path
 
 from tools.objects import get_random_object, Revolver, RevolverCartridges, \
     SniperBullets, RPGRocket, Quiver, C4, Detonator
-from tools.objects.objects import DiseaseObject, BaseballBat, WhiskyBottle
+from tools.objects.objects import DiseaseObject, BaseballBat, AlcoholBottle
 from tools.objects.weapons import RobinHoodsBow
 from .base import next_occ
 
@@ -296,14 +296,14 @@ class LynchingEvent(PseudoPeriodicEvent):
 
 
 class PubBrawlEvent(PseudoPeriodicEvent):
-    """Everyone gets a gun with 2 bullets"""
+    """Everyone gets a drink"""
     PSEUDO_PERIOD = timedelta(hours=6)
     VARIANCE = timedelta(hours=0.4)
 
     async def trigger(self, loultstate):
         for channel in loultstate.chans.values():
             for usr in channel.users.values():
-                usr.state.inventory.add(WhiskyBottle())
+                usr.state.inventory.add(AlcoholBottle())
             channel.broadcast(type="notification",
                               msg="Tournée générale dans le Loult Saloon!")
 

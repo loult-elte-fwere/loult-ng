@@ -4,8 +4,10 @@ import re
 from os import path, listdir
 from time import time as timestamp
 
+import yaml
+
 from tools.effects.effects import ExplicitTextEffect, GrandSpeechMasterEffect, StutterEffect, VocalDyslexia, \
-    VowelExchangeEffect, FlowerEffect
+    VowelExchangeEffect, FlowerEffect, CaptainHaddockEffect
 from tools.objects.base import ClonableObject, InertObject, UsableObject, DestructibleObject, TargetedObject, \
     userlist_dist
 from tools.tools import cached_loader
@@ -90,7 +92,7 @@ class BaseballBat(UsableObject, DestructibleObject):
         for filename in listdir(self.FIGHTING_FX_DIR):
             realpath = path.join(self.FIGHTING_FX_DIR, filename)
             self.sounds.append(cached_loader.load_byte(realpath))
-    
+
     @property
     def name(self):
         return "Batte pour frapper %s" % self.target_name
@@ -191,21 +193,29 @@ class Scolopamine(UsableObject, DestructibleObject, TargetedObject):
         self.should_be_destroyed = True
 
 
-class WhiskyBottle(UsableObject, DestructibleObject, TargetedObject):
-    NAME = "Bouteille de whisky"
+class AlcoholBottle(UsableObject, DestructibleObject, TargetedObject):
+    NAME = "Bouteille d'alcool"
     EFFECTS = [GrandSpeechMasterEffect, StutterEffect, VocalDyslexia, VowelExchangeEffect]
     FILLING_MAPPING = {0: "vide", 1: "presque vide", 2: "moitié vide",
                        3: "presque pleine", 4: "pleine"}
     BOTTLE_FX = path.join(DATA_PATH, "broken_bottle.mp3")
     GULP_FX = path.join(DATA_PATH, "gulp.mp3")
+    ALCOHOLS = yaml.load(open(path.join(DATA_PATH, "alcohols.yml")))
 
     def __init__(self):
         super().__init__()
         self.remaining_use = 4
+        rnd_alc = random.choice(self.ALCOHOLS)
+        self.alc_type = rnd_alc["name"]
+        self.alc_brand = random.choice(rnd_alc["brands"])
 
     @property
     def name(self):
-        return self.NAME + " (%s)" % self.FILLING_MAPPING[self.remaining_use]
+        if self.alc_type:
+            return "Bouteille de %s %s (%s)" % (self.alc_type, self.alc_brand,
+                                                self.FILLING_MAPPING[self.remaining_use])
+        else:
+            return "Bouteille de %s (%s)" % (self.alc_brand, self.FILLING_MAPPING[self.remaining_use])
 
     def use(self, loult_state, server, obj_params):
         # user decides to use it on someone else, meaning throwing it
@@ -231,7 +241,8 @@ class WhiskyBottle(UsableObject, DestructibleObject, TargetedObject):
                 return server.send_json(type="notification",
                                         msg="La bouteille est vide!")
             server.channel_obj.broadcast(type="notification",
-                                         msg="%s se descend du whisky!" % server.user.poke_params.fullname,
+                                         msg="%s se descend un peu de %s!" % (server.user.poke_params.fullname,
+                                                                              self.alc_brand),
                                          binary_payload=self._load_byte(self.GULP_FX))
             for effect_type in self.EFFECTS:
                 server.user.state.add_effect(effect_type())
@@ -284,6 +295,9 @@ class Detonator(UsableObject):
             if user.state.inventory.search_by_class(C4):
                 user.state.inventory.remove_by_class(C4)
                 for client in user.clients:
+                    client.send_json(type="notification",
+                                     msg="%s vous a fait sauter" % server.user.poke_params.fullname)
+                    client.sendBinay(self._load_byte(self.EXPLOSION_FX))
                     client.sendClose(code=4006, reason='reconnect later')
                 blown_up_users.append(user.poke_params.fullname)
         if blown_up_users:
@@ -371,7 +385,7 @@ class RectalExam(UsableObject, TargetedObject, DestructibleObject):
 
 class WealthDetector(UsableObject, TargetedObject):
     NAME = "détecteur de richesse"
-    
+
     def use(self, loult_state, server, obj_params):
         target_id, target = self._acquire_target(server, obj_params)
         if target is None:
@@ -440,26 +454,47 @@ class Lighter(UsableObject):
 class MollyChute(UsableObject, DestructibleObject):
     NAME = "paras de MD"
 
-    class LoveEffect(ExplicitTextEffect):
+    class MDMAEffect(ExplicitTextEffect):
         NAME = "un paras"
-        love_sentence = ["Attendez je vais kiffer le son là",
-                         "J'ai envie de vous faire un calin à tous",
-                         "Je peux t'embrasser %s?",
-                         "Vous êtes tous vraiment trop sympa en fait",
-                         "C'est tout doux quand je te caresse les cheveux %s",
-                         "Arrêtez de vous dire des trucs méchants moi je vous aime tous",
-                         "Franchement le monde est trop beau",
-                         "T'es vraiment trop sympa en fait %s",
-                         "C'est vraiment la plus belle soirée de ma vie"]
+        love_sentence = [
+            "Attendez je vais kiffer le son là",
+            "J'ai envie de vous faire un calin à tous",
+            "Je peux t'embrasser %s?",
+            "Vous êtes tous vraiment trop sympa en fait",
+            "C'est tout doux quand je te caresse les cheveux %s",
+            "Arrêtez de vous dire des trucs méchants moi je vous aime tous",
+            "Franchement le monde est trop beau",
+            "T'es vraiment trop sympa en fait %s",
+            "C'est vraiment la plus belle soirée de ma vie",
+            "t'as pas un chewing gum %s?",
+            "attends faut que j'aille boire de l'eau"
+        ]
+        bad_trip_sentences = [
+            "plus jamais je me défonce comme ça, c'est vraiment trop de la merde",
+            "la vie est si nulle",
+            "tellement la flemme de faire quoi que soit, marre de tout",
+            "franchement ça sert à rien de sortir comme ça, dépenser son argent et se niquer la santé pour quelques heures de bonheur artificiel",
+            "vraiment la descente je supporte plus, faut que j'arrête ces conneries",
+            "je suis sûr que tu me détestes en fait %s",
+            "j'ai trop chaud d'un coup",
+            "mes parents doivent avoir honte de moi"
+        ]
         TIMEOUT = 300
+        # 100 last seconds are bad trippin'
+        BAD_TRIP_TIME = 200
 
         def __init__(self, users_names):
             super().__init__()
             self.users = users_names
+            self.start = datetime.now()
 
         def process(self, text: str):
             if random.randint(1, 3) == 1:
-                sentence = random.choice(self.love_sentence)
+                if (datetime.now() - self.start).seconds < self.BAD_TRIP_TIME:
+                    sentence = random.choice(self.love_sentence)
+                else:
+                    sentence = random.choice(self.bad_trip_sentences)
+
                 if "%s" in sentence:
                     return sentence % random.choice(self.users)
                 else:
@@ -468,8 +503,18 @@ class MollyChute(UsableObject, DestructibleObject):
                 return text
 
     def use(self, loult_state, server, obj_params):
-        efct = self.LoveEffect([usr.poke_params.pokename for usr in server.channel_obj.users.values()])
+        efct = self.MDMAEffect([usr.poke_params.pokename for usr in server.channel_obj.users.values()])
         server.user.state.add_effect(efct)
         server.channel_obj.broadcast(type="notification",
                                      msg="%s prend de la MD!" % server.user.poke_params.fullname)
+        self.should_be_destroyed = True
+
+
+class CaptainHaddockPipe(UsableObject, DestructibleObject):
+    NAME = "pipe du capitaine haddock"
+
+    def use(self, loult_state, server, obj_params):
+        server.user.state.add_effect(CaptainHaddockEffect())
+        server.channel_obj.broadcast(type="notification",
+                                     msg="%s est un marin d'eau douce!" % server.user.poke_params.fullname)
         self.should_be_destroyed = True

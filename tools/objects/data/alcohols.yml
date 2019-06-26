@@ -1,0 +1,87 @@
+- name : whisky
+  brands:
+    - Altore
+    - Ballantine's
+    - Clan Campbell
+    - Four Roses
+    - Glenmorangie
+    - J&B
+    - Jack Daniel's
+    - Kilbeggan
+    - Knob Creek
+    - Loch Lomond
+    - Woodford Reserve
+- name: Bière
+  brands: 
+    - Les 3 Brasseurs
+    - 3 Monts
+    - 33 Export
+    - 1664
+    - Affligem
+    - Amstel
+    - Atlas
+    - Pietra
+    - Budweiser
+    - Cara Pils
+    - Ch'ti
+    - Chimay
+    - Chouffe
+    - Ciney
+    - Cuvée des Trolls
+    - Delirium Tremens
+    - Desperados
+    - Don de Dieu
+    - Duvel
+    - Edelweiss
+    - Fischer
+    - La Goudale
+    - Grimbergen
+    - Grolsch
+    - Guinness
+    - Hoegaarden
+    - Jenlain
+    - Jupiler
+    - Kanterbräu
+    - Karlsberg
+    - Kilkenny
+    - Kronenbourg
+    - Kwak
+    - La Fin du Monde
+    - Leffe
+    - Lindemans
+    - Maredsous
+- name: vodka
+  brands:
+   - Absolut
+   - Grey Goose
+   - Sobieski
+   - Smirnoff
+   - Eristoff
+   - Zubrovska
+- name : rhum
+  brands:
+    - Bacardí
+    - Captain Morgan
+    - Charrette
+    - Havana Club
+    - J.M.
+    - Diplomático
+    - Saint-James
+    - Trois Rivières
+- name: Pastis
+  brands:
+    - 51
+    - Ricard
+- name: ""
+  brands:
+    - Jägermeister
+    - Martini Blanc
+    - Malibu
+    - Chartreuse
+    - Mirabelle de papy
+    - Poire du vieux jojo
+    - Picon
+    - Amaretto
+    - Cointreau
+    - Calvados
+    - Absinthe

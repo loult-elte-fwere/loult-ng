@@ -1,7 +1,7 @@
 import random
 from .base import LoultObject
 from .objects import (MagicWand,
-                      Crown, SimpleInstrument, Scolopamine, WhiskyBottle, PolynectarPotion,
+                      Crown, SimpleInstrument, Scolopamine, AlcoholBottle, PolynectarPotion,
                       Microphone, C4, Detonator, SuicideJacket, Flower,
                       Costume, WealthDetector, RectalExam, Cigarettes, Lighter,
                       MollyChute)
@@ -10,7 +10,7 @@ from tools.objects.weapons import Revolver, RevolverCartridges, SniperRifle, \
 
 # objects which can be given to users and are not specifically linked to any events
 AVAILABLE_OBJECTS = [MagicWand, Crown, SimpleInstrument, Scolopamine,
-                     WhiskyBottle, PolynectarPotion,  Microphone, C4,
+                     AlcoholBottle, PolynectarPotion, Microphone, C4,
                      Detonator, SuicideJacket, Flower, Quiver, WealthDetector,
                      RectalExam, Costume, Cigarettes, Lighter, MollyChute]
 
