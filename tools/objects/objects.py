@@ -297,7 +297,7 @@ class Detonator(UsableObject):
                 for client in user.clients:
                     client.send_json(type="notification",
                                      msg="%s vous a fait sauter" % server.user.poke_params.fullname)
-                    client.sendBinay(self._load_byte(self.EXPLOSION_FX))
+                    client.sendBinary(self._load_byte(self.EXPLOSION_FX))
                     client.sendClose(code=4006, reason='reconnect later')
                 blown_up_users.append(user.poke_params.fullname)
         if blown_up_users:
