@@ -8,7 +8,9 @@ import sounddevice as sd
 from scipy.io import wavfile
 
 from salt import SALT
+# needed to prevent imports loop
 from tools.state import LoultServerState
+from tools.effects.unused_effects import VenerEffect
 from tools.effects.effects import *  # See tools/__init__.py for available effects
 from tools.users import User
 
@@ -61,7 +63,7 @@ class SpeechDeformation(PhonemicEffect):
 
 fake_cookie = md5(("6225456233193a39466" + SALT).encode('utf8')).digest()
 user = User(fake_cookie, "wesh", None)
-for effect in [CaptainHaddockEffect()]:
+for effect in [CaptainHaddockEffect(), VenerEffect()]:
     print("Applying effect %s" % effect.name)
     user.state.add_effect(effect)
 

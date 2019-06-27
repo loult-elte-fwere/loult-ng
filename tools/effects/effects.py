@@ -211,7 +211,7 @@ class TouretteEffect(HiddenTextEffect):
     TIMEOUT = 120
     available_words = {
         "tourette" : ["pute", "salope", "chier", "kk", "chienne", "merde", "cul", "bite", "chatte", "suce"],
-        "bibw": ["jtm", "t miw miw", "onw", "jvm", "biswe bidwe", "plein d'amouw", "bibwe", "t chwe"]}
+        "bibwe": ["jtm", "t miw miw", "onw", "jvm", "biswe bidwe", "plein d'amouw", "bibwe", "t chwe"]}
 
     def __init__(self, disease: str = None):
         super().__init__()
