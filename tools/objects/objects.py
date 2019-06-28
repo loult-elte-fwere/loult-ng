@@ -16,7 +16,6 @@ DATA_PATH = path.join(path.dirname(path.realpath(__file__)), "data")
 
 
 class DiseaseObject(ClonableObject, InertObject):
-
     DISEASES = ["syphilis", "diarrhée", "chaude-pisse", "gripe aviaire"]
 
     def __init__(self, patient_zero, disease=None):
@@ -58,7 +57,7 @@ class Flower(UsableObject, DestructibleObject):
 class SimpleInstrument(UsableObject):
     SND_DIR = path.join(DATA_PATH, "instruments/")
     INSTRUMENTS_MAPPING = {"gong": "gong.mp3"}
-    COOLDOWN = 30 # in seconds
+    COOLDOWN = 30  # in seconds
 
     def __init__(self, instrument=None):
         if instrument is None:
@@ -82,6 +81,7 @@ class SimpleInstrument(UsableObject):
 
 class BaseballBat(UsableObject, DestructibleObject):
     FIGHTING_FX_DIR = path.join(DATA_PATH, "fighting/")
+    BROKEN_BAT_FX = path.join(DATA_PATH, "broken_bat.mp3")
 
     def __init__(self, target_userid, target_username):
         super().__init__()
@@ -100,10 +100,11 @@ class BaseballBat(UsableObject, DestructibleObject):
     def use(self, loult_state, server, obj_params):
         # checking if target user is present, sending a notif and a sound
         if self.target_userid in server.channel_obj.users:
-            server.channel_obj.broadcast(type="notification",
-                                         msg="%s donne un coup de batte à %s"
-                                             % (server.user.poke_params.fullname, self.target_name),
-                                         binary_payload=random.choice(self.sounds))
+            if self.remaining_hits > 0:
+                server.channel_obj.broadcast(type="notification",
+                                             msg="%s donne un coup de batte à %s"
+                                                 % (server.user.poke_params.fullname, self.target_name),
+                                             binary_payload=random.choice(self.sounds))
             self.remaining_hits -= 1
         else:
             server.send_json(type="notification",
@@ -114,7 +115,8 @@ class BaseballBat(UsableObject, DestructibleObject):
             self.should_be_destroyed = True
             server.channel_obj.broadcast(type="notification",
                                          msg="%s a cassé sa batte sur %s"
-                                             % (server.user.poke_params.fullname, self.target_name))
+                                             % (server.user.poke_params.fullname, self.target_name),
+                                         binary_payload=cached_loader.load_byte(self.BROKEN_BAT_FX))
 
 
 class Crown(UsableObject, DestructibleObject):
@@ -142,13 +144,13 @@ class Crown(UsableObject, DestructibleObject):
 
 class MagicWand(UsableObject, TargetedObject):
     NAME = "Baguette Magique"
-    COOLDOWN = 15 * 60 # in seconds
+    COOLDOWN = 15 * 60  # in seconds
 
     class DuckEffect(ExplicitTextEffect):
         TIMEOUT = 300
 
-        def process(self, text : str):
-            return re.sub(r"[\w]+","qurk", text)
+        def process(self, text: str):
+            return re.sub(r"[\w]+", "qurk", text)
 
     def __init__(self):
         self.last_used = datetime(1972, 1, 1)
@@ -170,7 +172,6 @@ class MagicWand(UsableObject, TargetedObject):
         params.pokename = "Qurkee"
         target._info = None
         server.channel_obj.update_userlist()
-
 
         self.last_used = datetime.now()
 
@@ -337,7 +338,7 @@ class Costume(UsableObject):
     CHARACTERS = ["link", "mario", "wario", "sonic"]
 
     def __init__(self):
-        self.character = random.choice(self.CHARACTERS) # type:str
+        self.character = random.choice(self.CHARACTERS)  # type:str
 
     @property
     def name(self):
@@ -368,7 +369,7 @@ class RectalExam(UsableObject, TargetedObject, DestructibleObject):
             return
 
         from ..objects import get_random_object
-        rdm_objects = [get_random_object() for _ in range(random.randint(2,4))]
+        rdm_objects = [get_random_object() for _ in range(random.randint(2, 4))]
         for obj in rdm_objects:
             server.user.state.inventory.add(obj)
         names_list = ", ".join(obj.name for obj in rdm_objects)
@@ -438,7 +439,7 @@ class Cigarettes(UsableObject, DestructibleObject):
 
 class Lighter(UsableObject):
     NAME = "briquet"
-    COOLDOWN = 30 # in seconds
+    COOLDOWN = 30  # in seconds
     CIG_FX = path.join(DATA_PATH, "lighter.mp3")
 
     def __init__(self):
