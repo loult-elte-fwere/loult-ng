@@ -21,12 +21,12 @@ document.addEventListener('DOMContentLoaded', function() {
 	var parser = function(raw_msg) {
 		let rules = [
 			{
-				test: msg => msg.includes('://vocaroo.com/i/'),
-				run: msg => msg.replace(/<a href="https?:\/\/vocaroo.com\/i\/(\w+)" target="_blank">https?:\/\/vocaroo.com\/i\/\w+<\/a>/g, '<audio controls><source src="https://vocaroo.com/media_command.php?media=$1&command=download_mp3" type="audio/mpeg"><source src="https://vocaroo.com/media_command.php?media=$1&command=download_webm" type="audio/webm"></audio>$&')
-			},
-			{
 				test: msg => msg.includes('http'),
 				run: msg => msg.replace(/https?:\/\/[^< ]*[^<*.,?! :]/g, '<a href="$&" target="_blank">$&</a>')
+			},
+			{
+				test: msg => msg.includes('://vocaroo.com/i/'),
+				run: msg => msg.replace(/<a href="https?:\/\/vocaroo.com\/i\/(\w+)" target="_blank">https?:\/\/vocaroo.com\/i\/\w+<\/a>/g, '<audio controls><source src="https://vocaroo.com/media_command.php?media=$1&command=download_mp3" type="audio/mpeg"><source src="https://vocaroo.com/media_command.php?media=$1&command=download_webm" type="audio/webm"></audio>$&')
 			},
 			{
 				test: msg => msg.includes('**'),
