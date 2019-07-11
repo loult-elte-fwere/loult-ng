@@ -20,17 +20,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
 	var parser = function(raw_msg) {
 		let rules = [
-			/*{
-				test: msg => msg.includes('http'),
-				run: msg => msg.replace(/https?:\/\/[^< ]*[^<*.,?! :]/g, '<a href="$&" target="_blank">$&</a>')
-			},*/
-			{
-				test: msg => msg.includes('**'),
-				run: msg => msg.replace(/\*{2}([^\*]+)\*{2}?/g, '<span class="spoiler">$1</span>')
-			},
 			{
 				test: msg => msg.includes('://vocaroo.com/i/'),
 				run: msg => msg.replace(/<a href="https?:\/\/vocaroo.com\/i\/(\w+)" target="_blank">https?:\/\/vocaroo.com\/i\/\w+<\/a>/g, '<audio controls><source src="https://vocaroo.com/media_command.php?media=$1&command=download_mp3" type="audio/mpeg"><source src="https://vocaroo.com/media_command.php?media=$1&command=download_webm" type="audio/webm"></audio>$&')
+			},
+			{
+				test: msg => msg.includes('http'),
+				run: msg => msg.replace(/https?:\/\/[^< ]*[^<*.,?! :]/g, '<a href="$&" target="_blank">$&</a>')
+			},
+			{
+				test: msg => msg.includes('**'),
+				run: msg => msg.replace(/\*{2}([^\*]+)\*{2}?/g, '<span class="spoiler">$1</span>')
 			},
 			{
 				test: msg => msg.startsWith('&gt;'),
@@ -182,7 +182,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	};
 
 	hist = document.getElementById('history'),
-	hist.value = localStorage.getItem('history') ? localStorage.getItem('history') : 'full';
+		hist.value = localStorage.getItem('history') ? localStorage.getItem('history') : 'full';
 
 	hist.onchange = function() {
 		localStorage.history = hist.value;
@@ -192,7 +192,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	var limitHistory = function () {
 		var limit = localStorage.getItem('history');
 
-                if (limit == 'full' || typeof limit === 'undefined' || !limit) {
+		if (limit == 'full' || typeof limit === 'undefined' || !limit) {
 			return;
 		}
 
@@ -253,7 +253,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	});
 
 	window.onfocus = function() {
-		 if(count > 0) {
+		if(count > 0) {
 			document.title = 'Loult.family';
 			count = 0;
 		}
@@ -336,7 +336,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			case 'es':
 			case 'de':
 				lang = ln;
-			break;
+				break;
 			default:
 				lang = 'en';
 		}
@@ -463,8 +463,8 @@ document.addEventListener('DOMContentLoaded', function() {
 		input.onfocus = function(evt) {
 			if (audio && context && context.state !== "running") {
 				context.resume().then(() => {
-				    console.log('Playback resumed successfully');
-				  });
+					console.log('Playback resumed successfully');
+				});
 			}
 		}
 
@@ -572,34 +572,34 @@ document.addEventListener('DOMContentLoaded', function() {
 					case 'bot':
 						if(!lastMuted)
 							addLine(users[msg.userid], parser(msg.msg), msg.date, msg.type, msg.userid);
-					break;
+						break;
 
 					case 'me':
 						if(!lastMuted)
 							addLine({name : 'info', color : users[msg.userid].color}, 'Le ' + users[msg.userid].name + ' ' + users[msg.userid].adjective + ' ' + parser(msg.msg), msg.date, 'me', msg.userid);
-					break;
+						break;
 
 					case 'connect':
 						addUser(msg.userid, msg.params, msg.profile);
 						if(!lastMuted)
 							addLine({name : 'info'}, 'Un ' + msg.params.name + ' ' + msg.params.adjective + ' apparaît !', msg.date, 'log', msg.type);
-					break;
+						break;
 
 					case 'disconnect':
 						if(!lastMuted)
 							addLine({name : 'info'}, 'Le ' + users[msg.userid].name + ' ' + users[msg.userid].adjective + ' s\'enfuit !', msg.date, 'part', msg.type);
 						delUser(msg.userid);
-					break;
+						break;
 
 					case 'attack':
 						switch(msg['event']) {
 							case 'attack':
 								addLine({name : 'info'}, users[msg.attacker_id].name + ' attaque ' + users[msg.defender_id].name + ' !', msg.date, 'log', msg.type);
-							break;
+								break;
 
 							case 'dice':
 								addLine({name : 'info'}, users[msg.attacker_id].name + ' tire un ' + msg.attacker_dice + ' + ('+ msg.attacker_bonus + '), ' + users[msg.defender_id].name + ' tire un ' + msg.defender_dice + ' + (' + msg.defender_bonus + ') !', msg.date, 'log', msg.type);
-							break;
+								break;
 
 							case 'effect':
 								addLine({name : 'info'}, users[msg.target_id].name + ' est maintenant affecté par l\'effet ' + msg.effect + ' !', msg.date, 'log', msg.type);
@@ -608,46 +608,46 @@ document.addEventListener('DOMContentLoaded', function() {
 									d.setSeconds(d.getSeconds() + msg.timeout);
 									setTimeout(function() { addLine({name : 'info'}, 'L\'effet ' + msg.effect + ' est terminé.', d, 'part', 'expire'); }, msg.timeout * 1000);
 								}
-							break;
+								break;
 
 							case 'invalid':
 								addLine({name : 'info'}, 'Impossible d\'attaquer pour le moment, ou pokémon invalide', (new Date), 'kick', 'invalid');
-							break;
+								break;
 
 							case 'nothing':
 								addLine({name : 'info'}, 'Il ne se passe rien...', msg.date, 'log', msg.type);
-							break;
+								break;
 						}
-					break;
+						break;
 
 					case 'antiflood':
 						switch(msg['event']) {
 							case 'banned':
 								addLine({name : 'info'}, 'Le ' + users[msg.flooder_id].name + ' ' + users[msg.flooder_id].adjective + ' était trop faible. Il est libre maintenant.', msg.date, 'kick', msg.type);
-							break;
+								break;
 
 							case 'flood_warning':
 								addLine({name : 'info'}, 'Attention, la qualité de vos contributions semble en baisse. Prenez une grande inspiration.', msg.date, 'kick', msg.type);
-							break;
+								break;
 						}
-					break;
+						break;
 
 					case 'wait':
 						addLine({name : 'info'}, 'La connection est en cours. Concentrez-vous quelques instants avant de dire des âneries.', msg.date, 'log', msg.type);
-					break;
+						break;
 
 					case 'notification':
-                        addLine({name : 'info'}, msg.msg,("date" in msg) ? msg.date : (new Date), 'info');
-                    break;
+						addLine({name : 'info'}, msg.msg,("date" in msg) ? msg.date : (new Date), 'info');
+						break;
 
 					case 'userlist':
-					    // flushing previous user list just in case
-					    for(var i in users)
-				            delUser(i);
+						// flushing previous user list just in case
+						for(var i in users)
+							delUser(i);
 
 						for(var i = 0; i < msg.users.length; i++)
 							addUser(msg.users[i].userid, msg.users[i].params, msg.users[i].profile);
-					break;
+						break;
 
 					case 'backlog':
 						for(var i = 0; i < msg.msgs.length; i++)
@@ -657,66 +657,66 @@ document.addEventListener('DOMContentLoaded', function() {
 								addLine(msg.msgs[i].user, parser(msg.msgs[i].msg), msg.msgs[i].date, 'backlog ' + msg.msgs[i].type, msg.msgs[i].userid);
 
 						addLine({name : 'info'}, 'Vous êtes connecté.', (new Date), 'log', 'connected');
-					break;
+						break;
 
 					case 'banned':
 						banned = true;
 						ws.close();
-					break;
+						break;
 
 					// conditions dedicated to objects
 					case 'give':
-					    switch(msg['response']){
-					        case 'invalid_target':
-					            addLine({name : 'info'}, 'Utilisateur récepteur inexistant', (new Date), 'kick', 'invalid');
-					        break;
+						switch(msg['response']){
+							case 'invalid_target':
+								addLine({name : 'info'}, 'Utilisateur récepteur inexistant', (new Date), 'kick', 'invalid');
+								break;
 
-					        case 'exchanged':
-					            addLine({name : 'info'}, users[msg.sender].name + ' donne ' + msg.obj_name + ' à  ' + users[msg.receiver].name + ".", msg.date, 'log');
-					        break;
-					    }
-					break;
+							case 'exchanged':
+								addLine({name : 'info'}, users[msg.sender].name + ' donne ' + msg.obj_name + ' à  ' + users[msg.receiver].name + ".", msg.date, 'log');
+								break;
+						}
+						break;
 
 					case 'object':
-					    switch(msg['response']){
-					        case 'invalid_id':
-					            addLine({name : 'info'}, 'Indice d\'objet dans l\'inventaire inexistant', (new Date), 'log', 'invalid');
-					        break;
+						switch(msg['response']){
+							case 'invalid_id':
+								addLine({name : 'info'}, 'Indice d\'objet dans l\'inventaire inexistant', (new Date), 'log', 'invalid');
+								break;
 
-					        case 'object_trashed':
-					            addLine({name : 'info'}, 'L\'objet ' + msg.object_name + ' a été jeté.', (new Date), 'log');
-					        break;
+							case 'object_trashed':
+								addLine({name : 'info'}, 'L\'objet ' + msg.object_name + ' a été jeté.', (new Date), 'log');
+								break;
 
-					        case 'object_taken':
-					            addLine({name : 'info'}, 'L\'objet ' + msg.object_name + ' a pris dans l\'inventaire commun.', (new Date), 'log');
-					        break;
-					    }
-					break;
+							case 'object_taken':
+								addLine({name : 'info'}, 'L\'objet ' + msg.object_name + ' a pris dans l\'inventaire commun.', (new Date), 'log');
+								break;
+						}
+						break;
 
 					case 'punish':
-					switch(msg['event']){
-					    case 'taser':
-					        ws.close();
-					        banned = true;
-					        function sleep(ms) {
-                              return new Promise(resolve => setTimeout(resolve, ms));
-                            }
-                            async function tase(){
-                                while(true){
-                                    addLine({name : 'info'}, 'CIVILISE TOI FILS DE PUTE', (new Date), 'kick', 'antiflood');
-                                    await sleep(10)
-                                }
-					        }
-					        tase();
-					    break;
+						switch(msg['event']){
+							case 'taser':
+								ws.close();
+								banned = true;
+							function sleep(ms) {
+								return new Promise(resolve => setTimeout(resolve, ms));
+							}
+							async function tase(){
+								while(true){
+									addLine({name : 'info'}, 'CIVILISE TOI FILS DE PUTE', (new Date), 'kick', 'antiflood');
+									await sleep(10)
+								}
+							}
+								tase();
+								break;
 
-					    case 'cactus':
-					        ws.close();
-					        ws = null;
-					        window.location.replace("http://0xad.net/cactus/");
-					        cactus = true;
-                        break;
-					}
+							case 'cactus':
+								ws.close();
+								ws = null;
+								window.location.replace("http://0xad.net/cactus/");
+								cactus = true;
+								break;
+						}
 				}
 			}
 			else if(!lastMuted && audio && volume.gain.value > 0) {
