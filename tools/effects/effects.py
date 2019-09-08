@@ -7,6 +7,7 @@ from itertools import cycle
 from os import path
 from typing import List
 from statistics import mean
+import re
 
 import numpy as np
 from pysndfx import AudioEffectsChain
@@ -20,6 +21,7 @@ from voxpopuli import PhonemeList, FrenchPhonemes
 from voxpopuli.phonemes import Phoneme
 from tools.users import VoiceParameters
 from .melody import chord_progressions, get_harmonies
+
 
 # TODO : effet théatre, effet speech random
 # guitar raggea + maitre de l'élocution
@@ -41,7 +43,7 @@ class Effect:
 
     @property
     def name(self):
-        return self.NAME if self._name is None else self._name# using a property, in case it gets more fancy than just a class constant
+        return self.NAME if self._name is None else self._name  # using a property, in case it gets more fancy than just a class constant
 
     def is_expired(self):
         return (datetime.now() - self.creation).seconds > self.timeout
@@ -68,7 +70,7 @@ class EffectGroup(Effect):
 
 class TextEffect(Effect):
 
-    def process(self, text : str) -> str:
+    def process(self, text: str) -> str:
         """This function takes text and applies (or not, it's up the dev) alterations to that text"""
         pass
 
@@ -86,14 +88,14 @@ class HiddenTextEffect(TextEffect):
 class PhonemicEffect(Effect):
     """Effect that modifies Phonems before they're sent to mbrola"""
 
-    def process(self, phonems : PhonemeList) -> PhonemeList:
+    def process(self, phonems: PhonemeList) -> PhonemeList:
         """"""
 
 
 class VoiceEffect(Effect):
     """Affects the voice before the audio rendering"""
 
-    def process(self, voice_params : VoiceParameters) -> VoiceParameters:
+    def process(self, voice_params: VoiceParameters) -> VoiceParameters:
         pass
 
 
@@ -108,7 +110,6 @@ class VisualEffect(Effect):
     """Doesn't do anything, just here to notify the client"""
 
 
-
 #### Here are the text effects ####
 
 class SnebwewEffect(ExplicitTextEffect):
@@ -119,14 +120,14 @@ class SnebwewEffect(ExplicitTextEffect):
                 "tu", "je", "a"]
 
     def process(self, text: str):
-        splitted = text.split() # fak ye baudrive
+        splitted = text.split()  # fak ye baudrive
         reconstructed = ''
         it = iter(splitted)
         endswith_sneb = False
         for word in it:
             if word:
                 reconstructed += word + ' '
-                if word.lower() in self.pronouns and random.randint(1,2) == 1:
+                if word.lower() in self.pronouns and random.randint(1, 2) == 1:
                     reconstructed += "SNÈBWÈW" + ' '
                     endswith_sneb = True
                     try:
@@ -140,12 +141,13 @@ class SnebwewEffect(ExplicitTextEffect):
 
         return reconstructed
 
+
 class FlowerEffect(ExplicitTextEffect):
     """Insert flower emojis between words"""
     NAME = "fleuwiw"
     TIMEOUT = 800
 
-    flowers = ["\U0001f337", "\U0001f338", "\U0001f339", "\U0001f33a","\U0001f33b", "\U0001f33c"]
+    flowers = ["\U0001f337", "\U0001f338", "\U0001f339", "\U0001f33a", "\U0001f33b", "\U0001f33c"]
 
     def process(self, text: str) -> str:
         # We'll try to have neither too few nor too many flowers.
@@ -156,7 +158,7 @@ class FlowerEffect(ExplicitTextEffect):
             if probability <= random.uniform(0, 1):
                 result.append(random.choice(self.flowers))
             result.append(token)
-        return " ".join(result[:-1]) # slice to avoid trailing whitespace
+        return " ".join(result[:-1])  # slice to avoid trailing whitespace
 
 
 class ContradictorEffect(ExplicitTextEffect):
@@ -168,7 +170,7 @@ class ContradictorEffect(ExplicitTextEffect):
         super().__init__()
         self.verb_tree = cached_loader.load_pickle(self.TREE_FILEPATH)
 
-    def process(self, text : str):
+    def process(self, text: str):
         if random.randint(1, 2) == 1:
             splitted = text.split()
             reconstructed = ''
@@ -178,7 +180,7 @@ class ContradictorEffect(ExplicitTextEffect):
                     previous_was_negation = True
                 else:
                     reconstructed += word + " "
-                    if previous_was_negation and self.verb_tree.has_leaf(Leaf(word)): # testing if it's a verb
+                    if previous_was_negation and self.verb_tree.has_leaf(Leaf(word)):  # testing if it's a verb
                         reconstructed += 'pas'
                         previous_was_negation = False
 
@@ -210,7 +212,7 @@ class TouretteEffect(HiddenTextEffect):
     NAME = "syndrome de tourette"
     TIMEOUT = 120
     available_words = {
-        "tourette" : ["pute", "salope", "chier", "kk", "chienne", "merde", "cul", "bite", "chatte", "suce"],
+        "tourette": ["pute", "salope", "chier", "kk", "chienne", "merde", "cul", "bite", "chatte", "suce"],
         "bibwe": ["jtm", "t miw miw", "onw", "jvm", "biswe bidwe", "plein d'amouw", "bibwe", "t chwe"]}
 
     def __init__(self, disease: str = None):
@@ -232,10 +234,27 @@ class TouretteEffect(HiddenTextEffect):
         reconstructed = ""
         for word in space_splitted:
             reconstructed += " " + word + " "
-            if random.randint(1,6) == 1:
+            if random.randint(1, 6) == 1:
                 reconstructed += " ".join([random.choice(self.words)
-                                           for i in range(random.randint(1,4))])
+                                           for i in range(random.randint(1, 4))])
         return reconstructed
+
+
+class CensorshipEffect(ExplicitTextEffect):
+    """Censors randomly parts of the input text"""
+    NAME = "censure d'état"
+    TIMEOUT = 150
+
+    @staticmethod
+    def random_repl(match):
+        if random.randint(0, 5) != 0:
+            return match.group()
+        else:
+            return "**%s**" % match.group()
+
+    def process(self, text: str) -> str:
+        # maybe use a sub instead of iterating like an idiot
+        return re.sub(r"[\w]+", self.random_repl, text)
 
 
 class SpeechMasterEffect(HiddenTextEffect):
@@ -260,7 +279,7 @@ class SkyblogEffect(ExplicitTextEffect):
     def process(self, text: str):
         reconstructed = ""
         for char in text:
-            reconstructed += char.upper() if random.randint(1,3) == 1 else char
+            reconstructed += char.upper() if random.randint(1, 3) == 1 else char
 
         return reconstructed
 
@@ -271,12 +290,12 @@ class PhonemicNwwoiwwEffect(PhonemicEffect):
     NAME = "nwwoiww"
     TIMEOUT = 150
 
-    def process(self, phonems : PhonemeList):
+    def process(self, phonems: PhonemeList):
         w_phonem = Phoneme("w", 103, [])
         for i, phoneme in enumerate(phonems):
             if phoneme.name == "R":
                 phoneme.name = "w"
-                if random.randint(0,1) == 0:
+                if random.randint(0, 1) == 0:
                     for j in range(2):
                         phonems.insert(i, w_phonem)
                 else:
@@ -288,7 +307,7 @@ class PhonemicFofoteEffect(PhonemicEffect):
     NAME = "fofotage"
     TIMEOUT = 150
 
-    def process(self, phonems : PhonemeList):
+    def process(self, phonems: PhonemeList):
         for phoneme in phonems:
             if phoneme.name in ["s", "v", "z", "S", "Z"]:
                 phoneme.name = "f"
@@ -298,18 +317,18 @@ class PhonemicFofoteEffect(PhonemicEffect):
 class AccentAllemandEffect(PhonemicEffect):
     NAME = "accent shleu"
     TIMEOUT = 150
-    _tranlation_table = {"Z" : "S", # je -> che
-                         "v" : "f", # vous -> fous
-                         "b" : "p", # boule -> poule
-                         "g" : "k" } # gant -> kan
+    _tranlation_table = {"Z": "S",  # je -> che
+                         "v": "f",  # vous -> fous
+                         "b": "p",  # boule -> poule
+                         "g": "k"}  # gant -> kan
 
-    def process(self, phonems : PhonemeList):
+    def process(self, phonems: PhonemeList):
         for phoneme in phonems:
             if phoneme.name in self._tranlation_table:
                 phoneme.name = self._tranlation_table[phoneme.name]
-            elif phoneme.name in FrenchPhonemes.ORALS and random.randint(1,3) == 1:
+            elif phoneme.name in FrenchPhonemes.ORALS and random.randint(1, 3) == 1:
                 phoneme.duration *= 2
-            elif phoneme.name == "d" and random.randint(1,2) == 1:
+            elif phoneme.name == "d" and random.randint(1, 2) == 1:
                 phoneme.name = "t"
         return phonems
 
@@ -322,11 +341,11 @@ class AccentMarseillaisEffect(PhonemicEffect):
         reconstructed = PhonemeList([])
         ng_phonem = Phoneme("N", 100)
         euh_phonem = Phoneme("2", 79)
-        phonems.append(Phoneme("_", 10)) # end-silence-padding, just to be safe
+        phonems.append(Phoneme("_", 10))  # end-silence-padding, just to be safe
         for i, phoneme in enumerate(phonems):
             if phoneme.name in FrenchPhonemes.NASAL_WOVELS:
                 reconstructed += [phoneme, ng_phonem]
-            elif phoneme.name in FrenchPhonemes.CONSONANTS - {"w"} and phonems[i+1].name not in FrenchPhonemes.VOWELS:
+            elif phoneme.name in FrenchPhonemes.CONSONANTS - {"w"} and phonems[i + 1].name not in FrenchPhonemes.VOWELS:
                 reconstructed += [phoneme, euh_phonem]
             elif phoneme.name == "o":
                 phoneme.name = "O"
@@ -340,15 +359,15 @@ class StutterEffect(PhonemicEffect):
     TIMEOUT = 150
     NAME = "be be te"
 
-    def process(self, phonems : PhonemeList):
+    def process(self, phonems: PhonemeList):
         silence = Phoneme("_", 61)
         reconstructed = PhonemeList([])
         for i, phoneme in enumerate(phonems):
             if phonems[i].name in FrenchPhonemes.CONSONANTS \
-                    and phonems[i+1].name in FrenchPhonemes.VOWELS \
-                    and random.randint(1,3) == 1:
-                    reconstructed += [phonems[i], phonems[i+1]] * 2
-            elif phoneme.name in FrenchPhonemes.VOWELS and random.randint(1,3) == 1:
+                    and phonems[i + 1].name in FrenchPhonemes.VOWELS \
+                    and random.randint(1, 3) == 1:
+                reconstructed += [phonems[i], phonems[i + 1]] * 2
+            elif phoneme.name in FrenchPhonemes.VOWELS and random.randint(1, 3) == 1:
                 reconstructed += [phoneme, silence, phoneme]
             else:
                 reconstructed.append(phoneme)
@@ -359,16 +378,17 @@ class VocalDyslexia(PhonemicEffect):
     NAME = "dysclesie vocael"
     TIMEOUT = 150
 
-    def process(self, phonems : PhonemeList):
+    def process(self, phonems: PhonemeList):
 
         def permutation(i, j, input_list):
             input_list[i], input_list[j] = input_list[j], input_list[i]
 
         def double_permutation(i, input_list):
-            input_list[i-1], input_list[i], input_list[i+1], input_list[i+2] = \
-                input_list[i+1], input_list[i+2], input_list[i-1], input_list[i]
+            input_list[i - 1], input_list[i], input_list[i + 1], input_list[i + 2] = \
+                input_list[i + 1], input_list[i + 2], input_list[i - 1], input_list[i]
+
         if len(phonems) > 5:
-            permut_count = random.randint(1, len(phonems) // 5) # approx 1 permut/10 phonems
+            permut_count = random.randint(1, len(phonems) // 5)  # approx 1 permut/10 phonems
             permut_points = [random.randint(1, len(phonems) - 3) for i in range(permut_count)]
             for point in permut_points:
                 permutation(point, point + 1, phonems)
@@ -399,7 +419,7 @@ class AutotuneEffect(PhonemicEffect):
             for _ in range(4):
                 yield random.choice(harmonies_ptich)
 
-    def process(self, phonems : PhonemeList):
+    def process(self, phonems: PhonemeList):
         notes = self._get_note()
         for pho in phonems:
             if pho.name in FrenchPhonemes.VOWELS:
@@ -413,14 +433,14 @@ class AutotuneEffect(PhonemicEffect):
 class RythmicEffect(PhonemicEffect):
     NAME = "JR"
     TIMEOUT = 200
-    BEAT_TIME = 80 # in milliseconds
+    BEAT_TIME = 80  #  in milliseconds
 
     def __init__(self):
         super().__init__()
         self.durations = [0.5, 0.5, 0.5, 0.5, 1, 1, 2, 2]
         random.shuffle(self.durations)
 
-    def process(self, phonems : PhonemeList):
+    def process(self, phonems: PhonemeList):
         beat_iterator = cycle(self.durations)
         for phoneme in phonems:
             if phoneme.name in FrenchPhonemes.VOWELS:
@@ -462,7 +482,7 @@ class TurboHangoul(PhonemicEffect):
 
     def __init__(self, intensity=None):
         super().__init__()
-        self.intensity = random.randint(1,4) if intensity is None else intensity
+        self.intensity = random.randint(1, 4) if intensity is None else intensity
         self._name = self.NAME + " " + str(self.intensity)
 
     @property
@@ -494,10 +514,10 @@ class VowelExchangeEffect(PhonemicEffect):
     NAME = "hein quoi?"
     TIMEOUT = 200
 
-    def process(self, phonems : PhonemeList):
+    def process(self, phonems: PhonemeList):
         vowels_list = list(FrenchPhonemes.ORALS | FrenchPhonemes.NASAL_WOVELS)
         for phoneme in phonems:
-            if phoneme.name in FrenchPhonemes.ORALS | FrenchPhonemes.NASAL_WOVELS and random.randint(1,5) == 1:
+            if phoneme.name in FrenchPhonemes.ORALS | FrenchPhonemes.NASAL_WOVELS and random.randint(1, 5) == 1:
                 phoneme.name = random.choice(vowels_list)
         return phonems
 
@@ -508,7 +528,7 @@ class PitchRandomizerEffect(PhonemicEffect):
     _multiplier_range = 0.6
     _delimiters_per_phonems = 5
 
-    def process(self, phonems : PhonemeList):
+    def process(self, phonems: PhonemeList):
         delimiters = list({random.randint(1, len(phonems))
                            for _ in range(len(phonems) // self._delimiters_per_phonems)})
         delimiters.sort()
@@ -517,9 +537,9 @@ class PitchRandomizerEffect(PhonemicEffect):
         for i, phoneme in enumerate(phonems):
             if delim_idx < len(delimiters) and i == delimiters[delim_idx]:
                 delim_idx += 1
-                current_multiplier = random.random() * self._multiplier_range * (1 if random.randint(0,1) else -1) + 1
+                current_multiplier = random.random() * self._multiplier_range * (1 if random.randint(0, 1) else -1) + 1
             phoneme.pitch_modifiers = [(duration, int(pitch * current_multiplier))
-                                      for duration, pitch in phoneme.pitch_modifiers]
+                                       for duration, pitch in phoneme.pitch_modifiers]
         return phonems
 
 
@@ -543,7 +563,7 @@ class VoiceSpeedupEffect(VoiceEffect):
     TIMEOUT = 200
     NAME = "en stress"
 
-    def __init__(self, factor: float=None):
+    def __init__(self, factor: float = None):
         super().__init__()
         self.factor = random.uniform(1.5, 2.4) if factor is None else factor
 
@@ -557,13 +577,12 @@ class VoiceCloneEffect(VoiceEffect):
     TIMEOUT = 600
     NAME = "clone de voiw"
 
-    def __init__(self, voice_params : VoiceParameters):
+    def __init__(self, voice_params: VoiceParameters):
         super().__init__()
         self.params = voice_params
 
-    def process(self, voice_params : VoiceParameters):
+    def process(self, voice_params: VoiceParameters):
         return self.params
-
 
 
 #### Here are the audio effects ####
@@ -603,7 +622,7 @@ class RobotVoiceEffect(AudioEffect):
     TIMEOUT = 150
 
     def process(self, wave_data: np.ndarray):
-        apply_audio_effects = AudioEffectsChain().pitch(200).tremolo(500).delay(0.6, 0.8, [33],[0.9])
+        apply_audio_effects = AudioEffectsChain().pitch(200).tremolo(500).delay(0.6, 0.8, [33], [0.9])
         return apply_audio_effects(wave_data, sample_in=BASE_SAMPLING_RATE, sample_out=BASE_SAMPLING_RATE)
 
 
@@ -635,7 +654,7 @@ class PitchShiftEffect(AudioEffect):
 
     def __init__(self):
         super().__init__()
-        if random.randint(0,1):
+        if random.randint(0, 1):
             self._name, self.pitch_shift = "pascal le grand frère", -700
         else:
             self._name, self.pitch_shift = "castration", 700
@@ -658,12 +677,12 @@ class WpseEffect(AudioEffect):
         self.samples = get_sounds(path.join(self.main_dir, self.type_folder))
 
     def process(self, wave_data: np.ndarray):
-        if random.randint(1,2) == 1:
+        if random.randint(1, 2) == 1:
             sample = random.choice(self.samples) * 0.3
             if self.type_folder == "burps":
-                wave_data = np.insert(wave_data, random.randint(1,len(wave_data)), sample)
+                wave_data = np.insert(wave_data, random.randint(1, len(wave_data)), sample)
             else:
-                wave_data = mix_tracks(wave_data, sample, offset=random.randint(1,len(wave_data)))
+                wave_data = mix_tracks(wave_data, sample, offset=random.randint(1, len(wave_data)))
 
         return wave_data
 
@@ -723,7 +742,8 @@ class BadCellphoneEffect(AudioEffect):
             else:
                 phone_pass = self._apply_cuts(phone_pass, int(seconds * 0.5))
 
-        if self.signal == 1 and len(phone_pass) > 3 * BASE_SAMPLING_RATE:  # adding cuts only if it's longer than 3 seconds
+        if self.signal == 1 and len(
+                phone_pass) > 3 * BASE_SAMPLING_RATE:  # adding cuts only if it's longer than 3 seconds
             phone_pass = self._apply_interference(phone_pass, int(seconds / 3))  # approx 1 interf/ 3 sec
         return phone_pass
 
@@ -748,7 +768,7 @@ class VieuxPortEffect(EffectGroup):
                 reconstructed += " " + word + " "
                 if random.randint(1, 6) == 1:
                     reconstructed += ", %s ," % random.choice(self.available_words)
-            if random.randint(1,3) == 1:
+            if random.randint(1, 3) == 1:
                 reconstructed += ", %s" % random.choice(self.available_words)
             return reconstructed
 
@@ -781,7 +801,7 @@ class MwfeEffect(EffectGroup):
     class VoiceMwfeEffect(VoiceEffect):
         TIMEOUT = 150
 
-        def process(self, voice_params : VoiceParameters):
+        def process(self, voice_params: VoiceParameters):
             return VoiceParameters(speed=110, pitch=60, voice_id=7)
 
     _sub_effects = [TextMwfeEffect, VoiceMwfeEffect]
@@ -813,5 +833,3 @@ class GodSpeakingEffect(EffectGroup):
     @property
     def effects(self):
         return [ReverbManEffect(), self.BackgroundEffect()]
-
-

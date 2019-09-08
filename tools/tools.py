@@ -15,6 +15,7 @@ from shlex import quote
 from struct import pack
 from typing import Union, Dict
 
+import emoji
 import numpy
 from resampy import resample
 from scipy.io import wavfile
@@ -22,10 +23,8 @@ from voxpopuli import PhonemeList, Phoneme
 
 logger = logging.getLogger('tools')
 
-
 INVISIBLE_UNICODE_POINTS = chain(range(0x2060, 0x2070), range(0x2028, 0x2030),
                                  range(0x200b, 0x2010), [0xfeff])
-
 
 INVISIBLE_CHARS = "[%s]" % "".join(chr(i) for i in INVISIBLE_UNICODE_POINTS)
 
@@ -42,9 +41,9 @@ class AudioRenderer:
 
     volumes_presets = {'fr1': 1.17138, 'fr2': 1.60851, 'fr3': 1.01283, 'fr4': 1.0964, 'fr5': 2.64384, 'fr6': 1.35412,
                        'fr7': 1.96092, 'us1': 1.658, 'us2': 1.7486, 'us3': 3.48104, 'es1': 3.26885, 'es2': 1.84053}
-    PHONEMES_MAX_DURATION = 1000 # 1 second in milliseconds
+    PHONEMES_MAX_DURATION = 1000  # 1 second in milliseconds
 
-    def _get_additional_params(self, lang, voice_params : 'VoiceParameters'):
+    def _get_additional_params(self, lang, voice_params: 'VoiceParameters'):
         """Uses the msg's lang field to figure out the voice, sex, and volume of the synth"""
         lang, voices = self.lang_voices_mapping.get(lang, self.lang_voices_mapping["fr"])
         voice = voices[voice_params.voice_id % len(voices)]
@@ -60,7 +59,7 @@ class AudioRenderer:
 
         return lang, voice, sex, volume
 
-    def _wav_format(self, wav : bytes):
+    def _wav_format(self, wav: bytes):
         """Since the wav returned by Mbrola has an incomplete header (size of the wav isn't set), this
         function sets the wav's RIFF header to their actual values"""
         return wav[:4] + pack('<I', len(wav) - 8) + wav[8:40] + pack('<I', len(wav) - 44) + wav[44:]
@@ -69,7 +68,7 @@ class AudioRenderer:
         for pho in phonemes:
             pho.duration = min(pho.duration, self.PHONEMES_MAX_DURATION)
 
-    async def string_to_audio(self, text : str, lang : str, voice_params : 'VoiceParameters') -> bytes:
+    async def string_to_audio(self, text: str, lang: str, voice_params: 'VoiceParameters') -> bytes:
         """Renders directly a string to audio using an espeak -> mbrola pipeline
         (output is a wav bytes object)"""
         lang, voice, sex, volume = self._get_additional_params(lang, voice_params)
@@ -82,7 +81,7 @@ class AudioRenderer:
         wav, err = await process.communicate()
         return self._wav_format(wav)
 
-    async def phonemes_to_audio(self, phonemes : PhonemeList, lang : str, voice_params : 'VoiceParameters') -> bytes:
+    async def phonemes_to_audio(self, phonemes: PhonemeList, lang: str, voice_params: 'VoiceParameters') -> bytes:
         """Renders a phonemlist object to audio using mbrola"""
         lang, voice, sex, volume = self._get_additional_params(lang, voice_params)
         audio_synth_string = 'MALLOC_CHECK_=0 mbrola -v %g -e /usr/share/mbrola/%s%d/%s%d - -.wav' \
@@ -95,7 +94,7 @@ class AudioRenderer:
         wav, err = await process.communicate(input=str(phonemes).encode('utf-8'))
         return self._wav_format(wav)
 
-    async def string_to_phonemes(self, text : str, lang : str, voice_params : 'VoiceParameters') -> PhonemeList:
+    async def string_to_phonemes(self, text: str, lang: str, voice_params: 'VoiceParameters') -> PhonemeList:
         """Renders an input string to a phonemlist object using espeak"""
         lang, voice, sex, volume = self._get_additional_params(lang, voice_params)
         phonem_synth_string = 'MALLOC_CHECK_=0 espeak -s %d -p %d --pho -q -v mb/mb-%s%d %s ' \
@@ -107,7 +106,7 @@ class AudioRenderer:
         return PhonemeList(phonems.decode('utf-8').strip())
 
     @staticmethod
-    async def to_f32_16k(wav : bytes) -> numpy.ndarray:
+    async def to_f32_16k(wav: bytes) -> numpy.ndarray:
         from .audio_tools import BASE_SAMPLING_RATE
         # converting the wav to ndarray, which is much easier to use for DSP
         rate, data = wavfile.read(BytesIO(wav))
@@ -119,7 +118,7 @@ class AudioRenderer:
         return BASE_SAMPLING_RATE, data
 
     @staticmethod
-    def to_wav_bytes(data : numpy.ndarray, rate : int) -> bytes:
+    def to_wav_bytes(data: numpy.ndarray, rate: int) -> bytes:
         # casting it back to int16
         data = (data * (2. ** 15)).astype("int16")
         # then, converting it back to binary data
@@ -137,24 +136,24 @@ class SpoilerBipEffect(UtilitaryEffect):
     """If there are ** phonems markers in the text, replaces their phonemic render by
     an equally long beep. If not, just returns the text"""
     _tags_phonems = {
-        "en" : ("k_hIN", "dZINk"),
-        "fr" : ("kiN", "ZiNk"),
-        "de" : ("kIN", "gINk"),
-        "es" : ("kin", "xink"),
+        "en": ("k_hIN", "dZINk"),
+        "fr": ("kiN", "ZiNk"),
+        "de": ("kIN", "gINk"),
+        "es": ("kin", "xink"),
     }
 
-    def __init__(self, renderer : AudioRenderer, voice_params : 'VoiceParameters'):
+    def __init__(self, renderer: AudioRenderer, voice_params: 'VoiceParameters'):
         super().__init__()
         self.renderer = renderer
         self.voice_params = voice_params
 
-    def _gen_beep(self, duration : int, lang : str):
-        i_phonem = "i:" if lang == "de" else "i" # "i" phonem is not the same i german. Damn krauts
+    def _gen_beep(self, duration: int, lang: str):
+        i_phonem = "i:" if lang == "de" else "i"  # "i" phonem is not the same i german. Damn krauts
         return PhonemeList(PhonemeList([Phoneme("b", 103),
-                                      Phoneme(i_phonem, duration, [(0, 103 * 3), (80, 103 * 3), (100, 103 * 3)]),
-                                      Phoneme("p", 228)]))
+                                        Phoneme(i_phonem, duration, [(0, 103 * 3), (80, 103 * 3), (100, 103 * 3)]),
+                                        Phoneme("p", 228)]))
 
-    async def process(self, text: str, lang : str) -> Union[str, PhonemeList]:
+    async def process(self, text: str, lang: str) -> Union[str, PhonemeList]:
         """Beeps out parts of the text that are tagged with double asterisks.
         It basicaly replaces the opening and closing asterisk with two opening and closing 'stop words'
         then finds the phonemic form of these two and replaces the phonems inside with an equivalently long beep"""
@@ -195,10 +194,14 @@ links_translation = {'fr': 'cliquez mes petits canards en sucre',
                      'en': "Click it mate"}
 
 
-def prepare_text_for_tts(text : str, lang : str) -> str:
+def prepare_text_for_tts(text: str, lang: str) -> str:
     text = sub('(https?://[^ ]*[^.,?! :])', links_translation[lang], text)
     text = text.replace('#', 'hashtag ')
     return quote(text.strip(' -"\'`$();:.'))
+
+
+def emojize(text: str):
+    return emoji.emojize(text, use_aliases=True)
 
 
 def encode_json(data):
@@ -229,12 +232,11 @@ class OrderedDequeDict(OrderedDict):
 
 
 class CachedOpener:
-
-    FILE_EXPIRY_TIME = 15 * 60 # in seconds
+    FILE_EXPIRY_TIME = 15 * 60  # in seconds
 
     def __init__(self):
-        self.files = {} # type: Dict[str,Union[str,byte]]
-        self.last_hit = {} # type: Dict[str,datetime]
+        self.files = {}  # type: Dict[str,Union[str,byte]]
+        self.last_hit = {}  # type: Dict[str,datetime]
 
     def check_files_expiry(self):
         now = datetime.now()

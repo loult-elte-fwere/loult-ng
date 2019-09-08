@@ -9,4 +9,4 @@ wheel>=0.29
 PyYAML
 pysndfx
 voxpopuli>=0.1.5.1
--e git+https://github.com/hadware/katalixia.git#egg=katalixia
+emoji>=0.5.3

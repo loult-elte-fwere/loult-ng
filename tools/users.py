@@ -14,7 +14,7 @@ from config import FLOOD_DETECTION_WINDOW, BANNED_WORDS, FLOOD_WARNING_TIMEOUT, 
 from tools import pokemons
 from tools.objects.inventory import UserInventory
 
-from tools.tools import AudioRenderer, SpoilerBipEffect, prepare_text_for_tts
+from tools.tools import AudioRenderer, SpoilerBipEffect, prepare_text_for_tts, emojize
 from voxpopuli import PhonemeList
 
 DATA_FILES_FOLDER = path.join(path.dirname(path.realpath(__file__)), "data/")
@@ -34,16 +34,16 @@ with open(path.join(DATA_FILES_FOLDER, "sexualite.txt")) as file:
 
 class VoiceParameters:
 
-    def __init__(self, speed : int, pitch : int, voice_id : int):
+    def __init__(self, speed: int, pitch: int, voice_id: int):
         self.speed = speed
         self.pitch = pitch
         self.voice_id = voice_id
 
     @classmethod
     def from_cookie_hash(cls, cookie_hash):
-        return cls((cookie_hash[5] % 80) + 90, # speed
-                   cookie_hash[0] % 100, # pitch
-                   cookie_hash[1]) # voice_id
+        return cls((cookie_hash[5] % 80) + 90,  # speed
+                   cookie_hash[0] % 100,  # pitch
+                   cookie_hash[1])  # voice_id
 
 
 class PokeParameters:
@@ -62,7 +62,7 @@ class PokeParameters:
     @classmethod
     def from_cookie_hash(cls, cookie_hash):
         color_rgb = hsv_to_rgb(cookie_hash[4] / 255, 0.8, 0.9)
-        return cls('#' + pack('3B', *(int(255 * i) for i in color_rgb)).hex(), # color
+        return cls('#' + pack('3B', *(int(255 * i) for i in color_rgb)).hex(),  # color
                    (cookie_hash[2] | (cookie_hash[3] << 8)) % len(pokemons.pokemon) + 1,
                    (cookie_hash[5] | (cookie_hash[6] << 13)) % len(adjectives) + 1)
 
@@ -84,14 +84,13 @@ class PokeProfile:
 
     @classmethod
     def from_cookie_hash(cls, cookie_hash):
-        return cls((cookie_hash[4] | (cookie_hash[2] << 7)) % len(jobs), # job
-                   (cookie_hash[3] | (cookie_hash[5] << 6)) % 62 + 18, # age
-                   ((cookie_hash[6] * cookie_hash[4] << 17)) % len(cities), # city
-                   (cookie_hash[2] | (cookie_hash[3] << 4)) % len(sexual_orient)) # sexual orientation
+        return cls((cookie_hash[4] | (cookie_hash[2] << 7)) % len(jobs),  # job
+                   (cookie_hash[3] | (cookie_hash[5] << 6)) % 62 + 18,  # age
+                   ((cookie_hash[6] * cookie_hash[4] << 17)) % len(cities),  # city
+                   (cookie_hash[2] | (cookie_hash[3] << 4)) % len(sexual_orient))  # sexual orientation
 
 
 class UserState:
-
     detection_window = timedelta(seconds=FLOOD_DETECTION_WINDOW)
 
     def __init__(self, banned_words=BANNED_WORDS):
@@ -104,9 +103,9 @@ class UserState:
         self.last_attack = datetime.now()  # any user has to wait some time before attacking, after entering the chan
         self.last_message = datetime.now()
         self.timestamps = list()
-        self.has_been_warned = False # User has been warned he shouldn't flood
+        self.has_been_warned = False  # User has been warned he shouldn't flood
         self._banned_words = [regex(word) for word in banned_words]
-        self.is_shadowbanned = False # User has been shadowbanned
+        self.is_shadowbanned = False  #  User has been shadowbanned
 
         self.inventory = UserInventory()
 
@@ -276,7 +275,7 @@ class User:
                 phonems = await self.audio_renderer.string_to_phonemes(text, lang, voice_params)
                 modified_phonems = self.apply_effects(phonems, self.state.effects[PhonemicEffect])
 
-            #rendering audio using the phonemlist
+            # rendering audio using the phonemlist
             return await self.audio_renderer.phonemes_to_audio(modified_phonems, lang, voice_params)
         else:
             # regular render
@@ -285,7 +284,9 @@ class User:
     async def render_message(self, text: str, lang: str):
         from tools.effects import ExplicitTextEffect, HiddenTextEffect, AudioEffect
 
-        cleaned_text = text[:500]
+        cleaned_text = text[:600]
+        # subsituting emoji tags in the message
+        cleaned_text = emojize(cleaned_text)
         # applying "explicit" effects (visible to the users)
         displayed_text = self.apply_effects(cleaned_text, self.state.effects[ExplicitTextEffect])
         # applying "hidden" texts effects (invisible on the chat, only heard in the audio)
@@ -298,7 +299,7 @@ class User:
         # if there are effets in the audio_effect list, we run it
         if self.state.effects[AudioEffect]:
             # converting to f32 (more standard) and resampling to 16k if needed, and converting to a ndarray
-            rate , data = await self.audio_renderer.to_f32_16k(wav)
+            rate, data = await self.audio_renderer.to_f32_16k(wav)
             # applying the effects pipeline to the sound
             data = self.apply_effects(data, self.state.effects[AudioEffect])
             # converting the sound's ndarray back to bytes

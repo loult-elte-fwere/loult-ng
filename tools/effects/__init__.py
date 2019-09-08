@@ -10,20 +10,21 @@ from .effects import (GodSpeakingEffect, VoiceSpeedupEffect, PhonemicFofoteEffec
                    ContradictorEffect, PubertyEffect,
                    PitchRandomizerEffect, SnebwewEffect, AutotuneEffect, GrandSpeechMasterEffect, TouretteEffect,
                    BadCellphoneEffect, CaptainHaddockEffect,
-                   Effect)
+                   Effect, CensorshipEffect)
 
 AVAILABLE_EFFECTS = 1 * [GodSpeakingEffect, VoiceSpeedupEffect,
                          VieuxPortEffect, MwfeEffect,
                          TurboHangoul, GhostEffect, TurboHangoul,
                          SkyblogEffect, AccentAllemandEffect,
-                         RobotVoiceEffect, AngryRobotVoiceEffect, BadCellphoneEffect] + \
-                    3 * [WpseEffect, SpeechMasterEffect, CrapweEffect,
+                         RobotVoiceEffect, AngryRobotVoiceEffect, BadCellphoneEffect,
+                         CensorshipEffect, CaptainHaddockEffect] + \
+                    3 * [SpeechMasterEffect, CrapweEffect,
                          VocalDyslexia, ReverbManEffect, PhonemicNwwoiwwEffect,
                          StutterEffect, VowelExchangeEffect, PitchShiftEffect,
                          ContradictorEffect, PubertyEffect, PitchRandomizerEffect,
-                         SnebwewEffect, CaptainHaddockEffect] + \
+                         SnebwewEffect] + \
                     6 * [AutotuneEffect, GrandSpeechMasterEffect, TouretteEffect,
-                         PhonemicFofoteEffect]
+                         PhonemicFofoteEffect, WpseEffect]
 
 
 def get_random_effect() -> Effect:
