@@ -572,6 +572,29 @@ document.addEventListener('DOMContentLoaded', function() {
 					case 'bot':
 						if(!lastMuted)
 							addLine(users[msg.userid], parser(msg.msg), msg.date, msg.type, msg.userid);
+								if (document.getElementById("embed").checked==true) {
+									//regex to get if msg have youtube link
+										let VID_REGEX =/(?:youtube(?:-nocookie)?\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/; 
+										if (msg.msg.match(VID_REGEX) ) {
+											ytbId=msg.msg.split("v=")[1].substring(0, 11);
+
+										//create iframe at the bottom of last Div
+											let ifrm = document.createElement('iframe');
+												ifrm.setAttribute('src', 'https://www.youtube.com/embed/'+ytbId);
+												ifrm.setAttribute('frameborder',0);
+											lastRow.appendChild(ifrm);
+										}
+									//if noelshack URL(just url) link	
+										if (msg.msg.match('http://image.noelshack.com/')|| msg.msg.match('https://image.noelshack.com/')){
+											var imgId=msg.msg.split("noelshack.com/")[1];
+											let imgDiv = document.createElement('img');
+												imgDiv.setAttribute('src',"https://image.noelshack.com/"+ imgId);
+												imgDiv.setAttribute('style', 'width:20vw;height:auto');
+												
+											lastRow.appendChild(imgDiv);
+										}
+								
+								}
 						break;
 
 					case 'me':
