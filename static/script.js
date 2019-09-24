@@ -41,7 +41,31 @@ document.addEventListener('DOMContentLoaded', function() {
 		var tests = rules.filter(rule => ('test' in rule) && rule.test(raw_msg));
 		return tests.filter(rule => 'run' in rule).reduce((prev, rule) => rule.run(prev), raw_msg);
 	};
+	var autoscroll= function(){
+		//auto scroll page down, if scroll bar at the bottom 
+		if(Math.floor(chat.scrollTop)+chat.offsetHeight >= (chat.scrollHeight - chat.offsetHeight)){
 
+			chat.scrollTop = chat.scrollHeight;
+		}
+	}
+	var addEmbedYtb = function(ytbId, callback) {
+
+		//create iframe at the bottom of last Div
+			let ifrm = document.createElement('iframe');
+			ifrm.setAttribute('src', 'https://www.youtube.com/embed/'+ytbId);
+			ifrm.setAttribute('frameborder',0);
+			lastRow.appendChild(ifrm);	
+			callback();
+	}
+	var addEmbedNoelshack = function(NsID, callback) {
+
+		//create IMG at the bottom of last Div
+			let imgDiv = document.createElement('img');
+			imgDiv.setAttribute('src',"https://image.noelshack.com/"+ NsID);
+			imgDiv.setAttribute('style', 'width:auto;height:30vh;maxWidth:60vw');
+			lastRow.appendChild(imgDiv);
+			callback();
+			}
 	var addLine = function(pkmn, txt, datemsg, rowclass, uid) {
 		var atBottom = (chat.scrollTop >= (chat.scrollHeight - chat.offsetHeight)-50),
 			text = document.createElement('div'),
@@ -577,21 +601,12 @@ document.addEventListener('DOMContentLoaded', function() {
 										let VID_REGEX =/(?:youtube(?:-nocookie)?\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/; 
 										if (msg.msg.match(VID_REGEX) ) {
 											ytbId=msg.msg.split("v=")[1].substring(0, 11);
-
-										//create iframe at the bottom of last Div
-											let ifrm = document.createElement('iframe');
-												ifrm.setAttribute('src', 'https://www.youtube.com/embed/'+ytbId);
-												ifrm.setAttribute('frameborder',0);
-											lastRow.appendChild(ifrm);
+											addEmbedYtb(ytbId,autoscroll);
 										}
 									//if noelshack URL(just url) link	
 										if (msg.msg.match('http://image.noelshack.com/')|| msg.msg.match('https://image.noelshack.com/')){
 											var imgId=msg.msg.split("noelshack.com/")[1];
-											let imgDiv = document.createElement('img');
-												imgDiv.setAttribute('src',"https://image.noelshack.com/"+ imgId);
-												imgDiv.setAttribute('style', 'width:20vw;height:auto');
-												
-											lastRow.appendChild(imgDiv);
+											addEmbedNoelshack(imgId,autoscroll);
 										}
 								
 								}
