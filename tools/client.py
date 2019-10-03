@@ -110,12 +110,6 @@ class LoultServerProtocol:
 
     def onConnect(self, request):
         """HTTP-level request, triggered when the client opens the WSS connection"""
-        if FILTER_DOMAINS:
-            if request.headers.get('origin') is not None:
-                if re.sub(r"http(s)://", "", request.headers["origin"]) not in AUTHORIZED_DOMAINS:
-                    self.channel_n = "cancer"
-            else:
-                self.channel_n = "cancer"
 
         self.ip = request.headers['x-real-ip']
 
@@ -149,6 +143,13 @@ class LoultServerProtocol:
         else:
             self.channel_n = request.path.lower().split('/', 2)[-1]
             self.channel_n = sub("/.*", "", self.channel_n)
+
+        if FILTER_DOMAINS:
+            if request.headers.get('origin') is not None:
+                if re.sub(r"http(s)://", "", request.headers["origin"]) not in AUTHORIZED_DOMAINS:
+                    self.channel_n = "cancer"
+            else:
+                self.channel_n = "cancer"
         self.sendend = datetime.now()
         self.lasttxt = datetime.now()
 
