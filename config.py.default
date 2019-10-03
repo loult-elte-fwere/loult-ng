@@ -21,6 +21,10 @@ FLOOD_WARNING_TIMEOUT = 5 * 60
 # in minutes, the time before a shadowmuted/banned user is able to connect again
 BAN_TIME = 1
 
+# filter domains
+FILTER_DOMAINS = False
+AUTHORIZED_DOMAINS = ["loult.family"]
+
 # Regular expressions interpreted by the "re" module and tested
 # in fullmatch mode. See https://docs.python.org/3/library/re.html
 # For example, [r".*\bTrump\b.*"] will match any sentence

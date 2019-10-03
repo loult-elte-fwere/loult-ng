@@ -125,7 +125,7 @@ class Crown(UsableObject, DestructibleObject):
     class ServantEffect(ExplicitTextEffect):
         TIMEOUT = 300
         SUFFIXES = ["seigneur %s", "maître %s", "mon roi", "mon bon %s", "ô grand %s", "sire %s",
-                    "sieur %s", "vénérable %s", "%, roi du loult", "%s maître des bibwe"]
+                    "sieur %s", "vénérable %s", "%s, roi du loult", "%s maître des bibwe"]
 
         def __init__(self, pokename):
             super().__init__()

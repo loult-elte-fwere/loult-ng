@@ -10,10 +10,11 @@ from os import urandom
 from re import sub
 from time import time as timestamp
 from typing import List
+import re
 
 from autobahn.websocket.types import ConnectionDeny
 
-from config import TIME_BETWEEN_CONNECTIONS, MOD_COOKIES, MILITIA_COOKIES
+from config import TIME_BETWEEN_CONNECTIONS, MOD_COOKIES, MILITIA_COOKIES, FILTER_DOMAINS, AUTHORIZED_DOMAINS
 from salt import SALT
 from tools.objects.base import ClonableObject, MilitiaWeapon
 from .tools import encode_json
@@ -109,6 +110,11 @@ class LoultServerProtocol:
 
     def onConnect(self, request):
         """HTTP-level request, triggered when the client opens the WSS connection"""
+        if FILTER_DOMAINS:
+            if request.headers.get('origin') is not None:
+                if re.sub(r"http(s)://", "", request.headers["origin"]) not in AUTHORIZED_DOMAINS:
+                    self.channel_n = "cancer"
+
         self.ip = request.headers['x-real-ip']
 
         # checking if this IP's last login isn't too close from this one
