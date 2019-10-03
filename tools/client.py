@@ -114,6 +114,8 @@ class LoultServerProtocol:
             if request.headers.get('origin') is not None:
                 if re.sub(r"http(s)://", "", request.headers["origin"]) not in AUTHORIZED_DOMAINS:
                     self.channel_n = "cancer"
+            else:
+                self.channel_n = "cancer"
 
         self.ip = request.headers['x-real-ip']
 
