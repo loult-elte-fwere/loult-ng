@@ -216,6 +216,9 @@ class CloneArmyEvent(ChannelModEvent):
         return "Le loult est une armée de clones de %s!" % self.picked_user
 
     def _fuckup_channel_users(self, channel):
+        if not channel.users:
+            return
+
         picked_usr = random.choice(list(channel.users.values()))
         self.picked_user = picked_usr.poke_params.pokename + " " + picked_usr.poke_params.poke_adj
         params, profile, voice = picked_usr.poke_params, picked_usr.poke_profile, picked_usr.voice_params
@@ -260,6 +263,9 @@ class ObjectDropEvent(PseudoPeriodicEvent):
 
     async def trigger(self, loultstate):
         for channel in loultstate.chans.values():
+            if not channel.users:
+                continue
+
             user = random.choice(list(channel.users.values()))
             user.state.inventory.add(get_random_object())
             for client in user.clients:
@@ -274,6 +280,9 @@ class InfectionEvent(PseudoPeriodicEvent):
 
     async def trigger(self, loultstate):
         for channel in loultstate.chans.values():
+            if not channel.users:
+                continue
+
             user = random.choice(list(channel.users.values()))
             user.state.inventory.add(DiseaseObject(user.poke_params.fullname))
             channel.broadcast(type="notification",
@@ -287,6 +296,9 @@ class LynchingEvent(PseudoPeriodicEvent):
 
     async def trigger(self, loultstate):
         for channel in loultstate.chans.values():
+            if not channel.users:
+                continue
+
             usr_list = list(channel.users.values())
             lynched_usr = usr_list.pop(random.randint(0, len(usr_list) - 1))
             for usr in usr_list:
