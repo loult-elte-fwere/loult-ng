@@ -131,73 +131,94 @@ document.addEventListener('DOMContentLoaded', function() {
 
 	var addUser = function(userid, params, profile) {
 		if(userid in users)
-			return;
+		return;
 
-		users[userid] = params;
+	users[userid] = params;
+	//check if same pokemon and add orderId
+		let orderId=0;
 
-		if(ambtn.checked && muted.indexOf(userid) === -1)
-			if(!params.you) muted.push(userid);
-
-		var row = document.createElement('li');
-		row.appendChild(document.createTextNode(params.name));
-		row.style.color = params.color;
-		row.style.backgroundImage = 'url("/img/pokemon/small/' + params.img + '.gif")';
-
-		if(!params.you) {
-			var i = document.createElement('i');
-			i.className = 'material-icons';
-			i.appendChild(document.createTextNode('volume_' + (muted.indexOf(userid) != -1 ? 'off' : 'up')));
-			row.appendChild(i);
-
-			i.onmousedown = function() {
-				if(muted.indexOf(userid) != -1) {
-					muted.splice(muted.indexOf(userid), 1);
-					i.innerHTML = 'volume_up';
-				}
-				else {
-					muted.push(userid);
-					i.innerHTML = 'volume_off';
-				}
-				localStorage.setItem('mutedUsers', JSON.stringify(muted));
-			};
+		for(let a in users){
+			console.log(users[a]);
+			if (users[a].name == params.name) orderId++;
 		}
-		else {
-			underlay.style.backgroundImage = 'url("/img/pokemon/big/' + params.img + '.png")';
-			you = userid;
-		}
+		users[userid].orderId=orderId;
+		console.log(users[userid]); 
 
-		var phead = document.createElement('div'),
-			pbody = document.createElement('div'),
-			pdiv = document.createElement('div'),
-			idiv = document.createElement('div'),
-			pimg = document.createElement('img'),
-			l = document.createElement('i');
-		l.className = 'material-icons';
-		l.appendChild(document.createTextNode('my_location'));
+	if(ambtn.checked && muted.indexOf(userid) === -1)
+		if(!params.you) muted.push(userid);
 
-		pimg.src = '/img/pokemon/medium/' + params.img + '.gif';
-		idiv.appendChild(pimg);
+	var row = document.createElement('li');
+	row.appendChild(document.createTextNode(params.name));
+	row.style.color = params.color;
+	row.style.backgroundImage = 'url("/img/pokemon/small/' + params.img + '.gif")';
 
-		phead.style.backgroundImage = 'linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0) 35px, rgba(' + parseInt(params.color.slice(1, 3), 16) + ', ' + parseInt(params.color.slice(3, 5), 16) + ', ' + parseInt(params.color.slice(5, 7), 16) + ', 0.2) 35px, ' + params.color + ' 100%)';
-		phead.appendChild(idiv);
-		phead.appendChild(document.createElement('br'));
-		phead.appendChild(document.createTextNode(params.name + ' ' + params.adjective));
+	if(!params.you) {
 
-		pbody.appendChild(l);
-		pbody.appendChild(document.createTextNode(profile.city + ' (' + profile.departement + ')'));
-		pbody.appendChild(document.createElement('br'));
-		pbody.appendChild(document.createTextNode(profile.age + ' ans'));
-		pbody.appendChild(document.createElement('br'));
-		pbody.appendChild(document.createTextNode(profile.orientation));
-		pbody.appendChild(document.createElement('br'));
-		pbody.appendChild(document.createTextNode(profile.job));
+		// Muted button
+		var i = document.createElement('i');
+		i.className = 'material-icons';
+		i.appendChild(document.createTextNode('volume_' + (muted.indexOf(userid) != -1 ? 'off' : 'up')));
+		row.appendChild(i);
 
-		pdiv.appendChild(phead);
-		pdiv.appendChild(pbody);
-		row.appendChild(pdiv);
+		i.onmousedown = function() {
+			if(muted.indexOf(userid) != -1) {
+				muted.splice(muted.indexOf(userid), 1);
+				i.innerHTML = 'volume_up';
+			}
+			else {
+				muted.push(userid);
+				i.innerHTML = 'volume_off';
+			}
+			localStorage.setItem('mutedUsers', JSON.stringify(muted));
+		};
 
-		userlist.appendChild(row);
-		users[userid].dom = row;
+	}
+	else {
+		underlay.style.backgroundImage = 'url("/img/pokemon/big/' + params.img + '.png")';
+		you = userid;
+	}
+	// Attack button
+	var i2 = document.createElement('i');
+	i2.className = 'material-icons';
+	i2.appendChild(document.createTextNode('sports_mma' ));
+	row.appendChild(i2);
+
+	i2.onmousedown = function() {
+		ws.send(JSON.stringify({ type : 'attack', target : params.name, order : orderId}));
+	};
+
+	var phead = document.createElement('div'),
+		pbody = document.createElement('div'),
+		pdiv = document.createElement('div'),
+		idiv = document.createElement('div'),
+		pimg = document.createElement('img'),
+		l = document.createElement('i');
+	l.className = 'material-icons';
+	l.appendChild(document.createTextNode('my_location'));
+
+	pimg.src = '/img/pokemon/medium/' + params.img + '.gif';
+	idiv.appendChild(pimg);
+
+	phead.style.backgroundImage = 'linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0) 35px, rgba(' + parseInt(params.color.slice(1, 3), 16) + ', ' + parseInt(params.color.slice(3, 5), 16) + ', ' + parseInt(params.color.slice(5, 7), 16) + ', 0.2) 35px, ' + params.color + ' 100%)';
+	phead.appendChild(idiv);
+	phead.appendChild(document.createElement('br'));
+	phead.appendChild(document.createTextNode(params.name + ' ' + params.adjective));
+
+	pbody.appendChild(l);
+	pbody.appendChild(document.createTextNode(profile.city + ' (' + profile.departement + ')'));
+	pbody.appendChild(document.createElement('br'));
+	pbody.appendChild(document.createTextNode(profile.age + ' ans'));
+	pbody.appendChild(document.createElement('br'));
+	pbody.appendChild(document.createTextNode(profile.orientation));
+	pbody.appendChild(document.createElement('br'));
+	pbody.appendChild(document.createTextNode(profile.job));
+
+	pdiv.appendChild(phead);
+	pdiv.appendChild(pbody);
+	row.appendChild(pdiv);
+
+	userlist.appendChild(row);
+	users[userid].dom = row;
 	};
 
 	var delUser = function(userid) {
@@ -479,7 +500,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 	var wsConnect = function() {
 		ws = new WebSocket(location.origin.replace('http', 'ws') + '/socket' + location.pathname);
-		// ws = new WebSocket('wss://loult.family/socket/' + location.pathname);
+		// ws = new WebSocket('wss://loult.family/socket/toast');
 		ws.binaryType = 'arraybuffer';
 
 		var lastMuted = false;
