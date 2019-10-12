@@ -1,0 +1,36 @@
+#userlist{
+    position: relative; 
+
+}
+#item{
+   /* bottom: 20vh; */
+   height: auto;
+}
+
+#item::-webkit-scrollbar{
+display: none;
+}
+
+#inventory, #bank{
+    height: auto;
+    width: calc(100% - 14px);
+    display: inline-block;
+    background: rgba(0, 0, 0, 0.25);
+    margin: 0 7px;
+    border: 0;
+    border-radius: 10px;
+}
+
+#inventory::-webkit-scrollbar, #bank::-webkit-scrollbar{
+    display: none;
+}
+
+.itemtitle{
+background: rgba(0, 0, 0, 0.25);
+text-align: center;
+display: block;
+/* background-color: rgba(81, 79, 79, 0.235); */
+}
+.itemContainer{
+    min-height: 10vh;
+}
