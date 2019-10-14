@@ -314,7 +314,7 @@ ul > li > div {
 }
 
 ul > li > div > div:first-child {
-	font-size: 25px;
+	font-size: 20px;
 	line-height: 30px;
 	padding-bottom: 10px;
 	text-align: center;
@@ -478,9 +478,9 @@ ul > li > div > div:last-child > i {
 	right: 0;
 	bottom: 0;
 	max-width: 680px;
-	max-height: 700px;
+	max-height: 780px;
 	width: 680px;
-	height: 700px;
+	height: 500px;
 	margin: auto;
 	line-height: 1.5em;
 	font-size: 25px;
@@ -508,7 +508,7 @@ ul > li > div > div:last-child > i {
 }
 
 #window > div:last-child > div {
-	height: 80px;
+	height: 42px;
 	padding: 10px 115px;
 }
 
@@ -523,16 +523,26 @@ ul > li > div > div:last-child > i {
 #window > div:last-child label {
 	display: inline-block;
 	padding: 0 10px;
-	min-width: 80px;
-	width: 80px;
+	/*min-width: 80px;*/
+	width: 150px;
 }
 
 #window > div:last-child span {
 	display: inline-block;
 	width: 165px;
 	margin: 0 10px;
-	text-align: right;
+	/*text-align: right;*/
 	white-space: nowrap;
+}
+
+.option{
+	text-align: left;
+}
+
+.option > select:last-child, .option > span:last-child, .option > label:last-child {
+	text-align: right;
+	float: right;
+	padding: 0 10px;
 }
 
 input[type=range] {
