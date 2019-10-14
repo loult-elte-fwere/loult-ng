@@ -508,7 +508,7 @@ ul > li > div > div:last-child > i {
 }
 
 #window > div:last-child > div {
-	height: 42px;
+	height: 42px; /* we */ 
 	padding: 10px 115px;
 }
 
