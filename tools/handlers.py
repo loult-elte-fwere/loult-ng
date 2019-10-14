@@ -316,8 +316,8 @@ class InventoryListingHandler(MsgBaseHandler):
 
     async def handle(self, msg_data: Dict):
         inventory_listing = self.user.state.inventory.get_listing()
-        self.server.send_json(type="notification",
-                              msg="Votre inventaire contient : %s" % inventory_listing)
+        self.server.send_json(type="inventory",
+                              items=inventory_listing)
 
 
 class ObjectGiveHandler(MsgBaseHandler):
