@@ -810,7 +810,7 @@ select {
 }
 
 .night #close, .night #chat > div > div:first-child, .night ul > li > div > div:first-child > div, .night footer > div > i:hover {
-	background-color: #333;
+	background-color: #010101;
 }
 
 .night main, .night #window > div:first-child, .night footer > div, .night footer > div > i, .night ul, .night #close, .night #window, .night ul > li > div > div:last-child {
