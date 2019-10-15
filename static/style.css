@@ -1,4 +1,17 @@
-﻿::-webkit-scrollbar-track, ::-webkit-scrollbar, ::-webkit-scrollbar-thumb {
+﻿@font-face {
+	font-family: "PokemonGB";
+	src: url("/fonts/PokemonGB.eot");
+	src: url("/fonts/PokemonGB.eot?#iefix") format("embedded-opentype"), 
+	url("/fonts/PokemonGB.otf") format("opentype"),
+	url("/fonts/PokemonGB.svg") format("svg"), 
+	url("/fonts/PokemonGB.ttf") format("truetype"), 
+	url("/fonts/PokemonGB.woff") format("woff"), 
+	url("/fonts/PokemonGB.woff2") format("woff2"); 
+	font-weight: normal;
+	font-style: normal;
+}
+
+::-webkit-scrollbar-track, ::-webkit-scrollbar, ::-webkit-scrollbar-thumb {
 	border: 4px solid #f9f9f9;
 }
 
@@ -508,7 +521,7 @@ ul > li > div > div:last-child > i {
 }
 
 #window > div:last-child > div {
-	height: 42px; /* we */
+	height: 42px; 
 	padding: 10px 115px;
 }
 
@@ -640,6 +653,14 @@ select {
 
 	#underlay {
 		right: 0;
+	}
+		.tooltip {
+		display: none!important;
+		visibility: hidden!important;
+		color: black;
+	}
+	.tooltiptext { 
+		visibility: hidden!important; 
 	}
 }
 
@@ -809,9 +830,12 @@ select {
 	color: #DDD;
 }
 
-.night #close, .night #chat > div > div:first-child, .night ul > li > div > div:first-child > div, .night footer > div > i:hover {
-	background-color: #010101;
+.night #close, .night #chat > div > div:first-child, .night ul > li > div > div:first-child > div {
+	background-color: #2B2B2B;
 }
+/*.night footer > div > i:hover { background-color: #111; }*/
+
+.night footer > div > .icon:hover { background-color: #111; }
 
 .night main, .night #window > div:first-child, .night footer > div, .night footer > div > i, .night ul, .night #close, .night #window, .night ul > li > div > div:last-child {
 	border-color: #111;
@@ -901,6 +925,38 @@ select {
 .drukqs {
 	-webkit-animation: fader 30s infinite;
 	animation: fader 30s infinite;
+}
+
+.icon { 
+	display: inline-block; 
+	width: 49px; 
+	height: 49px; 
+	margin: 0; 
+	padding: 0; 
+	border: 0;
+	overflow: hidden; 
+}
+.icon img { 
+	margin: 10px; 
+}				
+.tooltiptext {
+  font-family: "PokemonGB";
+  font-size: 10px;
+  visibility: hidden;
+  text-transform: uppercase;
+  letter-spacing: 1px; 
+  color: #fff;  
+  width: 178px;
+  height: 10px;					  
+  /* Position du tooltip */
+  position: absolute;
+  bottom: 60px;
+  right: 0;
+  text-align: left;
+  z-index: 1;
+}
+.icon:hover .tooltiptext {
+  visibility: visible;
 }
 
 @-webkit-keyframes fader {
