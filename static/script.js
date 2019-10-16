@@ -412,7 +412,8 @@ document.addEventListener('DOMContentLoaded', function() {
 		};
 
 		var changeIcon = function(v) {
-			vol.innerHTML = (v > 0 ? (v > 50 ? 'volume_up' : 'volume_down') : 'volume_mute');
+			vol.src = (v > 0 ? 'img/icons/flute.svg' : 'img/icons/flutenb.svg');
+			//vol.innerHTML = (v > 0 ? (v > 50 ? 'volume_ off' : 'volume_down') : 'volume_mute');
 		};
 
 		if(localStorage.volume) {
@@ -499,8 +500,8 @@ document.addEventListener('DOMContentLoaded', function() {
 	// WebSocket-related functions
 
 	var wsConnect = function() {
-		ws = new WebSocket(location.origin.replace('http', 'ws') + '/socket' + location.pathname);
-		// ws = new WebSocket('wss://loult.family/socket/toast');
+		// ws = new WebSocket(location.origin.replace('http', 'ws') + '/socket' + location.pathname);
+		 ws = new WebSocket('wss://loult.family/socket/toast');
 		ws.binaryType = 'arraybuffer';
 
 		var lastMuted = false;
