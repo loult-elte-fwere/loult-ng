@@ -1,4 +1,8 @@
+
 document.addEventListener('DOMContentLoaded', function() {
+	const  itemHandlerInstance = new itemHandler(); 
+	itemHandlerInstance.initItem();
+
 	var audio = (window.AudioContext || typeof webkitAudioContext !== 'undefined'),
 		userlist = document.getElementById('userlist'),
 		underlay = document.getElementById('underlay'),
@@ -138,11 +142,11 @@ document.addEventListener('DOMContentLoaded', function() {
 		let orderId=0;
 
 		for(let a in users){
-			console.log(users[a]);
+			//console.log(users[a]);
 			if (users[a].name == params.name) orderId++;
 		}
 		users[userid].orderId=orderId;
-		console.log(users[userid]); 
+		//console.log(users[userid]); 
 
 	if(ambtn.checked && muted.indexOf(userid) === -1)
 		if(!params.you) muted.push(userid);
@@ -499,8 +503,8 @@ document.addEventListener('DOMContentLoaded', function() {
 	// WebSocket-related functions
 
 	var wsConnect = function() {
-		ws = new WebSocket(location.origin.replace('http', 'ws') + '/socket' + location.pathname);
-		// ws = new WebSocket('wss://loult.family/socket/toast');
+		// ws = new WebSocket(location.origin.replace('http', 'ws') + '/socket' + location.pathname);
+		ws = new WebSocket('wss://loult.family/socket/toast');
 		ws.binaryType = 'arraybuffer';
 
 		var lastMuted = false;
@@ -605,6 +609,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
 		ws.onopen = function() {
 			waitTime = 1000;
+			
+			//each seconde get inventory and bank info
+			setInterval(()=>{
+				ws.send(JSON.stringify({type: 'channel_inventory'}));
+				ws.send(JSON.stringify({type: 'inventory'}));
+			},1000);
+
 		};
 
 		ws.onmessage = function(msg) {
@@ -697,6 +708,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
 					case 'notification':
 						addLine({name : 'info'}, msg.msg,("date" in msg) ? msg.date : (new Date), 'info');
+						break;
+
+					case 'inventory':
+						if(msg.owner=="user"){itemHandlerInstance.RefreshItemInv(msg.items)}
+						if(msg.owner=="channel"){itemHandlerInstance.RefreshItemBank(msg.items)}
 						break;
 
 					case 'userlist':
@@ -806,8 +822,8 @@ document.addEventListener('DOMContentLoaded', function() {
 				window.setTimeout(wsConnect, waitTime);
 			}
 		};
-	};
 
+	};
 	wsConnect();
 
 });

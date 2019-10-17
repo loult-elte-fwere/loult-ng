@@ -5,6 +5,7 @@
 #item{
    /* bottom: 20vh; */
    height: auto;
+   max-width: 200px;
 }
 
 #item::-webkit-scrollbar{
@@ -14,11 +15,12 @@ display: none;
 #inventory, #bank{
     height: auto;
     width: calc(100% - 14px);
-    display: inline-block;
     background: rgba(0, 0, 0, 0.25);
     margin: 0 7px;
     border: 0;
     border-radius: 10px;
+    max-height: 30vh;
+
 }
 
 #inventory::-webkit-scrollbar, #bank::-webkit-scrollbar{
@@ -30,7 +32,21 @@ background: rgba(0, 0, 0, 0.25);
 text-align: center;
 display: block;
 /* background-color: rgba(81, 79, 79, 0.235); */
+z-index: 9999;
 }
 .itemContainer{
-    min-height: 10vh;
+    min-height: 8vh;
+    max-height: 15vh;
+        margin: auto;
+        overflow: auto;
+        /* display: inline-block; */
+
+}
+.itemContainer div {
+    display: inline-block;
+}
+.itemContainer img {
+    max-width: 32px;
+    min-width: 32px;
+    image-rendering: pixelated;
 }

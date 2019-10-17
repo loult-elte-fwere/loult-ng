@@ -8,7 +8,6 @@
 		<link rel="icon" type="image/x-icon" href="/favicon.ico">
 		<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 		<link rel="stylesheet" href="/style.css">
-		<script src="./js/script.js"></script>
 	</head>
 	<body>
 		<header id="head">
@@ -21,15 +20,16 @@
 			<div id="chat"></div>
 			<div>
 				<ul id="userlist"></ul>
-				<ul id="item">
-					<ul id="bank">
+				<div id="item">
+					<div id="bank">
 						<div class="itemtitle" id="bankTitle">Banque</div>
 						<div class="itemContainer" id="bankContainer"></div>
-					</ul>
-					<ul id="inventory">
+					</div>
+					<div id="inventory">
 						<div class="itemtitle" id="inventoryTitle">inventaire</div>
 						<div class="itemContainer" id="inventoryContainer"></div>	
-					</ul>
+					</div>
+				</div>
 			</div>
 
 		</main>
@@ -89,5 +89,6 @@
 		</div>
 	</body>
 	<script src="./js/item.js"></script>
+	<script src="./js/script.js"></script>
 	<link rel="stylesheet" href="./css/item.css">
 </html>
