@@ -1,4 +1,4 @@
-﻿@font-face {
+@font-face {
 	font-family: "PokemonGB";
 	src: url("/fonts/PokemonGB.eot");
 	src: url("/fonts/PokemonGB.eot?#iefix") format("embedded-opentype"), 
@@ -831,9 +831,8 @@ select {
 }
 
 .night #close, .night #chat > div > div:first-child, .night ul > li > div > div:first-child > div {
-	background-color: #2B2B2B;
+	background-color: #505151;
 }
-/*.night footer > div > i:hover { background-color: #111; }*/
 
 .night footer > div > .icon:hover { background-color: #111; }
 
@@ -937,7 +936,11 @@ select {
 	overflow: hidden; 
 }
 .icon img { 
-	margin: 10px; 
+	margin: 8px; 
+	transition: 0.3s;
+}
+.icon img:hover {
+	margin: 6px;
 }				
 .tooltiptext {
   font-family: "PokemonGB";
@@ -950,7 +953,7 @@ select {
   height: 10px;					  
   /* Position du tooltip */
   position: absolute;
-  bottom: 60px;
+  bottom: 70px;
   right: 0;
   text-align: left;
   z-index: 1;
@@ -968,4 +971,124 @@ select {
 	0% { -webkit-filter: hue-rotate(0deg); filter: hue-rotate(0deg); }
 	50% { -webkit-filter: hue-rotate(180deg); filter: hue-rotate(180deg); }
 	100% { -webkit-filter: hue-rotate(360deg); filter: hue-rotate(360deg); }
+}
+
+/***** bibw *****/ 
+
+body.bibw {
+  background : -moz-linear-gradient(50% 1.37% -90deg,rgba(80, 81, 81, 1) 0%,rgba(72, 73, 73, 1) 1.44%,rgba(51, 52, 52, 1) 6.36%,rgba(38, 38, 38, 1) 11.11%,rgba(34, 34, 34, 1) 15.48%,rgba(34, 34, 34, 1) 100%);
+  background : -webkit-linear-gradient(-90deg, rgba(80, 81, 81, 1) 0%, rgba(72, 73, 73, 1) 1.44%, rgba(51, 52, 52, 1) 6.36%, rgba(38, 38, 38, 1) 11.11%, rgba(34, 34, 34, 1) 15.48%, rgba(34, 34, 34, 1) 100%);
+  background : -webkit-gradient(linear,50% 1.37% ,50% 100% ,color-stop(0,rgba(80, 81, 81, 1) ),color-stop(0.0144,rgba(72, 73, 73, 1) ),color-stop(0.0636,rgba(51, 52, 52, 1) ),color-stop(0.1111,rgba(38, 38, 38, 1) ),color-stop(0.1548,rgba(34, 34, 34, 1) ),color-stop(1,rgba(34, 34, 34, 1) ));
+  background : -o-linear-gradient(-90deg, rgba(80, 81, 81, 1) 0%, rgba(72, 73, 73, 1) 1.44%, rgba(51, 52, 52, 1) 6.36%, rgba(38, 38, 38, 1) 11.11%, rgba(34, 34, 34, 1) 15.48%, rgba(34, 34, 34, 1) 100%);
+  background : -ms-linear-gradient(-90deg, rgba(80, 81, 81, 1) 0%, rgba(72, 73, 73, 1) 1.44%, rgba(51, 52, 52, 1) 6.36%, rgba(38, 38, 38, 1) 11.11%, rgba(34, 34, 34, 1) 15.48%, rgba(34, 34, 34, 1) 100%);
+  -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#505151', endColorstr='#222222' ,GradientType=0)";
+  background : linear-gradient(180deg, rgba(80, 81, 81, 1) 0%, rgba(72, 73, 73, 1) 1.44%, rgba(51, 52, 52, 1) 6.36%, rgba(38, 38, 38, 1) 11.11%, rgba(34, 34, 34, 1) 15.48%, rgba(34, 34, 34, 1) 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#505151',endColorstr='#222222' , GradientType=0);
+}
+
+.bibw #chat > div > :nth-child(2) > div:not(:first-child), .bibw ul > li > div > div {
+	color: #EEE;
+}
+
+.bibw, .bibw ul, .bibw #window, .bibw #input, .bibw select {
+	background: #222;
+	color: #EEE;
+
+}
+.bibw ul > li:first-of-type {
+	margin-top: 30px;
+}
+
+.bibw ul > li > i, .bibw select, .bibw footer > div > i {
+	color: #DDD;
+}
+
+.bibw #close, .bibw #chat > div > div:first-child, .bibw ul > li > div > div:first-child > div {
+	background-color: #494949;
+}
+
+.bibw main, .bibw #window > div:first-child, .bibw footer > div, .bibw footer > div > i, .bibw ul, .bibw #close, .bibw #window, .bibw ul > li > div > div:last-child {
+	border: none!important;
+	background: none;
+}
+
+.bibw header {
+    background: none!important;
+    position: absolute;
+    width: 100%;
+}
+
+.bibw footer {
+	background: none !important;
+	margin-bottom: 15px;
+    margin-left: 10px;
+    margin-right: 0;
+}
+
+.bibw ul > li > div {
+	background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0) 35px, #222 35px, #222 100%);
+}
+
+.bibw #underlay {
+  -webkit-filter: invert(50%) brightness(200%);
+  filter: invert(50%) brightness(200%);
+}
+
+.bibw ::-webkit-scrollbar-track {
+	background-color: #222;
+}
+
+.bibw ::-webkit-scrollbar, .bibw ::-webkit-scrollbar-thumb {
+	background-color: #333;
+}
+
+.bibw ::-webkit-scrollbar-track, .bibw ::-webkit-scrollbar, .bibw ::-webkit-scrollbar-thumb {
+	border-color: #222;
+}
+
+.bibw > footer#foot > input { 
+	background: #0C0C0C; 
+	border-radius: 50px; 
+	font-family: 'Pokemon GB';    
+	font-size: 22px!important;
+	line-height: 50px;
+	margin-right: 10px;
+    margin-left: 10px; 
+    padding: 5px 25px;
+}
+
+.bibw #chat > div > div:last-child {
+	color: #505151!important;
+    font-size: 10px;
+    padding-right: 15px;
+}	
+.bibw footer > div {
+	margin-right: 20px;
+}
+
+.bibw #chat > div > div:first-child > img:nth-child(1)/*, .bibw #chat > div > div:first-child > img:nth-child(2), .bibw #chat > div > div:first-child > img:nth-child(3) */{
+	display: block;
+}
+
+.bibw #chat > div > :first-child {
+    width: 40px;
+    max-width: 40px;
+    max-height: 40px;
+    margin-left: 25px;
+}
+
+.bibw footer > div > .icon {
+	border-radius: 50px;
+}
+
+.bibw footer > div > .icon:hover {
+	background-color: #505151;
+}
+.bibw #overlay > #cover {
+	background: rgba(0, 0, 0, .66);
+}
+
+.pokeball {
+	width: 17px;
+	height: 17px;
 }
