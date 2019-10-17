@@ -80,6 +80,7 @@ document.addEventListener('DOMContentLoaded', function() {
 				var i = document.createElement('i');
 				i.className = 'material-icons';
 				i.appendChild(document.createTextNode('info_outline'));
+				i.innerHTML = '<img class="pokeball" src="img/icons/pokeball.svg"/>';
 				row.appendChild(i);
 			}
 			else {
@@ -178,6 +179,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		you = userid;
 	}
 	// Attack button
+	/*
 	var i2 = document.createElement('i');
 	i2.className = 'material-icons';
 	i2.appendChild(document.createTextNode('sports_mma' ));
@@ -185,7 +187,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
 	i2.onmousedown = function() {
 		ws.send(JSON.stringify({ type : 'attack', target : params.name, order : orderId}));
-	};
+	};*/
+
+
+
 
 	var phead = document.createElement('div'),
 		pbody = document.createElement('div'),
@@ -485,6 +490,19 @@ document.addEventListener('DOMContentLoaded', function() {
 		};
 	}
 
+	// Inventory chest
+	var chest = document.getElementById('chest');
+	
+	chest.onmouseover = function() {
+		chest.src = 'img/icons/coffreouvert.svg';
+	}
+	chest.onmouseout = function() {
+		chest.src = 'img/icons/coffre.svg';
+	}
+
+
+
+
 	// Users list display
 
 	var userswitch = document.getElementById('userswitch');
@@ -500,7 +518,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	// WebSocket-related functions
 
 	var wsConnect = function() {
-		 ws = new WebSocket(location.origin.replace('http', 'ws') + '/socket' + location.pathname);
+	    ws = new WebSocket(location.origin.replace('http', 'ws') + '/socket' + location.pathname);
 		// ws = new WebSocket('wss://loult.family/socket/toast');
 		ws.binaryType = 'arraybuffer';
 
