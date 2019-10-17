@@ -430,61 +430,6 @@ document.addEventListener('DOMContentLoaded', function() {
 		volrange.oninput = changeVolume;
 	}
 
-	// Speech
-
-	if('webkitSpeechRecognition' in window) {
-		var mic = document.getElementById('mic'),
-			recognition = new webkitSpeechRecognition(),
-			recognizing = false;
-
-		mic.innerHTML = 'mic_none';
-
-		mic.onclick = function () {
-			if(recognizing) {
-				recognition.stop();
-				mic.innerHTML = 'mic_none';
-				return;
-			}
-			mic.innerHTML = 'mic';
-			recognition.lang = lang + '-' + ((lang === 'en') ? 'US' : lang.toUpperCase());
-			recognition.start();
-			input.value = '';
-		};
-
-		recognition.continuous = true;
-		recognition.interimResults = true;
-
-		recognition.onstart = function() {
-			recognizing = true;
-		};
-
-		recognition.onerror = function(event) {
-			// console.log(event.error);
-		};
-
-		recognition.onend = function() {
-			recognizing = false;
-		};
-
-		recognition.onresult = function(event) {
-			var interim_transcript = '';
-			for(var i = event.resultIndex; i < event.results.length; i++)
-				if(event.results[i].isFinal) {
-					var m = input.value.trim();
-					if(m.length) {
-						ws.send(JSON.stringify({type: 'msg', msg: m, lang: lang}));
-						lastMsg = input.value;
-						input.value = '';
-					}
-				}
-				else
-					interim_transcript += event.results[i][0].transcript;
-
-			input.value = interim_transcript.trim();
-			input.value = input.value.charAt(0).toUpperCase() + input.value.slice(1);
-		};
-	}
-
 	// Users list display
 
 	var userswitch = document.getElementById('userswitch');
