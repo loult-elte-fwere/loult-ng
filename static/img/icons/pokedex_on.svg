@@ -14,22 +14,20 @@
 	path { transition: 1s; }
    
 
-    #diode:hover .st6 {
+    #diode .st6 {
      animation-duration: 700ms;
     animation-name: blink;
     animation-iteration-count: infinite;
-    animation-direction: alternate;
-    -webkit-animation:blink 700ms infinite;
-
+    animation-direction: alternate-reverse;
+    -webkit-animation: blink 500ms infinite;
     }
 
 @keyframes blink {
-    from {
-    	fill:#0080FF;
-    }
-    to {
-    	fill:#6EF1FF; 
-    }
+
+  from { fill:#009FF7; }
+  50%  { fill:#85D3FF; } /* ignorée */
+  to   { fill:#009FF7;  }
+
 }
 
 </style>

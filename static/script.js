@@ -179,18 +179,13 @@ document.addEventListener('DOMContentLoaded', function() {
 		you = userid;
 	}
 	// Attack button
-	/*
-	var i2 = document.createElement('i');
-	i2.className = 'material-icons';
-	i2.appendChild(document.createTextNode('sports_mma' ));
+	var i2 = document.createElement('img');
+	i2.className = 'sword';
+	i2.src = 'img/icons/sword.svg';
 	row.appendChild(i2);
-
-	i2.onmousedown = function() {
+	row.onmousedown = function() {
 		ws.send(JSON.stringify({ type : 'attack', target : params.name, order : orderId}));
-	};*/
-
-
-
+	};
 
 	var phead = document.createElement('div'),
 		pbody = document.createElement('div'),
