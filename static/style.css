@@ -1,12 +1,17 @@
-﻿@font-face {
+@font-face {
 	font-family: "PokemonGB";
-	src: url("/fonts/PokemonGB.eot");
-	src: url("/fonts/PokemonGB.eot?#iefix") format("embedded-opentype"), 
-	url("/fonts/PokemonGB.otf") format("opentype"),
-	url("/fonts/PokemonGB.svg") format("svg"), 
-	url("/fonts/PokemonGB.ttf") format("truetype"), 
+	src: url("/fonts/PokemonGB.eot") format("eot");
+	src: url("/fonts/PokemonGB.ttf") format("truetype"), 
 	url("/fonts/PokemonGB.woff") format("woff"), 
 	url("/fonts/PokemonGB.woff2") format("woff2"); 
+	font-weight: normal;
+	font-style: normal;
+}
+@font-face {
+	font-family: "Open Sans";
+	src: url("/fonts/OpenSans-Regular.woff2?v=1.101") format("woff2"), 
+	     url("/fonts/OpenSans-Regular.woff?v=1.101") format("woff"),
+	     url("/fonts/OpenSans-Regular.eot?v=1.101") format("eot");
 	font-weight: normal;
 	font-style: normal;
 }
@@ -22,6 +27,7 @@
 ::-webkit-scrollbar, ::-webkit-scrollbar-thumb {
 	background-color: #DDD;
 }
+#chat::-webkit-scrollbar { width: 0 !important }
 
 html, body, header, main, footer, div, i, ul, li, select, input {
 	transition: background-color 200ms linear;
@@ -77,10 +83,6 @@ header, #window > div:first-child {
 	background: linear-gradient(to bottom, #EEE 0%, #FFF 100%);
 }
 
-footer {
-	background: linear-gradient(to bottom, #FFF 0%, #EEE 100%);
-}
-
 header {
 	padding-right: 200px;
 }
@@ -108,6 +110,14 @@ header > div > img {
 @keyframes opacityin {
 	0% { opacity: 0; }
 	100% { opacity: 1; }
+}
+
+footer {
+	background: linear-gradient(to bottom, #FFF 0%, #EEE 100%);
+}
+
+footer > div > .icon:nth-of-type(3):hover > img:first-of-type {
+	display: none;
 }
 
 footer > div {
@@ -214,6 +224,7 @@ main {
 
 #chat > div > :first-child {
 	margin: 0 10px;
+	text-align: center;
 }
 
 #chat > div > div:first-child {
@@ -289,6 +300,7 @@ ul > li {
 	display: flex;
 	-ms-flex-pack: justify;
 	justify-content: space-between;
+	cursor: pointer;
 }
 
 ul > li > i {
@@ -324,6 +336,7 @@ ul > li > div {
 	width: 400px;
 	font-size: 11px;
 	background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0) 35px, #f9f9f9 35px, #f9f9f9 100%);
+	display: none!important;
 }
 
 ul > li > div > div:first-child {
@@ -831,9 +844,8 @@ select {
 }
 
 .night #close, .night #chat > div > div:first-child, .night ul > li > div > div:first-child > div {
-	background-color: #2B2B2B;
+	background-color: #505151;
 }
-/*.night footer > div > i:hover { background-color: #111; }*/
 
 .night footer > div > .icon:hover { background-color: #111; }
 
@@ -929,15 +941,19 @@ select {
 
 .icon { 
 	display: inline-block; 
-	width: 49px; 
-	height: 49px; 
+	width: 50px; 
+	height: 50px; 
 	margin: 0; 
 	padding: 0; 
 	border: 0;
 	overflow: hidden; 
 }
 .icon img { 
-	margin: 10px; 
+	margin: 8px; 
+	transition: 0.1s;
+}
+.icon:hover img {
+    transform: scale(1.15);
 }				
 .tooltiptext {
   font-family: "PokemonGB";
@@ -950,7 +966,7 @@ select {
   height: 10px;					  
   /* Position du tooltip */
   position: absolute;
-  bottom: 60px;
+  bottom: 80px;
   right: 0;
   text-align: left;
   z-index: 1;
@@ -968,4 +984,166 @@ select {
 	0% { -webkit-filter: hue-rotate(0deg); filter: hue-rotate(0deg); }
 	50% { -webkit-filter: hue-rotate(180deg); filter: hue-rotate(180deg); }
 	100% { -webkit-filter: hue-rotate(360deg); filter: hue-rotate(360deg); }
+}
+
+/***** bibw *****/ 
+
+body.bibw {
+  background : -moz-linear-gradient(0% 50% 0deg,rgba(42, 82, 152, 1) 0%,rgba(42, 82, 152, 1) 0.36%,rgba(35, 70, 131, 1) 34.53%,rgba(31, 62, 118, 1) 68.07%,rgba(30, 60, 114, 1) 100%);
+  background : -webkit-linear-gradient(0deg, rgba(42, 82, 152, 1) 0%, rgba(42, 82, 152, 1) 0.36%, rgba(35, 70, 131, 1) 34.53%, rgba(31, 62, 118, 1) 68.07%, rgba(30, 60, 114, 1) 100%);
+  background : -webkit-gradient(linear,0% 50% ,100% 50% ,color-stop(0,rgba(42, 82, 152, 1) ),color-stop(0.0036,rgba(42, 82, 152, 1) ),color-stop(0.3453,rgba(35, 70, 131, 1) ),color-stop(0.6807,rgba(31, 62, 118, 1) ),color-stop(1,rgba(30, 60, 114, 1) ));
+  background : -o-linear-gradient(0deg, rgba(42, 82, 152, 1) 0%, rgba(42, 82, 152, 1) 0.36%, rgba(35, 70, 131, 1) 34.53%, rgba(31, 62, 118, 1) 68.07%, rgba(30, 60, 114, 1) 100%);
+  background : -ms-linear-gradient(0deg, rgba(42, 82, 152, 1) 0%, rgba(42, 82, 152, 1) 0.36%, rgba(35, 70, 131, 1) 34.53%, rgba(31, 62, 118, 1) 68.07%, rgba(30, 60, 114, 1) 100%);
+  -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#2A5298', endColorstr='#1E3C72' ,GradientType=0)";
+  background : linear-gradient(90deg, rgba(42, 82, 152, 1) 0%, rgba(42, 82, 152, 1) 0.36%, rgba(35, 70, 131, 1) 34.53%, rgba(31, 62, 118, 1) 68.07%, rgba(30, 60, 114, 1) 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#2A5298',endColorstr='#1E3C72' , GradientType=1);
+}
+
+.bibw #chat > div > :nth-child(2) > div:not(:first-child), .bibw ul > li > div > div {
+	color: #EEE;
+}
+
+.bibw, .bibw ul, .bibw #window, .bibw #input, .bibw select {
+	background: #222;
+	color: #EEE;
+
+}
+.bibw ul > li:first-of-type {
+	margin-top: 30px;
+}
+
+.bibw ul > li > i, .bibw select, .bibw footer > div > i {
+	color: #DDD;
+	margin-right: 5px;
+}
+
+.bibw #close, .bibw #chat > div > div:first-child, .bibw ul > li > div > div:first-child > div {
+	background: none !important;
+	border: none;
+}
+
+.bibw main, .bibw #window > div:first-child, .bibw footer > div, .bibw footer > div > i, .bibw ul, .bibw #close, .bibw #window, .bibw ul > li > div > div:last-child {
+	border: none!important;
+	background: none;
+}
+
+.bibw header {
+    background: none!important;
+    position: absolute;
+    width: 100%;
+    padding-top: 15px;
+}
+
+.bibw footer {
+	background: none !important;
+	margin-bottom: 20px;
+    margin-right: 0;
+}
+
+.bibw ul > li > div {
+	background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0) 35px, #222 35px, #222 100%);
+}
+
+.bibw #underlay {
+  -webkit-filter: invert(50%) brightness(200%);
+  filter: invert(50%) brightness(200%);
+}
+
+.bibw ::-webkit-scrollbar-track {
+	background-color: rgba(0,0,0,0); display: none;
+}
+
+.bibw ::-webkit-scrollbar, .bibw ::-webkit-scrollbar-thumb {
+    background-color: rgba(0,0,0,0);
+    color: white;
+}
+
+.bibw ::-webkit-scrollbar-track, .bibw ::-webkit-scrollbar, .bibw ::-webkit-scrollbar-thumb {
+	border-color: #222;
+	border: 0;
+}
+
+.bibw > footer#foot > input { 
+	background: #0C0C0C; 
+	border-radius: 50px; 
+	font-family: "PokemonGB";    
+	font-size: 22px!important;
+	line-height: 50px;
+	margin-right: 10px;
+    margin-left: 25px;
+    padding: 5px 25px;
+}
+
+.bibw #chat > div > div:last-child {
+	color: #9AD5D8!important;
+	opacity: .33;
+    font-size: 10px;
+    padding-right: 17px;
+}	
+.bibw footer > div {
+	margin-right: 20px;
+}
+
+.bibw #chat > div > div:first-child > img:nth-child(1)/*, .bibw #chat > div > div:first-child > img:nth-child(2), .bibw #chat > div > div:first-child > img:nth-child(3) */{
+	display: block;
+	width: 100%;
+	height: 100%;
+	top: -10px;
+    image-rendering: crisp-edges;
+    margin-left: -2px;
+}
+.bibw #chat > div > div > div {
+	padding: 4px;
+}
+
+.bibw #chat > div > :first-child {
+    width: 50px;
+    max-width: 50px;
+    max-height: 50px;
+    margin-left: 25px;
+    text-align: center;
+}
+
+.bibw footer > div > .icon {
+	border-radius: 50px;
+}
+
+.bibw footer > div > .icon:hover {
+	background-color: #9AD5D8;
+}
+.bibw #overlay > #cover {
+	background: rgba(0, 0, 0, .66);
+}
+
+.pokeball {
+	width: 17px;
+	height: 17px;
+}
+.sword {
+	width: 25px;
+	height: 25px;
+	right: 200px;
+	position: absolute;
+	padding-top: 7px;
+	display: none;
+	z-index: 999;
+}
+
+ul > li:hover > .sword {
+	display: block;
+}
+.bibw main #chat div > a {
+	color: #1AC;
+}
+
+.bibw >  #main > #chat > .part > div > div {
+	color: #9AD5D8!important;
+}
+.bibw >  #main > #chat > div:first-of-type {
+    padding-top: 120px;
+}
+
+.bibw > main {
+	font-family: "Open Sans";
+	font-size: 17px;
 }
