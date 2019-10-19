@@ -435,10 +435,12 @@ document.addEventListener('DOMContentLoaded', function() {
 	var chest = document.getElementById('chest');
 	
 	chest.onmouseover = function() {
-		chest.src = 'img/icons/coffreouvert.svg';
+	    chest.src = 'img/icons/coffreouvert.svg';
+	    ws.send(JSON.stringify({type: 'inventory'}));
+
 	};
 	chest.onmouseout = function() {
-		chest.src = 'img/icons/coffre.svg';
+	    chest.src = 'img/icons/coffre.svg';
 	};
 
 
@@ -447,11 +449,11 @@ document.addEventListener('DOMContentLoaded', function() {
 	var userswitch = document.getElementById('userswitch');
 
 	userswitch.onclick = function() {
-		var atBottom = (chat.scrollTop === (chat.scrollHeight - chat.offsetHeight));
-		userlist.style.width = (userlist.style.width === '0px' ? '200px' : '0px');
-		head.style.paddingRight = underlay.style.right = userlist.style.width;
-		if(atBottom)
-			chat.scrollTop = chat.scrollHeight;
+	    var atBottom = (chat.scrollTop === (chat.scrollHeight - chat.offsetHeight));
+	    userlist.style.width = (userlist.style.width === '0px' ? '200px' : '0px');
+	    head.style.paddingRight = underlay.style.right = userlist.style.width;
+	    if(atBottom)
+		chat.scrollTop = chat.scrollHeight;
 	};
 
 	// WebSocket-related functions
