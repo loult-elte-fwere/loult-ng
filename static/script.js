@@ -659,6 +659,21 @@ document.addEventListener('DOMContentLoaded', function() {
 		    addLine({name : 'info'}, msg.msg,("date" in msg) ? msg.date : (new Date), 'info');
 		    break;
 
+		case 'inventory' :
+		    inventory = msg['items'];
+		    item_list = "";
+		    if(inventory.length <= 0){
+			item_list = "Queudal";
+		    }
+		    else {
+			for(i = 0; i < inventory.length; i++) {
+			    item_list = item_list + (item_list.length > 1 ? ", " : "") + inventory[i]['name'];
+			}
+		    }
+		    console.log(inventory);
+		    addLine({name : 'info'}, "Objets dans l'inventaire : " + item_list , ("date" in msg) ? msg.date : (new Date), 'info');
+		    break;
+
 		case 'userlist':
 		    // flushing previous user list just in case
 		    for(var i in users)
