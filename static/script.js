@@ -148,10 +148,24 @@ document.addEventListener('DOMContentLoaded', function() {
 	if(ambtn.checked && muted.indexOf(userid) === -1)
 		if(!params.you) muted.push(userid);
 
-	var row = document.createElement('li');
-	row.appendChild(document.createTextNode(params.name));
+	var row = document.createElement('li'),
+        newSpan = document.createElement('span');
+  	
+  	newSpan.appendChild(document.createTextNode(params.name));
+
+  	row.appendChild ( newSpan ); 
 	row.style.color = params.color;
 	row.style.backgroundImage = 'url("/img/pokemon/small/' + params.img + '.gif")';
+
+	// Attack button
+	var i2 = document.createElement('img');
+	i2.className = 'sword';
+	i2.src = 'img/icons/sword.svg';
+	row.appendChild(i2);
+	row.onmousedown = function() {
+		ws.send(JSON.stringify({ type : 'attack', target : params.name, order : orderId}));
+	};
+
 
 	if(!params.you) {
 
@@ -178,14 +192,6 @@ document.addEventListener('DOMContentLoaded', function() {
 		underlay.style.backgroundImage = 'url("/img/pokemon/big/' + params.img + '.png")';
 		you = userid;
 	}
-	// Attack button
-	var i2 = document.createElement('img');
-	i2.className = 'sword';
-	i2.src = 'img/icons/sword.svg';
-	row.appendChild(i2);
-	row.onmousedown = function() {
-		ws.send(JSON.stringify({ type : 'attack', target : params.name, order : orderId}));
-	};
 
 	var phead = document.createElement('div'),
 		pbody = document.createElement('div'),
@@ -457,8 +463,8 @@ document.addEventListener('DOMContentLoaded', function() {
 	// WebSocket-related functions
 
 	var wsConnect = function() {
-	    ws = new WebSocket(location.origin.replace('http', 'ws') + '/socket' + location.pathname);
-		// ws = new WebSocket('wss://loult.family/socket/toast');
+	    // ws = new WebSocket(location.origin.replace('http', 'ws') + '/socket' + location.pathname);
+		ws = new WebSocket('wss://loult.family/socket/toast');
 		ws.binaryType = 'arraybuffer';
 
 		var lastMuted = false;

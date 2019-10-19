@@ -322,6 +322,15 @@ a:hover, li > i:hover, footer i:hover, #window input:hover, #window label:hover,
 	cursor: pointer;
 }
 
+/* à refaire */
+input[type=range]#volrange::-webkit-range-track, input[type=range]#volrange::-moz-range-track ; input[type=range]#volrange::-ms-track 
+input[type=range]#volrange::-webkit-slider-thumb {
+	color: red!important;
+	background: white!important;            
+}
+
+
+
 ul > li:hover > div {
 	display: block;
 }
@@ -503,20 +512,22 @@ ul > li > div > div:last-child > i {
 	left: 0;
 	right: 0;
 	bottom: 0;
-	max-width: 680px;
-	max-height: 780px;
 	width: 680px;
-	height: 500px;
+	height: 540px;
 	margin: auto;
 	line-height: 1.5em;
-	font-size: 25px;
+	font-size: 20px;
 	background: #f9f9f9;
 	border: 2px solid #BBB;
+	background: rgba(0,0,0,.8) !important;
+	border-radius: 50px;
 }
 
 #window > div:first-child {
 	border-bottom: 2px solid #BBB;
-	padding-left: 8px;
+	padding: 40px;
+	padding-left: 50px;
+	padding-bottom: 30px;
 	height: 40px;
 	display: -webkit-box;
 	display: -ms-flexbox;
@@ -579,7 +590,7 @@ input[type=range] {
 
 select {
 	background: #f9f9f9;
-	font-size: 25px;
+	font-size: 20px;
 	border: none;
 	outline: 0;
 }
@@ -941,8 +952,8 @@ select {
 
 .icon { 
 	display: inline-block; 
-	width: 50px; 
-	height: 50px; 
+	width: 49px; 
+	height: 49px; 
 	margin: 0; 
 	padding: 0; 
 	border: 0;
@@ -989,18 +1000,29 @@ select {
 /***** bibw *****/ 
 
 body.bibw {
-  background : -moz-linear-gradient(0% 50% 0deg,rgba(42, 82, 152, 1) 0%,rgba(42, 82, 152, 1) 0.36%,rgba(35, 70, 131, 1) 34.53%,rgba(31, 62, 118, 1) 68.07%,rgba(30, 60, 114, 1) 100%);
-  background : -webkit-linear-gradient(0deg, rgba(42, 82, 152, 1) 0%, rgba(42, 82, 152, 1) 0.36%, rgba(35, 70, 131, 1) 34.53%, rgba(31, 62, 118, 1) 68.07%, rgba(30, 60, 114, 1) 100%);
-  background : -webkit-gradient(linear,0% 50% ,100% 50% ,color-stop(0,rgba(42, 82, 152, 1) ),color-stop(0.0036,rgba(42, 82, 152, 1) ),color-stop(0.3453,rgba(35, 70, 131, 1) ),color-stop(0.6807,rgba(31, 62, 118, 1) ),color-stop(1,rgba(30, 60, 114, 1) ));
-  background : -o-linear-gradient(0deg, rgba(42, 82, 152, 1) 0%, rgba(42, 82, 152, 1) 0.36%, rgba(35, 70, 131, 1) 34.53%, rgba(31, 62, 118, 1) 68.07%, rgba(30, 60, 114, 1) 100%);
-  background : -ms-linear-gradient(0deg, rgba(42, 82, 152, 1) 0%, rgba(42, 82, 152, 1) 0.36%, rgba(35, 70, 131, 1) 34.53%, rgba(31, 62, 118, 1) 68.07%, rgba(30, 60, 114, 1) 100%);
-  -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#2A5298', endColorstr='#1E3C72' ,GradientType=0)";
-  background : linear-gradient(90deg, rgba(42, 82, 152, 1) 0%, rgba(42, 82, 152, 1) 0.36%, rgba(35, 70, 131, 1) 34.53%, rgba(31, 62, 118, 1) 68.07%, rgba(30, 60, 114, 1) 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#2A5298',endColorstr='#1E3C72' , GradientType=1);
+	  background : -moz-linear-gradient(99% 50% -180deg,rgba(42, 82, 152, 1) 0%,rgba(36, 70, 132, 1) 4.12%,rgba(29, 54, 105, 1) 11%,rgba(23, 41, 83, 1) 18.89%,rgba(18, 31, 66, 1) 28.13%,rgba(14, 24, 55, 1) 39.54%,rgba(13, 20, 48, 1) 55.55%,rgba(12, 19, 46, 1) 100%);
+  background : -webkit-linear-gradient(-180deg, rgba(42, 82, 152, 1) 0%, rgba(36, 70, 132, 1) 4.12%, rgba(29, 54, 105, 1) 11%, rgba(23, 41, 83, 1) 18.89%, rgba(18, 31, 66, 1) 28.13%, rgba(14, 24, 55, 1) 39.54%, rgba(13, 20, 48, 1) 55.55%, rgba(12, 19, 46, 1) 100%);
+  background : -webkit-gradient(linear,99% 50% ,1.42% 50% ,color-stop(0,rgba(42, 82, 152, 1) ),color-stop(0.0412,rgba(36, 70, 132, 1) ),color-stop(0.11,rgba(29, 54, 105, 1) ),color-stop(0.1889,rgba(23, 41, 83, 1) ),color-stop(0.2813,rgba(18, 31, 66, 1) ),color-stop(0.3954,rgba(14, 24, 55, 1) ),color-stop(0.5555,rgba(13, 20, 48, 1) ),color-stop(1,rgba(12, 19, 46, 1) ));
+  background : -o-linear-gradient(-180deg, rgba(42, 82, 152, 1) 0%, rgba(36, 70, 132, 1) 4.12%, rgba(29, 54, 105, 1) 11%, rgba(23, 41, 83, 1) 18.89%, rgba(18, 31, 66, 1) 28.13%, rgba(14, 24, 55, 1) 39.54%, rgba(13, 20, 48, 1) 55.55%, rgba(12, 19, 46, 1) 100%);
+  background : -ms-linear-gradient(-180deg, rgba(42, 82, 152, 1) 0%, rgba(36, 70, 132, 1) 4.12%, rgba(29, 54, 105, 1) 11%, rgba(23, 41, 83, 1) 18.89%, rgba(18, 31, 66, 1) 28.13%, rgba(14, 24, 55, 1) 39.54%, rgba(13, 20, 48, 1) 55.55%, rgba(12, 19, 46, 1) 100%);
+  -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#2A5298', endColorstr='#0C132E' ,GradientType=0)";
+  background : linear-gradient(270deg, rgba(42, 82, 152, 1) 0%, rgba(36, 70, 132, 1) 4.12%, rgba(29, 54, 105, 1) 11%, rgba(23, 41, 83, 1) 18.89%, rgba(18, 31, 66, 1) 28.13%, rgba(14, 24, 55, 1) 39.54%, rgba(13, 20, 48, 1) 55.55%, rgba(12, 19, 46, 1) 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#2A5298',endColorstr='#0C132E' , GradientType=1);
+}
+
+.bibw #chat {
+	margin-left: 25px;
+}
+
+.bibw > main > #userlist {
+	margin-right: 25px;
 }
 
 .bibw #chat > div > :nth-child(2) > div:not(:first-child), .bibw ul > li > div > div {
-	color: #EEE;
+	color: #eaeaea;
+}
+.bibw #chat > div > :nth-child(2) .greentext {
+	color: #154DFF;
 }
 
 .bibw, .bibw ul, .bibw #window, .bibw #input, .bibw select {
@@ -1045,8 +1067,9 @@ body.bibw {
 }
 
 .bibw #underlay {
-  -webkit-filter: invert(50%) brightness(200%);
-  filter: invert(50%) brightness(200%);
+  -webkit-filter: invert(50%) brightness(100%);
+  filter: invert(50%) brightness(100%);
+  background-size: 25%;
 }
 
 .bibw ::-webkit-scrollbar-track {
@@ -1067,7 +1090,7 @@ body.bibw {
 	background: #0C0C0C; 
 	border-radius: 50px; 
 	font-family: "PokemonGB";    
-	font-size: 22px!important;
+	font-size: 16px !important;
 	line-height: 50px;
 	margin-right: 10px;
     margin-left: 25px;
@@ -1076,7 +1099,7 @@ body.bibw {
 
 .bibw #chat > div > div:last-child {
 	color: #9AD5D8!important;
-	opacity: .33;
+	opacity: 0;
     font-size: 10px;
     padding-right: 17px;
 }	
@@ -1084,24 +1107,42 @@ body.bibw {
 	margin-right: 20px;
 }
 
-.bibw #chat > div > div:first-child > img:nth-child(1)/*, .bibw #chat > div > div:first-child > img:nth-child(2), .bibw #chat > div > div:first-child > img:nth-child(3) */{
+.bibw #chat > div > div:first-child > img:nth-child(1) {
 	display: block;
 	width: 100%;
 	height: 100%;
-	top: -10px;
+	top: -15px;
     image-rendering: crisp-edges;
     margin-left: -2px;
 }
+
+/* targeting crhome */
+
+@media screen and (-webkit-min-device-pixel-ratio:0) and (min-resolution:.001dpcm) {
+    .bibw #chat > div > div:first-child > img:nth-child(1) {
+		image-rendering: pixelated;
+    }
+}
+
+/* targeting microsoft edge */
+
+@supports (-ms-ime-align:auto) {
+    .bibw #chat > div > div:first-child > img:nth-child(1) {
+		image-rendering: pixelated;
+    }
+}
+
+
 .bibw #chat > div > div > div {
 	padding: 4px;
 }
 
 .bibw #chat > div > :first-child {
-    width: 50px;
-    max-width: 50px;
-    max-height: 50px;
-    margin-left: 25px;
+    width: 64px;
+    max-width: 64px;
+    max-height: 64px;
     text-align: center;
+    border-radius: 0;
 }
 
 .bibw footer > div > .icon {
@@ -1122,16 +1163,17 @@ body.bibw {
 .sword {
 	width: 25px;
 	height: 25px;
-	right: 200px;
+	right: 225px;
 	position: absolute;
 	padding-top: 7px;
 	display: none;
 	z-index: 999;
 }
 
-ul > li:hover > .sword {
+ul > li > span:hover + .sword {
 	display: block;
 }
+
 .bibw main #chat div > a {
 	color: #1AC;
 }
@@ -1145,5 +1187,5 @@ ul > li:hover > .sword {
 
 .bibw > main {
 	font-family: "Open Sans";
-	font-size: 17px;
+	font-size: 16px;
 }
