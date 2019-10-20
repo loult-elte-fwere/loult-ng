@@ -4,6 +4,8 @@ document.addEventListener('DOMContentLoaded', function() {
 	underlay = document.getElementById('underlay'),
 	input = document.getElementById('input'),
 	chat = document.getElementById('chat'),
+	chest = document.getElementById('chest'),
+	inventory_display = document.getElementById('inventory_display'),
 	theme = (localStorage.theme && localStorage.theme.split(' ').length > 2) ? localStorage.theme : 'cozy night sans',
 	waitTime = 1000,
 	banned = false,
@@ -447,13 +449,12 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
 
-    // Inventory chest
-    var chest = document.getElementById('chest');
-    var inventory_display = document.getElementById('inventory_display');
-    
+    // Inventory chest    
     chest.addEventListener('mouseover', function(e) {
 	chest.firstElementChild.src = 'img/icons/coffreouvert.svg';
 	ws.send(JSON.stringify({type: 'inventory'}));
+	inventory_display.style.top = (chest.offsetTop - inventory_display.scrollHeight) + "px";
+	inventory_display.style.left = (chest.offsetLeft - (inventory_display.scrollWidth / 1.5)) + "px";
     }, false);
 
     chest.addEventListener('mouseout', function(e) {
@@ -698,6 +699,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			    name = inventory[i]['name'];
 			    // icon = inventory[i]['icon'];
 			    item_template = "<div class=\"item\">" +
+				"<span>" + id + "</span>" +
 				"<img title=\"" + name + "\" " +
 				"src=\"img/icons/sword.svg\"></img></div>";
 			    inventory_display.innerHTML += item_template;

@@ -1192,17 +1192,16 @@ ul > li > span:hover + .sword {
 
 #inventory_display {
     position: absolute;
-    bottom: 100px;
-    right: 0;
+    top: 0;
     opacity: 0;
-    background-color: black;
+    background: black;
     vertical-align: middle;
     color: #fff;
     text-align: center;
-    border-radius: 15px;
+    border-radius: 30px;
     min-width: 200px;
-    padding: 15px;
-    margin-right: 150px;
+    padding: 20px 10px 10px 20px;
+    margin: 20px 150px 20px -1px;
     z-index: 2;
 }
 
@@ -1210,10 +1209,11 @@ ul > li > span:hover + .sword {
     opacity: 1;
 }
 
+/* triangle at the bottom of the bubble */
 #inventory_display::after {
   content: " ";
   position: absolute;
-  top: 100%; /* At the bottom of the tooltip */
+  top: 100%;
   left: 75%;
   margin-left: -10px;
   border-width: 15px;
@@ -1223,12 +1223,15 @@ ul > li > span:hover + .sword {
 
 .item {
     position: relative;
+    display: inline-block;
+    margin: 10px 10px 30px 10px;
+    width: 50px;
+    height: 50px;
     vertical-align: middle;
     clear: right;
 }
 
 .item img {
-    width: 30px;
     vertical-align: middle;
     display: inline-block;
     transition: none;
