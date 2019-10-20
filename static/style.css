@@ -1207,6 +1207,7 @@ ul > li > span:hover + .sword {
 
 #chest:hover > #inventory_display {
     opacity: 1;
+    display: block;
 }
 
 /* triangle at the bottom of the bubble */
