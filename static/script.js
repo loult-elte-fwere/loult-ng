@@ -580,10 +580,6 @@ document.addEventListener('DOMContentLoaded', function() {
 		    ws.send(JSON.stringify({type: 'msg', msg: trimed, lang: lang}));
 		    underlay.className = 'pulse';
 		}
-
-	var wsConnect = function() {
-	    ws = new WebSocket(location.origin.replace('http', 'ws') + '/socket' + location.pathname);
-		ws.binaryType = 'arraybuffer';
 		lastMsg = input.value;
 		input.value = '';
 	    }
