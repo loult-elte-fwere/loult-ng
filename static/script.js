@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	lastMsg,
 	lastRow,
 	lastId,
+	inventory = "",
 	ws;
 
     // DOM-related functions
@@ -433,16 +434,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Inventory chest
     var chest = document.getElementById('chest');
+    var inventory_display = document.getElementById('inventory_display');
     
-    chest.onmouseover = function() {
-	chest.src = 'img/icons/coffreouvert.svg';
+    chest.addEventListener('mouseover', function(e) {
+	chest.firstElementChild.src = 'img/icons/coffreouvert.svg';
 	ws.send(JSON.stringify({type: 'inventory'}));
+    }, false);
 
-    };
-    chest.onmouseout = function() {
-	chest.src = 'img/icons/coffre.svg';
-    };
-
+    chest.addEventListener('mouseout', function(e) {
+	chest.firstElementChild.src = 'img/icons/coffre.svg';
+    }, false);
 
     // Users list display
 
@@ -492,6 +493,17 @@ document.addEventListener('DOMContentLoaded', function() {
 		    }
 		    else if(trimed.match(/^\/((?:list)+)$/i)) {
 			ws.send(JSON.stringify({type: 'inventory'}));
+			item_list = "";
+			if(inventory.length <= 0){
+			    item_list = "Queudal";
+			}
+			else {
+			    for(i = 0; i < inventory.length; i++) {
+				item_list = item_list + (item_list.length > 1 ? ", " : "") + inventory[i]['name'];
+			    }
+			}
+			addLine({name : 'info'}, "Objets dans l'inventaire : " +
+				item_list , new Date, 'info');
 		    }
 		    else if(trimed.match(/^\/give\s/i)) {
 			var splitted = trimed.split(' ');
@@ -660,18 +672,23 @@ document.addEventListener('DOMContentLoaded', function() {
 		    break;
 
 		case 'inventory' :
+		    inventory_display.innerHTML = "";
 		    inventory = msg['items'];
-		    item_list = "";
+
 		    if(inventory.length <= 0){
-			item_list = "Queudal";
+			inventory_display.innerHTML = "<span>...</span>";
 		    }
 		    else {
 			for(i = 0; i < inventory.length; i++) {
-			    item_list = item_list + (item_list.length > 1 ? ", " : "") + inventory[i]['name'];
+			    id = inventory[i]['id'];
+			    name = inventory[i]['name'];
+			    // icon = inventory[i]['icon'];
+			    item_template = "<div class=\"item\">" +
+				"<img title=\"" + name + "\" " +
+				"src=\"img/icons/sword.svg\"></img></div>";
+			    inventory_display.innerHTML += item_template;
 			}
 		    }
-		    console.log(inventory);
-		    addLine({name : 'info'}, "Objets dans l'inventaire : " + item_list , ("date" in msg) ? msg.date : (new Date), 'info');
 		    break;
 
 		case 'userlist':
@@ -782,7 +799,5 @@ document.addEventListener('DOMContentLoaded', function() {
 	    }
 	};
     };
-
     wsConnect();
-
 });
