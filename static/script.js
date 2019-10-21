@@ -486,7 +486,7 @@ document.addEventListener('DOMContentLoaded', function() {
 						var splitted = trimed.split(' ');
 						ws.send(JSON.stringify({ type : 'attack', target : splitted[1], order : ((splitted.length === 3) ? parseInt(splitted[2]) : 0) }));
 					}
-					else if(trimed.match(/^\/(?:en|es|fr|de)\s/i)) {
+					else if(trimed.match(/^\/(?:en|es|fr|de|it)\s/i)) {
 						ws.send(JSON.stringify({type: 'msg', msg: trimed.substr(4), lang: trimed.substr(1, 2).toLowerCase()}));
 						underlay.className = 'pulse';
 					}
