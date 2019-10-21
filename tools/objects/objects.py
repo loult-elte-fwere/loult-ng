@@ -29,6 +29,7 @@ class DiseaseObject(ClonableObject, InertObject):
 
 
 class Flower(UsableObject, DestructibleObject):
+    ICON = "flower.gif"
     FLOWERS = ["rose", "lys blanc", "iris", "chrysanthème", "oeillet", "jonquille", "muguet",
                "tulipe", "orchidée"]
 
@@ -121,6 +122,7 @@ class BaseballBat(UsableObject, DestructibleObject):
 
 class Crown(UsableObject, DestructibleObject):
     NAME = "Couronne du loult"
+    ICON = "crown.gif"
 
     class ServantEffect(ExplicitTextEffect):
         TIMEOUT = 300
@@ -145,6 +147,7 @@ class Crown(UsableObject, DestructibleObject):
 
 class MagicWand(UsableObject, TargetedObject):
     NAME = "Baguette Magique"
+    ICON = "magicwand.gif"
     COOLDOWN = 15 * 60  # in seconds
 
     class DuckEffect(ExplicitTextEffect):
@@ -179,6 +182,7 @@ class MagicWand(UsableObject, TargetedObject):
 
 class Scolopamine(UsableObject, DestructibleObject, TargetedObject):
     NAME = "Scolopamine"
+    ICON = "scolopamine.gif"
 
     def use(self, loult_state, server, obj_params):
         target_id, target = self._acquire_target(server, obj_params)
@@ -253,6 +257,7 @@ class AlcoholBottle(UsableObject, DestructibleObject, TargetedObject):
 
 class PolynectarPotion(UsableObject, DestructibleObject, TargetedObject):
     NAME = "potion polynectar"
+    ICON = "polynectar.gif"
 
     def use(self, loult_state, server, obj_params):
         target_id, target = self._acquire_target(server, obj_params)
@@ -274,6 +279,7 @@ class PolynectarPotion(UsableObject, DestructibleObject, TargetedObject):
 class Microphone(UsableObject):
     MIKEDROP_FX = path.join(DATA_PATH, "mikedrop.mp3")
     NAME = 'micro'
+    ICON = "micro.gif"
 
     def use(self, loult_state, server, obj_params):
         server.channel_obj.broadcast(type="notification",
@@ -285,10 +291,12 @@ class Microphone(UsableObject):
 
 class C4(InertObject):
     NAME = "C4"
+    ICON = "c4.gif"
 
 
 class Detonator(UsableObject):
     NAME = "Détonateur"
+    ICON = "detonator.gif"
     EXPLOSION_FX = path.join(DATA_PATH, "explosion.mp3")
 
     def use(self, loult_state, server, obj_params):
@@ -311,6 +319,7 @@ class Detonator(UsableObject):
 
 class SuicideJacket(UsableObject, DestructibleObject):
     NAME = "ceinture d'explosif"
+    ICON = "suicide.gif"
     EXPLOSION_FX = path.join(DATA_PATH, "suicide_bomber.mp3")
 
     def use(self, loult_state, server, obj_params):
@@ -336,10 +345,12 @@ class SuicideJacket(UsableObject, DestructibleObject):
 
 class Costume(UsableObject):
     NAME = "costume"
+    
     CHARACTERS = ["link", "mario", "wario", "sonic"]
 
     def __init__(self):
         self.character = random.choice(self.CHARACTERS)  # type:str
+        #ICON = self.character + ".gif"
 
     @property
     def name(self):
@@ -363,6 +374,7 @@ class Costume(UsableObject):
 
 class RectalExam(UsableObject, TargetedObject, DestructibleObject):
     NAME = "examen rectal"
+    ICON = "rectalexam.gif"
 
     def use(self, loult_state, server, obj_params):
         target_id, target = self._acquire_target(server, obj_params)
@@ -387,6 +399,7 @@ class RectalExam(UsableObject, TargetedObject, DestructibleObject):
 
 class WealthDetector(UsableObject, TargetedObject):
     NAME = "détecteur de richesse"
+    ICON = "detector.gif"
 
     def use(self, loult_state, server, obj_params):
         target_id, target = self._acquire_target(server, obj_params)
@@ -403,6 +416,7 @@ class WealthDetector(UsableObject, TargetedObject):
 
 class Cigarettes(UsableObject, DestructibleObject):
     NAME = "cigarettes"
+    ICON = "cigarettes.gif"
     BRANDS = ["Lucky Loult", "Lucky Loult Menthol", "Mrleboro", "Chesterfnre", "Sheitanes Maïs",
               "Aguloises"]
     CIG_FX = path.join(DATA_PATH, "cigarette_lighting.mp3")
@@ -440,6 +454,7 @@ class Cigarettes(UsableObject, DestructibleObject):
 
 class Lighter(UsableObject):
     NAME = "briquet"
+    ICON = "lighter.gif"
     COOLDOWN = 30  # in seconds
     CIG_FX = path.join(DATA_PATH, "lighter.mp3")
 
@@ -455,6 +470,7 @@ class Lighter(UsableObject):
 
 class MollyChute(UsableObject, DestructibleObject):
     NAME = "paras de MD"
+    ICON = "paraMd.gif"
 
     class MDMAEffect(ExplicitTextEffect):
         NAME = "un paras"
@@ -514,6 +530,7 @@ class MollyChute(UsableObject, DestructibleObject):
 
 class CaptainHaddockPipe(UsableObject, DestructibleObject):
     NAME = "pipe du capitaine haddock"
+    ICON = "haddockpipe.gif"
 
     def use(self, loult_state, server, obj_params):
         server.user.state.add_effect(CaptainHaddockEffect())

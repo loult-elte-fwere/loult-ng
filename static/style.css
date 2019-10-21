@@ -1233,14 +1233,19 @@ ul > li > span:hover + .sword {
     clear: right;
 }
 
-.item img {
+#inventory_display > span {
+    letter-spacing: 5px;
+}
+
+.item > img {
     vertical-align: middle;
     display: inline-block;
     transition: none;
     transform: none;
+    width: 40px;
 }
 
-.item a {
+.item > a {
     text-decoration:none;
     color: #fff;
 }

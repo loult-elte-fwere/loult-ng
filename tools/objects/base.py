@@ -8,7 +8,7 @@ def userlist_dist(channel_obj, userid_1, userid_2):
 
 class LoultObject:
     NAME = "stuff"
-    ICON = "snebwew.png"
+    ICON = "question.gif"
 
     @property
     def name(self):

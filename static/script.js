@@ -705,12 +705,12 @@ document.addEventListener('DOMContentLoaded', function() {
 			for(i = 0; i < inventory.length; i++) {
 			    id = inventory[i]['id'];
 			    name = inventory[i]['name'];
-			    // icon = inventory[i]['icon'];
+			    icon = inventory[i]['icon'];
 			    item_template = '<div class="item"><a href="#" title="' +
 				name +
 				'"><span>' +
 				id +
-				'</span><img src="img/icons/sword.svg"></img></a></div>';
+				'</span><img src="img/icons/' + icon + '"></img></a></div>';
 			    inventory_display.innerHTML += item_template;
 			    
 			}
