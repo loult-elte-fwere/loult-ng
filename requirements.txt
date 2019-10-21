@@ -10,3 +10,6 @@ PyYAML
 pysndfx
 voxpopuli>=0.1.5.1
 emoji>=0.5.3
+flask-smorest
+quart
+quart-smorest
