@@ -448,7 +448,6 @@ document.addEventListener('DOMContentLoaded', function() {
 	volrange.oninput = changeVolume;
     };
 
-
     // Inventory chest
     // position the inventory popover at load, any DRYer way to do it welcomed
     inventory_display.style.top = (chest.offsetTop - inventory_display.scrollHeight) + "px";
@@ -458,12 +457,17 @@ document.addEventListener('DOMContentLoaded', function() {
 	ws.send(JSON.stringify({type: 'inventory'}));
 	inventory_display.style.top = (chest.offsetTop - inventory_display.scrollHeight) + "px";
 	inventory_display.style.left = (chest.offsetLeft - (inventory_display.scrollWidth / 1.5)) + "px";
-	inventory_display.style.visibility = "visible";
-    }, false);
+	inventory_display.style.opacity = 1;
+    }, true);
 
-    chest.addEventListener('mouseout', function(e) {
+    chest.addEventListener('mouseleave', function(e) {
+	var e = event.toElement || event.relatedTarget;
+        if (e.parentNode == this || e == this) {
+            return;
+        } // solve the flickering problem, but link title still can't be displayed 
 	chest.firstElementChild.src = 'img/icons/coffre.svg';
-    }, false);
+	inventory_display.style.opacity = 0;
+    }, true);
 
     // Users list display
 

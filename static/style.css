@@ -1191,7 +1191,6 @@ ul > li > span:hover + .sword {
 }
 
 #inventory_display {
-    visibility: hidden;
     position: absolute;
     opacity: 0;
     background: black;
@@ -1200,10 +1199,11 @@ ul > li > span:hover + .sword {
     color: #fff;
     text-align: center;
     border-radius: 30px;
+    height: auto;
     min-width: 200px;
     padding: 10px;
     margin: 20px 150px 20px -1px;
-    z-index: 5;
+    z-index: 99;
 }
 
 #chest:hover > #inventory_display {
@@ -1224,7 +1224,6 @@ ul > li > span:hover + .sword {
 }
 
 .item {
-    pointer-events:none; /* cosmetic placeholder, the blinking bug will have to be fixed */
     position: relative;
     display: inline-block;
     margin: 10px 10px 30px 10px;
