@@ -201,6 +201,7 @@ class Scolopamine(UsableObject, DestructibleObject, TargetedObject):
 
 class AlcoholBottle(UsableObject, DestructibleObject, TargetedObject):
     NAME = "Bouteille d'alcool"
+    ICON = "alcohol.gif"
     EFFECTS = [GrandSpeechMasterEffect, StutterEffect, VocalDyslexia, VowelExchangeEffect]
     FILLING_MAPPING = {0: "vide", 1: "presque vide", 2: "moitié vide",
                        3: "presque pleine", 4: "pleine"}
