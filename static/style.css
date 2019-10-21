@@ -1194,7 +1194,7 @@ ul > li > span:hover + .sword {
     position: absolute;
     opacity: 0;
     background: black;
-    transition: 700ms linear;
+    transition: 400ms linear;
     vertical-align: middle;
     color: #fff;
     text-align: center;

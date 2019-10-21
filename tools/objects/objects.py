@@ -56,6 +56,7 @@ class Flower(UsableObject, DestructibleObject):
 
 
 class SimpleInstrument(UsableObject):
+    ICON = "gong.gif"
     SND_DIR = path.join(DATA_PATH, "instruments/")
     INSTRUMENTS_MAPPING = {"gong": "gong.mp3"}
     COOLDOWN = 30  # in seconds
