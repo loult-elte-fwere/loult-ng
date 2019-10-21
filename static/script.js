@@ -449,12 +449,16 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
 
-    // Inventory chest    
+    // Inventory chest
+    // position the inventory popover at load, any DRYer way to do it welcomed
+    inventory_display.style.top = (chest.offsetTop - inventory_display.scrollHeight) + "px";
+    inventory_display.style.left = (chest.offsetLeft - (inventory_display.scrollWidth / 1.5)) + "px";
     chest.addEventListener('mouseover', function(e) {
 	chest.firstElementChild.src = 'img/icons/coffreouvert.svg';
 	ws.send(JSON.stringify({type: 'inventory'}));
 	inventory_display.style.top = (chest.offsetTop - inventory_display.scrollHeight) + "px";
 	inventory_display.style.left = (chest.offsetLeft - (inventory_display.scrollWidth / 1.5)) + "px";
+	inventory_display.style.visibility = "visible";
     }, false);
 
     chest.addEventListener('mouseout', function(e) {
@@ -698,11 +702,13 @@ document.addEventListener('DOMContentLoaded', function() {
 			    id = inventory[i]['id'];
 			    name = inventory[i]['name'];
 			    // icon = inventory[i]['icon'];
-			    item_template = "<div class=\"item\">" +
-				"<span>" + id + "</span>" +
-				"<img title=\"" + name + "\" " +
-				"src=\"img/icons/sword.svg\"></img></div>";
+			    item_template = '<div class="item"><a href="#" title="' +
+				name +
+				'"><span>' +
+				id +
+				'</span><img src="img/icons/sword.svg"></img></a></div>';
 			    inventory_display.innerHTML += item_template;
+			    
 			}
 		    }
 		    break;
