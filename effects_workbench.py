@@ -1,16 +1,11 @@
 #!/usr/bin/python3
-import io
 import logging
 from asyncio import get_event_loop
 from hashlib import md5
-
-import sounddevice as sd
-from scipy.io import wavfile
+import os
+from tools.state import LoultServerState
 
 from salt import SALT
-# needed to prevent imports loop
-from tools.state import LoultServerState
-from tools.effects.unused_effects import VenerEffect
 from tools.effects.effects import *  # See tools/__init__.py for available effects
 from tools.users import User
 
@@ -63,7 +58,7 @@ class SpeechDeformation(PhonemicEffect):
 
 fake_cookie = md5(("6225456233193a39466" + SALT).encode('utf8')).digest()
 user = User(fake_cookie, "wesh", None)
-for effect in [CaptainHaddockEffect(), CensorshipEffect()]:
+for effect in [VenerEffect()]:
     print("Applying effect %s" % effect.name)
     user.state.add_effect(effect)
 
@@ -72,7 +67,7 @@ ferais un plaisir de putain de sortir des pédales comme vous parce que putain j
 ils sla pètent ouais moi jsais chier debout et tout mais mon gars les mecs qui chient debout arrivent pas
 a pisser assis et ceux qui pissent assis mon gars c'est des connards qui votent pour daesh aux élections
  régionales ça c'est avéré jai vécu des trucs dans ma life mon gars tsais meme pas ou ta sexualité se situe"""
-msg = "Salut les amis"
+# msg = "Salut les amis"
 
 loop = get_event_loop()
 text, wav = loop.run_until_complete(user.render_message(msg, "fr"))
@@ -82,6 +77,6 @@ print("Text : ", text)
 with open("/tmp/effect.wav", "wb") as wav_file:
     wav_file.write(wav)
 
-rate, array = wavfile.read(io.BytesIO(wav))
-sd.play(array, rate)
+os.system("aplay /tmp/effect.wav")
+
 
