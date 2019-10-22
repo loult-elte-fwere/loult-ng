@@ -519,6 +519,15 @@ document.addEventListener('DOMContentLoaded', function() {
 		    }
 		    else if(trimed.match(/^\/((?:list)+)$/i)) {
 			ws.send(JSON.stringify({type: 'inventory'}));
+			chest.firstElementChild.src = 'img/icons/coffreouvert.svg';
+			if(inventory_display.style.opacity == 0) {
+			    inventory_display.style.opacity = 1;
+			    // document.getElementById('chest-tooltip').style.visibility = "visible";
+			}
+			else {
+			    inventory_display.style.opacity = 0;
+			    // document.getElementById('chest-tooltip').style.visibility = "hidden";
+			}   
 		    }
 		    else if(trimed.match(/^\/give\s/i)) {
 			var splitted = trimed.split(' ');
@@ -721,8 +730,8 @@ document.addEventListener('DOMContentLoaded', function() {
 				inventory_display.innerHTML += item_template;
 			    }
 			}
-			// addLine({name : 'info'}, "Objets dans l'inventaire : " +
-			// 	item_list , new Date, 'info');
+			 // addLine({name : 'info'}, "Objets dans l'inventaire : " +
+			 // 	 item_list , new Date, 'info');
 		    }
 		    else {
 			bank = msg['items'];
