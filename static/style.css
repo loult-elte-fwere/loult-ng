@@ -598,7 +598,7 @@ select {
 #close {
 	cursor: pointer;
 	text-align: center;
-	padding: 7px;
+	/* padding: 7px; */
 	background: #EEE;
 	border-left: 2px solid #BBB;
 }

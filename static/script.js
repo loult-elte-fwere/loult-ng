@@ -450,14 +450,9 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     // Inventory chest
-    // position the inventory popover at load, any DRYer way to do it welcomed
-    // inventory_display.style.top = (chest.offsetTop - inventory_display.scrollHeight) + "px";
-    // inventory_display.style.left = (chest.offsetLeft - (inventory_display.scrollWidth / 1.5)) + "px";
     chest.addEventListener('mouseover', function(e) {
 	chest.firstElementChild.src = 'img/icons/coffreouvert.svg';
 	ws.send(JSON.stringify({type: 'inventory'}));
-//	inventory_display.style.top = (chest.offsetTop - inventory_display.scrollHeight) + "px";
-//	inventory_display.style.left = (chest.offsetLeft - (inventory_display.scrollWidth / 1.5)) + "px";
 	inventory_display.style.opacity = 1;
     }, true);
 
@@ -695,6 +690,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
 		case 'inventory' :
 		    inventory_display.innerHTML = "";
+
+		    // Inventory items
+		    function use_item() {
+			attribute = this.getAttribute('data-id');
+			ws.send(JSON.stringify({ type : 'use', object_id: attribute, params : "" }));
+		    }
 		    
 		    function build_item_list(inv_obj) {
 			item_list = "";
@@ -709,6 +710,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			return item_list;
 		    }
 
+		    // inventory
 		    if(msg["owner"] == "user") {
 			inventory = msg['items'];
 			item_list = build_item_list(inventory);
@@ -718,20 +720,29 @@ document.addEventListener('DOMContentLoaded', function() {
 			}
 			else {
 			    for(i = 0; i < inventory.length; i++) {
+				// please no bully
 				id = inventory[i]['id'];
 				name = inventory[i]['name'];
 				icon = inventory[i]['icon'];
-				item_template = '<div class="item"><a href="#" title="' +
-				    name +
-				    '"><span>' +
-				    id +
-				    '</span><img src="img/icons/' + icon + '"></img></a></div>';
-				inventory_display.innerHTML += item_template;
+				item = document.createElement('div');
+				item.setAttribute("class", "item");
+				item.setAttribute("data-id", id);
+				item_link = document.createElement('a');
+				item_link.setAttribute("title", name);
+				item_id = document.createElement("span");
+				item_id.innerHTML = id;
+				item_img = document.createElement('img');
+				item_img.setAttribute("src", "img/icons/" + icon);
+				item_link.appendChild(item_id);
+				item_link.appendChild(item_img);
+				item.appendChild(item_link);
+				item.addEventListener('mousedown', use_item);
+				inventory_display.appendChild(item);
 			    }
 			}
-			 // addLine({name : 'info'}, "Objets dans l'inventaire : " +
-			 // 	 item_list , new Date, 'info');
 		    }
+		    
+		    // bank
 		    else {
 			bank = msg['items'];
 			item_list = build_item_list(bank);
