@@ -558,3 +558,4 @@ class Cocaine(UsableObject, DestructibleObject, TargetedObject):
                                          % (server.user.poke_params.fullname,
                                             target.poke_params.fullname))
         server.user.state.add_effect(VenerEffect())
+        self.should_be_destroyed = True
