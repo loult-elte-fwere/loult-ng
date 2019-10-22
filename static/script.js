@@ -431,7 +431,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	};
 
 	var changeIcon = function(v) {
-	    vol.src = (v > 0 ? 'img/icons/flute.svg' : 'img/icons/flutenb.svg');
+	    vol.firstElementChild.src = (v > 0 ? 'img/icons/flute.svg' : 'img/icons/flutenb.svg');
 	    //vol.innerHTML = (v > 0 ? (v > 50 ? 'volume_ off' : 'volume_down') : 'volume_mute');
 	};
 
