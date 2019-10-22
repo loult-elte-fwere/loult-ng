@@ -450,13 +450,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Inventory chest
     // position the inventory popover at load, any DRYer way to do it welcomed
-    inventory_display.style.top = (chest.offsetTop - inventory_display.scrollHeight) + "px";
-    inventory_display.style.left = (chest.offsetLeft - (inventory_display.scrollWidth / 1.5)) + "px";
+    // inventory_display.style.top = (chest.offsetTop - inventory_display.scrollHeight) + "px";
+    // inventory_display.style.left = (chest.offsetLeft - (inventory_display.scrollWidth / 1.5)) + "px";
     chest.addEventListener('mouseover', function(e) {
 	chest.firstElementChild.src = 'img/icons/coffreouvert.svg';
 	ws.send(JSON.stringify({type: 'inventory'}));
-	inventory_display.style.top = (chest.offsetTop - inventory_display.scrollHeight) + "px";
-	inventory_display.style.left = (chest.offsetLeft - (inventory_display.scrollWidth / 1.5)) + "px";
+//	inventory_display.style.top = (chest.offsetTop - inventory_display.scrollHeight) + "px";
+//	inventory_display.style.left = (chest.offsetLeft - (inventory_display.scrollWidth / 1.5)) + "px";
 	inventory_display.style.opacity = 1;
     }, true);
 

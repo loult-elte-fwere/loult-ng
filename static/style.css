@@ -1190,9 +1190,16 @@ ul > li > span:hover + .sword {
 	font-size: 17px;
 }
 
+#chest {
+    position: relative;
+    overflow: inherit;
+}
+
 #inventory_display {
     position: absolute;
     opacity: 0;
+    bottom: 50px;
+    left: -145px;
     background: black;
     transition: 400ms linear;
     vertical-align: middle;
@@ -1209,6 +1216,10 @@ ul > li > span:hover + .sword {
 #chest:hover > #inventory_display {
     opacity: 1;
     display: block;
+}
+
+#chest-tooltip {
+    margin-bottom: -25px;
 }
 
 /* triangle at the bottom of the bubble */
