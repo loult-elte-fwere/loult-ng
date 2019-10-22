@@ -1196,6 +1196,8 @@ ul > li > span:hover + .sword {
 }
 
 #inventory_display {
+    display: flex;
+    flex-flow: wrap;
     position: absolute;
     opacity: 0;
     bottom: 50px;
@@ -1215,7 +1217,6 @@ ul > li > span:hover + .sword {
 
 #chest:hover > #inventory_display {
     opacity: 1;
-    display: block;
 }
 
 #chest-tooltip {
@@ -1236,9 +1237,10 @@ ul > li > span:hover + .sword {
 
 .item {
     position: relative;
+    flex-flow: wrap;
     display: inline-block;
     margin: 10px 10px 30px 10px;
-    width: 50px;
+    width: calc(33% - 25px);
     height: 50px;
     vertical-align: middle;
     clear: right;
@@ -1246,11 +1248,13 @@ ul > li > span:hover + .sword {
 
 #inventory_display > span {
     letter-spacing: 5px;
+    text-align: center;
+    width: 100%;
 }
 
-.item > img {
+.item > a > img {
     vertical-align: middle;
-    display: inline-block;
+    /* display: inline-block; */
     transition: none;
     transform: none;
     width: 40px;
@@ -1259,4 +1263,8 @@ ul > li > span:hover + .sword {
 .item > a {
     text-decoration:none;
     color: #fff;
+}
+
+.item > span {
+    display: block;
 }
