@@ -144,11 +144,9 @@ document.addEventListener('DOMContentLoaded', function() {
 	let orderId=0;
 
 	for(let a in users){
-	    console.log(users[a]);
 	    if (users[a].name == params.name) orderId++;
 	}
 	users[userid].orderId=orderId;
-	console.log(users[userid]); 
 
 	if(ambtn.checked && muted.indexOf(userid) === -1)
 	    if(!params.you) muted.push(userid);
