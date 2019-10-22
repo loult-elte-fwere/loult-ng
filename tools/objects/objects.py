@@ -352,7 +352,7 @@ class Costume(UsableObject):
 
     def __init__(self):
         self.character = random.choice(self.CHARACTERS)  # type:str
-        #ICON = self.character + ".gif"
+        ICON = self.character + ".gif"
 
     @property
     def name(self):

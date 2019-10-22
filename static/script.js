@@ -179,8 +179,9 @@ document.addEventListener('DOMContentLoaded', function() {
 	    i.className = 'material-icons';
 	    i.appendChild(document.createTextNode('volume_' + (muted.indexOf(userid) != -1 ? 'off' : 'up')));
 	    row.appendChild(i);
-
-	    i.onmousedown = function() {
+	    muted_button = row.getElementsByClassName('material-icons')[0];
+	    muted_button.onmousedown = function(e) {
+		e.stopPropagation();
 		if(muted.indexOf(userid) != -1) {
 		    muted.splice(muted.indexOf(userid), 1);
 		    i.innerHTML = 'volume_up';
