@@ -516,13 +516,9 @@ document.addEventListener('DOMContentLoaded', function() {
 		    else if(trimed.match(/^\/((?:bank)+)$/i)) {
 			ws.send(JSON.stringify({type: 'channel_inventory'}));
 			underlay.className = 'pulse';
-			addLine({name : 'info'}, "Objets dans la banque : " +
-				item_list , new Date, 'info');
 		    }
 		    else if(trimed.match(/^\/((?:list)+)$/i)) {
 			ws.send(JSON.stringify({type: 'inventory'}));
-			addLine({name : 'info'}, "Objets dans l'inventaire : " +
-				item_list , new Date, 'info');
 		    }
 		    else if(trimed.match(/^\/give\s/i)) {
 			var splitted = trimed.split(' ');
@@ -693,8 +689,11 @@ document.addEventListener('DOMContentLoaded', function() {
 		    inventory_display.innerHTML = "";
 		    
 		    function build_item_list(inv_obj) {
+			item_list = "";
 			for(i = 0; i < inv_obj.length; i++) {
-			    item_list = item_list + (item_list.length > 1 ? ", " : "") + inv_obj[i]['name'];
+			    name = inv_obj[i]['name'];
+			    id = inv_obj[i]['id'];
+			    item_list = item_list + (item_list.length > 1 ? ", " : "") + name + ' (' + id + ')';
 			}
 			if(item_list.length <= 0){
 			    item_list = "Queudal";
@@ -722,10 +721,14 @@ document.addEventListener('DOMContentLoaded', function() {
 				inventory_display.innerHTML += item_template;
 			    }
 			}
+			// addLine({name : 'info'}, "Objets dans l'inventaire : " +
+			// 	item_list , new Date, 'info');
 		    }
 		    else {
 			bank = msg['items'];
 			item_list = build_item_list(bank);
+			addLine({name : 'info'}, "Objets dans la banque : " +
+				item_list , new Date, 'info');
 		    }
 		    break;
 
