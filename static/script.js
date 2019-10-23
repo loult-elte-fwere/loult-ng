@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	inventory = "",
         bank = "",
 	item_list = "",
+	dragged_item,
 	ws;
 
     // DOM-related functions
@@ -483,11 +484,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function item_drop(event) {
 	event.preventDefault();
-	object_id = event.dataTransfer.getData('text/plain');
-	target_id = event.target.getAttribute("data-id");
-	ws.send(JSON.stringify({ type : 'use', item_id: object_id, params : target_id.slice(2) }));
-	console.log(object_id);
+	target_id = event.target.getAttribute("data-id").split(" ");
+	console.log(dragged_item);
 	console.log(target_id);
+	ws.send(JSON.stringify({
+	    type : 'use',
+	    object_id: parseInt(dragged_item),
+	    params : target_id }));
     }
 
     // Users list display
@@ -722,19 +725,6 @@ document.addEventListener('DOMContentLoaded', function() {
 			ws.send(JSON.stringify({ type : 'take', object_id: attribute}));
 			ws.send(JSON.stringify({ type : 'channel_inventory'}));
 		    }
-		    
-		    // function build_item_list(inv_obj) {
-		    // 	item_list = "";
-		    // 	for(i = 0; i < inv_obj.length; i++) {
-		    // 	    name = inv_obj[i]['name'];
-		    // 	    id = inv_obj[i]['id'];
-		    // 	    item_list = item_list + (item_list.length > 1 ? ", " : "") + name + ' (' + id + ')';
-		    // 	}
-		    // 	if(item_list.length <= 0){
-		    // 	    item_list = "Queudal";
-		    // 	}
-		    // 	return item_list;
-		    // }
 
 		    items = msg['items'];
 
@@ -758,6 +748,9 @@ document.addEventListener('DOMContentLoaded', function() {
 			    item_id.innerHTML = id;
 			    item_img.setAttribute("src", "img/icons/" + icon);
 			    item_img.setAttribute("data-id", id);
+			    item_img.addEventListener('drag', function(event) {
+				dragged_item = this.getAttribute('data-id');
+			    });
 			    item_link.appendChild(item_id);
 			    item_link.appendChild(item_img);
 			    item.appendChild(item_link);
