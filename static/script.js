@@ -450,25 +450,23 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     // Inventory chest
-    // CURRENT PROBLEM : chest/inventory mouseover retrieve a USER inventory object, even if called from /bank
-    chest.addEventListener('mouseover', function(e) {
-	var e = event.toElement || event.relatedTarget;
-        if (e.parentNode == this || e == this) {
-            return;
-        } // solve the flickering problem, but link title still can't be displayed 
+    
+    chest.addEventListener('mouseover', function(event) {
 	chest.firstElementChild.src = 'img/icons/coffreouvert.svg';
 	ws.send(JSON.stringify({type: 'inventory'}));
 	inventory_display.style.opacity = 1;
-    }, true);
+    });
 
-    inventory_display.addEventListener('mouseleave', function(e) {
-	var e = event.toElement || event.relatedTarget;
-        if (e.parentNode == this || e == this) {
-            return;
-        } // solve the flickering problem, but link title still can't be displayed 
+    chest.addEventListener('mouseleave', function(event) {
+	event.stopPropagation();
 	chest.firstElementChild.src = 'img/icons/coffre.svg';
 	inventory_display.style.opacity = 0;
-    }, true);
+    });
+
+    inventory_display.addEventListener('mouseover', function(event) {
+	event.stopPropagation();
+	inventory_display.style.opacity = 1;	
+    })
 
     // Users list display
 
@@ -514,27 +512,14 @@ document.addEventListener('DOMContentLoaded', function() {
 		    }
 		    else if(trimed.match(/^\/((?:bank)+)$/i)) {
 			ws.send(JSON.stringify({type: 'channel_inventory'}));
-			underlay.className = 'pulse';
-			if(inventory_display.style.opacity == 0) {
-			    inventory_display.style.opacity = 1;
-			    // document.getElementById('chest-tooltip').style.visibility = "visible";
-			}
-			else {
-			    inventory_display.style.opacity = 0;
-			    // document.getElementById('chest-tooltip').style.visibility = "hidden";
-			}
+			chest.firstElementChild.src = 'img/icons/coffreouvert.svg';
+//			underlay.className = 'pulse';
+			inventory_display.style.opacity = 1;
 		    }
 		    else if(trimed.match(/^\/((?:list)+)$/i)) {
 			ws.send(JSON.stringify({type: 'inventory'}));
 			chest.firstElementChild.src = 'img/icons/coffreouvert.svg';
-			if(inventory_display.style.opacity == 0) {
-			    inventory_display.style.opacity = 1;
-			    // document.getElementById('chest-tooltip').style.visibility = "visible";
-			}
-			else {
-			    inventory_display.style.opacity = 0;
-			    // document.getElementById('chest-tooltip').style.visibility = "hidden";
-			}
+			inventory_display.style.opacity = 1;
 		    }
 		    else if(trimed.match(/^\/give\s/i)) {
 			var splitted = trimed.split(' ');
