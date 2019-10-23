@@ -7,7 +7,7 @@ from time import time as timestamp
 import yaml
 
 from tools.effects.effects import ExplicitTextEffect, GrandSpeechMasterEffect, StutterEffect, VocalDyslexia, \
-    VowelExchangeEffect, FlowerEffect, CaptainHaddockEffect
+    VowelExchangeEffect, FlowerEffect, CaptainHaddockEffect, VenerEffect
 from tools.objects.base import ClonableObject, InertObject, UsableObject, DestructibleObject, TargetedObject, \
     userlist_dist
 from tools.tools import cached_loader
@@ -208,7 +208,7 @@ class AlcoholBottle(UsableObject, DestructibleObject, TargetedObject):
                        3: "presque pleine", 4: "pleine"}
     BOTTLE_FX = path.join(DATA_PATH, "broken_bottle.mp3")
     GULP_FX = path.join(DATA_PATH, "gulp.mp3")
-    ALCOHOLS = yaml.load(open(path.join(DATA_PATH, "alcohols.yml")))
+    ALCOHOLS = yaml.safe_load(open(path.join(DATA_PATH, "alcohols.yml")))
 
     def __init__(self):
         super().__init__()
@@ -352,7 +352,10 @@ class Costume(UsableObject):
 
     def __init__(self):
         self.character = random.choice(self.CHARACTERS)  # type:str
-        ICON = self.character + ".gif"
+
+    @property
+    def icon(self):
+        return self.character + ".gif"
 
     @property
     def name(self):
@@ -538,4 +541,21 @@ class CaptainHaddockPipe(UsableObject, DestructibleObject):
         server.user.state.add_effect(CaptainHaddockEffect())
         server.channel_obj.broadcast(type="notification",
                                      msg="%s est un marin d'eau douce!" % server.user.poke_params.fullname)
+        self.should_be_destroyed = True
+
+
+class Cocaine(UsableObject, DestructibleObject, TargetedObject):
+    NAME = "poudre de perlinpinpin"
+    ICON = "c.png"
+
+    def use(self, loult_state, server, obj_params):
+        target_id, target = self._acquire_target(server, obj_params)
+        if target is None:
+            return
+
+        server.channel_obj.broadcast(type="notification",
+                                     msg="%s se fait une trace sur le cul de %s!"
+                                         % (server.user.poke_params.fullname,
+                                            target.poke_params.fullname))
+        server.user.state.add_effect(VenerEffect())
         self.should_be_destroyed = True

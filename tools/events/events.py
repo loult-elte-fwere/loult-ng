@@ -14,7 +14,7 @@ import yaml
 
 from tools.effects.effects import AutotuneEffect, ReverbManEffect, RobotVoiceEffect, \
     AngryRobotVoiceEffect, PitchShiftEffect, GrandSpeechMasterEffect, VisualEffect, VoiceCloneEffect, \
-    VoiceSpeedupEffect, BadCellphoneEffect, RythmicEffect
+    VoiceSpeedupEffect, BadCellphoneEffect, RythmicEffect, VenerEffect
 from tools.events.base import PeriodicEvent, PseudoPeriodicEvent, ChannelModEvent
 from tools.users import User
 
@@ -167,6 +167,21 @@ class MusicalEvent(PseudoPeriodicEvent):
                               msg="Le loult est une comédie musicale!")
 
 
+class TreizeNRV(PseudoPeriodicEvent):
+    """Everyone's very, very angry now"""
+    PSEUDO_PERIOD = timedelta(hours=3.5)
+    VARIANCE = timedelta(hours=0.5)
+
+    async def trigger(self, loultstate):
+        for channel in loultstate.chans.values():
+            for user in channel.users.values():
+                user.state.add_effect(VenerEffect())
+            channel.broadcast(type="notification",
+                              event_type="13NRV",
+                              date=timestamp() * 1000,
+                              msg="TOUT LE MONDE EST 13NRV PUTT 1 1 1 1 1 1")
+
+
 class UsersMixupEvent(ChannelModEvent):
     """All the users's profiles are mixed up, sometimes including their voices"""
 
@@ -241,7 +256,7 @@ class ThemeRenameEvent(ChannelModEvent):
     def __init__(self):
         super().__init__()
         with open(self.THEMES_FILE) as themesfile:
-            self.themes = yaml.load(themesfile)
+            self.themes = yaml.safe_load(themesfile)
         self.theme_descr = None # defined when the fuckup function is called
 
     @property
