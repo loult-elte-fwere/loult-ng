@@ -1170,7 +1170,7 @@ body.bibw {
 	z-index: 999;
 }
 
-ul > li > span:hover + .sword {
+ul > li:hover .sword {
 	display: block;
 }
 
