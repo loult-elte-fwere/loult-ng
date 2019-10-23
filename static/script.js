@@ -450,13 +450,18 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     // Inventory chest
+    // CURRENT PROBLEM : chest/inventory mouseover retrieve a USER inventory object, even if called from /bank
     chest.addEventListener('mouseover', function(e) {
+	var e = event.toElement || event.relatedTarget;
+        if (e.parentNode == this || e == this) {
+            return;
+        } // solve the flickering problem, but link title still can't be displayed 
 	chest.firstElementChild.src = 'img/icons/coffreouvert.svg';
 	ws.send(JSON.stringify({type: 'inventory'}));
 	inventory_display.style.opacity = 1;
     }, true);
 
-    chest.addEventListener('mouseleave', function(e) {
+    inventory_display.addEventListener('mouseleave', function(e) {
 	var e = event.toElement || event.relatedTarget;
         if (e.parentNode == this || e == this) {
             return;
@@ -510,6 +515,14 @@ document.addEventListener('DOMContentLoaded', function() {
 		    else if(trimed.match(/^\/((?:bank)+)$/i)) {
 			ws.send(JSON.stringify({type: 'channel_inventory'}));
 			underlay.className = 'pulse';
+			if(inventory_display.style.opacity == 0) {
+			    inventory_display.style.opacity = 1;
+			    // document.getElementById('chest-tooltip').style.visibility = "visible";
+			}
+			else {
+			    inventory_display.style.opacity = 0;
+			    // document.getElementById('chest-tooltip').style.visibility = "hidden";
+			}
 		    }
 		    else if(trimed.match(/^\/((?:list)+)$/i)) {
 			ws.send(JSON.stringify({type: 'inventory'}));
@@ -521,7 +534,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			else {
 			    inventory_display.style.opacity = 0;
 			    // document.getElementById('chest-tooltip').style.visibility = "hidden";
-			}   
+			}
 		    }
 		    else if(trimed.match(/^\/give\s/i)) {
 			var splitted = trimed.split(' ');
@@ -696,6 +709,11 @@ document.addEventListener('DOMContentLoaded', function() {
 			attribute = this.getAttribute('data-id');
 			ws.send(JSON.stringify({ type : 'use', object_id: attribute, params : "" }));
 		    }
+
+		    function take_item() {
+			attribute = this.getAttribute('data-id');
+			ws.send(JSON.stringify({ type : 'take', object_id: attribute}));
+		    }
 		    
 		    function build_item_list(inv_obj) {
 			item_list = "";
@@ -710,46 +728,35 @@ document.addEventListener('DOMContentLoaded', function() {
 			return item_list;
 		    }
 
-		    // inventory
-		    if(msg["owner"] == "user") {
-			inventory = msg['items'];
-			item_list = build_item_list(inventory);
+		    items = msg['items'];
+		    //item_list = build_item_list(items);
 
-			if(inventory.length <= 0){
-			    inventory_display.innerHTML = "<span>...</span>";
-			}
-			else {
-			    for(i = 0; i < inventory.length; i++) {
-				// please no bully
-				id = inventory[i]['id'];
-				name = inventory[i]['name'];
-				icon = inventory[i]['icon'];
-				item = document.createElement('div');
-				item.setAttribute("class", "item");
-				item.setAttribute("data-id", id);
-				item_link = document.createElement('a');
-				item_link.setAttribute("title", name);
-				item_id = document.createElement("span");
-				item_id.innerHTML = id;
-				item_img = document.createElement('img');
-				item_img.setAttribute("src", "img/icons/" + icon);
-				item_link.appendChild(item_id);
-				item_link.appendChild(item_img);
-				item.appendChild(item_link);
-				item.addEventListener('mousedown', use_item);
-				inventory_display.appendChild(item);
-			    }
-			}
+		    if(items.length <= 0) {
+			inventory_display.innerHTML = "<span>...</span>";
 		    }
-		    
-		    // bank
 		    else {
-			bank = msg['items'];
-			item_list = build_item_list(bank);
-			addLine({name : 'info'}, "Objets dans la banque : " +
-				item_list , new Date, 'info');
+			inventory_callback = msg['owner'] == "user" ? use_item : take_item;
+			for(i = 0; i < items.length; i++) {
+			    id = items[i]['id'];
+			    name = items[i]['name'];
+			    icon = items[i]['icon'];
+			    item = document.createElement('div');
+			    item_link = document.createElement('a');
+			    item_id = document.createElement("span");
+			    item_img = document.createElement('img');
+			    item.setAttribute("class", "item");
+			    item.setAttribute("data-id", id);
+			    item_link.setAttribute("title", name);
+			    item_id.innerHTML = id;
+			    item_img.setAttribute("src", "img/icons/" + icon);
+			    item_link.appendChild(item_id);
+			    item_link.appendChild(item_img);
+			    item.appendChild(item_link);
+			    item.addEventListener('mousedown', inventory_callback);
+			    inventory_display.appendChild(item);
+			}
 		    }
-		    break;
+		break;
 
 		case 'userlist':
 		    // flushing previous user list just in case
