@@ -151,24 +151,22 @@ document.addEventListener('DOMContentLoaded', function() {
 	if(ambtn.checked && muted.indexOf(userid) === -1)
 	    if(!params.you) muted.push(userid);
 
-	var row = document.createElement('li'),
-        newSpan = document.createElement('span');
-  	
-  	newSpan.appendChild(document.createTextNode(params.name));
+	var row = document.createElement('li');
+        //var newSpan = document.createElement('span');
 
-  	row.appendChild ( newSpan ); 
+	// items can be dragged on users to use
+	row.setAttribute("data-id", users[userid].name + " " + users[userid].orderId);
+	row.addEventListener("dragstart", item_dragstart);
+	row.addEventListener("dragover", item_dragover);
+	row.addEventListener("dragenter", item_dragenter);
+	row.addEventListener("drop", item_drop);
+  	
+  	// newSpan.appendChild(document.createTextNode(params.name));
+	row.appendChild(document.createTextNode(params.name));
+
+  	// row.appendChild ( newSpan ); 
 	row.style.color = params.color;
 	row.style.backgroundImage = 'url("/img/pokemon/small/' + params.img + '.gif")';
-
-	// Attack button
-	var i2 = document.createElement('img');
-	i2.className = 'sword';
-	i2.src = 'img/icons/sword.svg';
-	row.appendChild(i2);
-	row.onmousedown = function() {
-		ws.send(JSON.stringify({ type : 'attack', target : params.name, order : orderId}));
-	};
-
 
 	if(!params.you) {
 
@@ -468,6 +466,30 @@ document.addEventListener('DOMContentLoaded', function() {
 	inventory_display.style.opacity = 1;	
     })
 
+    // Items
+    function item_dragstart(event) {
+	event.target.dataTransfer.setData(event.target.getAttribute('data-id'));
+	console.log(event);
+	event.preventDefault();
+    }
+    
+    function item_dragover(event) {
+	event.preventDefault();
+    }
+
+    function item_dragenter(event) {
+	event.preventDefault();
+    }
+
+    function item_drop(event) {
+	event.preventDefault();
+	object_id = event.dataTransfer.getData('text/plain');
+	target_id = event.target.getAttribute("data-id");
+	ws.send(JSON.stringify({ type : 'use', item_id: object_id, params : target_id.slice(2) }));
+	console.log(object_id);
+	console.log(target_id);
+    }
+
     // Users list display
 
     var userswitch = document.getElementById('userswitch');
@@ -698,23 +720,23 @@ document.addEventListener('DOMContentLoaded', function() {
 		    function take_item() {
 			attribute = this.getAttribute('data-id');
 			ws.send(JSON.stringify({ type : 'take', object_id: attribute}));
+			ws.send(JSON.stringify({ type : 'channel_inventory'}));
 		    }
 		    
-		    function build_item_list(inv_obj) {
-			item_list = "";
-			for(i = 0; i < inv_obj.length; i++) {
-			    name = inv_obj[i]['name'];
-			    id = inv_obj[i]['id'];
-			    item_list = item_list + (item_list.length > 1 ? ", " : "") + name + ' (' + id + ')';
-			}
-			if(item_list.length <= 0){
-			    item_list = "Queudal";
-			}
-			return item_list;
-		    }
+		    // function build_item_list(inv_obj) {
+		    // 	item_list = "";
+		    // 	for(i = 0; i < inv_obj.length; i++) {
+		    // 	    name = inv_obj[i]['name'];
+		    // 	    id = inv_obj[i]['id'];
+		    // 	    item_list = item_list + (item_list.length > 1 ? ", " : "") + name + ' (' + id + ')';
+		    // 	}
+		    // 	if(item_list.length <= 0){
+		    // 	    item_list = "Queudal";
+		    // 	}
+		    // 	return item_list;
+		    // }
 
 		    items = msg['items'];
-		    //item_list = build_item_list(items);
 
 		    if(items.length <= 0) {
 			inventory_display.innerHTML = "<span>...</span>";
@@ -731,13 +753,15 @@ document.addEventListener('DOMContentLoaded', function() {
 			    item_img = document.createElement('img');
 			    item.setAttribute("class", "item");
 			    item.setAttribute("data-id", id);
+			    item_img.setAttribute("draggable", true);
 			    item_link.setAttribute("title", name);
 			    item_id.innerHTML = id;
 			    item_img.setAttribute("src", "img/icons/" + icon);
+			    item_img.setAttribute("data-id", id);
 			    item_link.appendChild(item_id);
 			    item_link.appendChild(item_img);
 			    item.appendChild(item_link);
-			    item.addEventListener('mousedown', inventory_callback);
+			    item.addEventListener('click', inventory_callback, true);
 			    inventory_display.appendChild(item);
 			}
 		    }
