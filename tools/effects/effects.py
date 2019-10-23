@@ -833,3 +833,40 @@ class GodSpeakingEffect(EffectGroup):
     @property
     def effects(self):
         return [ReverbManEffect(), self.BackgroundEffect()]
+
+
+class VenerEffect(EffectGroup):
+    TIMEOUT = 120
+    NAME = "YÉ CHAUD"
+
+    class UPPERCASEEffect(ExplicitTextEffect):
+        TIMEOUT = 120
+
+        def process(self, text: str):
+            return text.upper()
+
+    class AmbianceEffect(AudioEffect):
+        """Adds a random mood to the audio"""
+        NAME = "ambiance"
+        TIMEOUT = 120
+        sound_file = path.join(path.dirname(path.realpath(__file__)), "data/vener/stinkhole_shave_me_extract.wav")
+        gain = 0.3
+
+        def __init__(self):
+            super().__init__()
+            self.rate, self.track_data = cached_loader.load_wav(self.sound_file)
+
+        @property
+        def name(self):
+            return self._name
+
+        def process(self, wave_data: np.ndarray):
+            padding_time = self.rate * 2
+            rnd_pos = random.randint(0, len(self.track_data) - len(wave_data) - padding_time)
+            return mix_tracks(self.track_data[rnd_pos:rnd_pos + len(wave_data) + padding_time] * self.gain,
+                              wave_data * 1.2,
+                              align="center")
+
+    @property
+    def effects(self):
+        return [self.UPPERCASEEffect(), self.AmbianceEffect()]

@@ -316,8 +316,9 @@ class InventoryListingHandler(MsgBaseHandler):
 
     async def handle(self, msg_data: Dict):
         inventory_listing = self.user.state.inventory.get_listing()
-        self.server.send_json(type="notification",
-                              msg="Votre inventaire contient : %s" % inventory_listing)
+        self.server.send_json(type="inventory",
+                              owner="user",
+                              items=inventory_listing)
 
 
 class ObjectGiveHandler(MsgBaseHandler):
@@ -394,8 +395,9 @@ class ObjectTrashHandler(MsgBaseHandler):
 class ListChannelInventoryHandler(MsgBaseHandler):
 
     async def handle(self, msg_data: Dict):
-        self.server.send_json(type="notification",
-                              msg="L'inventaire commun contient: " + self.channel_obj.inventory.get_listing())
+        self.server.send_json(type="inventory",
+                              owner="channel",
+                              items=self.channel_obj.inventory.get_listing())
 
 
 class ObjectTakeHandler(MsgBaseHandler):

@@ -13,10 +13,9 @@ class UserInventory:
             self.add(get_random_object())
 
     def get_listing(self):
-        if self.objects:
-            return ", ".join("%i : %s" % (obj_id, obj.name) for obj_id, obj in enumerate(self.objects))
-        else:
-            return "Queudal"
+        return [{"id": i,
+                 "name": item.name,
+                 "icon": item.icon} for i, item in enumerate(self.objects)]
 
     def remove(self, obj: LoultObject):
         self.objects.remove(obj)
