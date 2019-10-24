@@ -116,7 +116,7 @@ footer {
 	background: linear-gradient(to bottom, #FFF 0%, #EEE 100%);
 }
 
-footer > div > .icon:nth-of-type(3):hover > img:first-of-type {
+.icon:nth-of-type(3):hover > img:first-of-type {
 	display: none;
 }
 
@@ -964,7 +964,7 @@ select {
 	transition: 0.1s;
 }
 .icon:hover > img {
-    transform: scale(1.15);
+    transform: scale(1.2);
 }				
 .tooltiptext {
   font-family: "PokemonGB";
@@ -977,9 +977,9 @@ select {
   height: 10px;					  
   /* Position du tooltip */
   position: absolute;
-  bottom: 80px;
-  right: 0;
-  text-align: left;
+  bottom: 95px;
+  right: 30px;
+  text-align: right;
   z-index: 1;
 }
 .icon:hover .tooltiptext {
@@ -1000,14 +1000,14 @@ select {
 /***** bibw *****/ 
 
 body.bibw {
-	  background : -moz-linear-gradient(99% 50% -180deg,rgba(42, 82, 152, 1) 0%,rgba(36, 70, 132, 1) 4.12%,rgba(29, 54, 105, 1) 11%,rgba(23, 41, 83, 1) 18.89%,rgba(18, 31, 66, 1) 28.13%,rgba(14, 24, 55, 1) 39.54%,rgba(13, 20, 48, 1) 55.55%,rgba(12, 19, 46, 1) 100%);
-  background : -webkit-linear-gradient(-180deg, rgba(42, 82, 152, 1) 0%, rgba(36, 70, 132, 1) 4.12%, rgba(29, 54, 105, 1) 11%, rgba(23, 41, 83, 1) 18.89%, rgba(18, 31, 66, 1) 28.13%, rgba(14, 24, 55, 1) 39.54%, rgba(13, 20, 48, 1) 55.55%, rgba(12, 19, 46, 1) 100%);
-  background : -webkit-gradient(linear,99% 50% ,1.42% 50% ,color-stop(0,rgba(42, 82, 152, 1) ),color-stop(0.0412,rgba(36, 70, 132, 1) ),color-stop(0.11,rgba(29, 54, 105, 1) ),color-stop(0.1889,rgba(23, 41, 83, 1) ),color-stop(0.2813,rgba(18, 31, 66, 1) ),color-stop(0.3954,rgba(14, 24, 55, 1) ),color-stop(0.5555,rgba(13, 20, 48, 1) ),color-stop(1,rgba(12, 19, 46, 1) ));
-  background : -o-linear-gradient(-180deg, rgba(42, 82, 152, 1) 0%, rgba(36, 70, 132, 1) 4.12%, rgba(29, 54, 105, 1) 11%, rgba(23, 41, 83, 1) 18.89%, rgba(18, 31, 66, 1) 28.13%, rgba(14, 24, 55, 1) 39.54%, rgba(13, 20, 48, 1) 55.55%, rgba(12, 19, 46, 1) 100%);
-  background : -ms-linear-gradient(-180deg, rgba(42, 82, 152, 1) 0%, rgba(36, 70, 132, 1) 4.12%, rgba(29, 54, 105, 1) 11%, rgba(23, 41, 83, 1) 18.89%, rgba(18, 31, 66, 1) 28.13%, rgba(14, 24, 55, 1) 39.54%, rgba(13, 20, 48, 1) 55.55%, rgba(12, 19, 46, 1) 100%);
-  -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#2A5298', endColorstr='#0C132E' ,GradientType=0)";
-  background : linear-gradient(270deg, rgba(42, 82, 152, 1) 0%, rgba(36, 70, 132, 1) 4.12%, rgba(29, 54, 105, 1) 11%, rgba(23, 41, 83, 1) 18.89%, rgba(18, 31, 66, 1) 28.13%, rgba(14, 24, 55, 1) 39.54%, rgba(13, 20, 48, 1) 55.55%, rgba(12, 19, 46, 1) 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#2A5298',endColorstr='#0C132E' , GradientType=1);
+  background : -moz-linear-gradient(50% 102.96% 90deg,rgba(2, 58, 104, 1) 0%,rgba(6, 41, 74, 1) 8.72%,rgba(9, 28, 51, 1) 17.44%,rgba(10, 21, 38, 1) 25.72%,rgba(11, 18, 33, 1) 33.07%,rgba(11, 18, 33, 1) 100%);
+  background : -webkit-linear-gradient(90deg, rgba(2, 58, 104, 1) 0%, rgba(6, 41, 74, 1) 8.72%, rgba(9, 28, 51, 1) 17.44%, rgba(10, 21, 38, 1) 25.72%, rgba(11, 18, 33, 1) 33.07%, rgba(11, 18, 33, 1) 100%);
+  background : -webkit-gradient(linear,50% 102.96% ,50% 3.14% ,color-stop(0,rgba(2, 58, 104, 1) ),color-stop(0.0872,rgba(6, 41, 74, 1) ),color-stop(0.1744,rgba(9, 28, 51, 1) ),color-stop(0.2572,rgba(10, 21, 38, 1) ),color-stop(0.3307,rgba(11, 18, 33, 1) ),color-stop(1,rgba(11, 18, 33, 1) ));
+  background : -o-linear-gradient(90deg, rgba(2, 58, 104, 1) 0%, rgba(6, 41, 74, 1) 8.72%, rgba(9, 28, 51, 1) 17.44%, rgba(10, 21, 38, 1) 25.72%, rgba(11, 18, 33, 1) 33.07%, rgba(11, 18, 33, 1) 100%);
+  background : -ms-linear-gradient(90deg, rgba(2, 58, 104, 1) 0%, rgba(6, 41, 74, 1) 8.72%, rgba(9, 28, 51, 1) 17.44%, rgba(10, 21, 38, 1) 25.72%, rgba(11, 18, 33, 1) 33.07%, rgba(11, 18, 33, 1) 100%);
+  -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#023A68', endColorstr='#0B1221' ,GradientType=0)";
+  background : linear-gradient(0deg, rgba(2, 58, 104, 1) 0%, rgba(6, 41, 74, 1) 8.72%, rgba(9, 28, 51, 1) 17.44%, rgba(10, 21, 38, 1) 25.72%, rgba(11, 18, 33, 1) 33.07%, rgba(11, 18, 33, 1) 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#0B1221',endColorstr='#023A68' , GradientType=0);
 }
 
 .bibw #chat {
@@ -1019,7 +1019,7 @@ body.bibw {
 }
 
 .bibw #chat > div > :nth-child(2) > div:not(:first-child), .bibw ul > li > div > div {
-	color: #eaeaea;
+	color: #ddd;
 }
 .bibw #chat > div > :nth-child(2) .greentext {
 	color: #154DFF;
@@ -1030,12 +1030,16 @@ body.bibw {
 	color: #EEE;
 
 }
+.bibw ul > li {
+	width: 100%;
+}
+
 .bibw ul > li:first-of-type {
 	margin-top: 30px;
 }
 
 .bibw ul > li > i, .bibw select, .bibw footer > div > i {
-	color: #DDD;
+	color: #7baaad;
 	margin-right: 5px;
 }
 
@@ -1053,12 +1057,19 @@ body.bibw {
     background: none!important;
     position: absolute;
     width: 100%;
-    padding-top: 15px;
+	padding-top: 15px;
+}
+.bibw header > div {
+	background-color: #0B1221;
+	border-radius: 50px;	
+}
+.bibw header > div > img {
+	mix-blend-mode: hard-light;
 }
 
 .bibw footer {
 	background: none !important;
-	margin-bottom: 20px;
+	margin-bottom: 25px;
     margin-right: 0;
 }
 
@@ -1072,22 +1083,8 @@ body.bibw {
   background-size: 25%;
 }
 
-.bibw ::-webkit-scrollbar-track {
-	background-color: rgba(0,0,0,0); display: none;
-}
-
-.bibw ::-webkit-scrollbar, .bibw ::-webkit-scrollbar-thumb {
-    background-color: rgba(0,0,0,0);
-    color: white;
-}
-
-.bibw ::-webkit-scrollbar-track, .bibw ::-webkit-scrollbar, .bibw ::-webkit-scrollbar-thumb {
-	border-color: #222;
-	border: 0;
-}
-
 .bibw > footer#foot > input { 
-	background: #0C0C0C; 
+	background: #070c17; 
 	border-radius: 50px; 
 	font-family: "PokemonGB";    
 	font-size: 16px !important;
@@ -1099,15 +1096,16 @@ body.bibw {
 
 .bibw #chat > div > div:last-child {
 	color: #9AD5D8!important;
-	opacity: 0;
+	opacity: 0!important;
+	visibility: hidden;
     font-size: 10px;
     padding-right: 17px;
 }	
-.bibw footer > div {
+.bibw footer > div:last-of-type {
 	margin-right: 20px;
 }
 
-.bibw #chat > div > div:first-child > img:nth-child(1) {
+.item > a > img, .bibw #chat > div > div:first-child > img:nth-child(1) {
 	display: block;
 	width: 100%;
 	height: 100%;
@@ -1119,7 +1117,7 @@ body.bibw {
 /* targeting crhome */
 
 @media screen and (-webkit-min-device-pixel-ratio:0) and (min-resolution:.001dpcm) {
-    .bibw #chat > div > div:first-child > img:nth-child(1) {
+    .item > a > img, .bibw #chat > div > div:first-child > img:nth-child(1) {
 		image-rendering: pixelated;
     }
 }
@@ -1179,8 +1177,31 @@ ul > li:hover .sword {
 }
 
 .bibw >  #main > #chat > .part > div > div {
-	color: #9AD5D8!important;
+	color: #7baaad!important;
 }
+
+.bibw #chat > .info > div > div {
+	color: #9AD5D8;
+}
+
+.bibw #chat > .log > div > div {
+	color: #7baaad!important;
+}
+
+.bibw #chat > .log > div > div:first-of-type {
+	color: #52c1df!important;
+    text-shadow: #2cf1fb 1px 0px 10px;
+}
+
+.bibw #chat div {
+	animation: fadein 400ms;
+}
+@keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+
 .bibw >  #main > #chat > div:first-of-type {
     padding-top: 120px;
 }
@@ -1190,29 +1211,38 @@ ul > li:hover .sword {
 	font-size: 17px;
 }
 
+.bibw ::-webkit-scrollbar-track {
+	opacity: 0;
+	display: none;
+	visibility: hidden;;
+}
+
+.bibw ::-webkit-scrollbar, .bibw ::-webkit-scrollbar-thumb, .bibw #chat::-webkit-scrollbar, .bibw #chat::-webkit-scrollbar-thumb,.bibw #chat::-webkit-scrollbar-track, .bibw #chat::-webkit-scrollbar, .bibw #chat::-webkit-scrollbar-thumb, .bibw ::-webkit-scrollbar-track, .bibw ::-webkit-scrollbar, .bibw ::-webkit-scrollbar-thumb {
+	opacity: 0;
+	display: none;
+	visibility: hidden;    
+	scrollbar-width: none
+}
+
 #chest {
     position: relative;
     overflow: inherit;
 }
 
 #inventory_display {
-    display: flex;
-    flex-flow: wrap;
-    position: absolute;
-    opacity: 0;
-    bottom: 50px;
-    left: -145px;
-    background: black;
-    transition: 400ms linear;
-    vertical-align: middle;
-    color: #fff;
-    text-align: center;
-    border-radius: 30px;
-    height: auto;
-    min-width: 200px;
-    padding: 10px;
-    margin: 20px 150px 20px -1px;
+	opacity: 0;
+    position: fixed;
     z-index: 99;
+    background:#070c17;
+    transition: 200ms linear;
+    right: 150px;
+    border-radius: 30px;
+    display: flex;
+    flex-wrap: wrap;
+    max-width: 220px;
+    bottom: 90px;
+    min-width: 85px;
+    padding: 10px;
 }
 
 #chest:hover > #inventory_display {
@@ -1222,34 +1252,36 @@ ul > li:hover .sword {
 #chest-tooltip {
     margin-bottom: -25px;
 }
-
-/* triangle at the bottom of the bubble */
 #inventory_display::after {
   content: " ";
   position: absolute;
   top: 100%;
-  left: 75%;
-  margin-left: -10px;
+  right: 26px;
+  margin-left: -36px;
   border-width: 15px;
   border-style: solid;
-  border-color: black transparent transparent transparent;
+  border-color: #070c17 transparent transparent transparent;
 }
 
 .item {
     position: relative;
-    flex-flow: wrap;
-    display: inline-block;
-    margin: 10px 10px 30px 10px;
-    width: calc(33% - 25px);
-    height: 30px;
-    vertical-align: middle;
-    clear: right;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: auto;
+    flex: 0 50%;
+	box-sizing: border-box;
+	padding: 5px;
 }
 
 #inventory_display > span {
-    letter-spacing: 5px;
+    letter-spacing: 0px;
     text-align: center;
     width: 100%;
+    font-family: 'Pokemon GB';
+    margin-left: 2px;
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 .item > a > img {
@@ -1257,12 +1289,19 @@ ul > li:hover .sword {
     /* display: inline-block; */
     transition: none;
     transform: none;
-    width: 30px;
+	width: 30px;
+    transform: scale(1.2);
+    margin-left: 15px;
 }
 
 .item > a {
     text-decoration:none;
-    color: #fff;
+	color: #fff;
+	font-family: 'Pokemon GB';
+	display: flex;
+	align-items: center;
+	font-size: 16px;
+	padding: 5px;
 }
 
 .item > span {
