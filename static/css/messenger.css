@@ -1,0 +1,136 @@
+
+/* retire contour avatars */
+.modeMessenger #chat > div > div:first-child {
+    border: 0;
+    border-radius:0;
+    background: transparent !important;
+}
+
+/* Retourne images avatars */
+.modeMessenger #chat > div > div:first-child{
+    z-index:999999999;
+    transform: scaleX(-1);
+}
+
+
+
+
+
+.modeMessenger .log, .part, .info{
+margin:4px 5vw;
+border-radius:5px;
+}
+
+.modeMessenger .part{
+    background-color:  #FF865080;
+}
+.modeMessenger .log{
+    background-color:  #8BF18B80;
+}
+.modeMessenger .info{
+    background-color:  #FF555E80;
+}
+
+
+
+
+
+
+
+
+.modeMessenger .msg {
+    display: flow-root!important;
+    margin: 2px 5px;
+/* 		max-width: 100%; */
+    overflow-wrap: break-word;
+/* 		  word-wrap: breoak-word; */
+/* 	text-overflow: ellipsis; */
+/* 	word-wrap: break-word; */
+white-space:pre-wrap;
+
+
+}
+
+.modeMessenger .msg div{
+    float: left;
+     word-break: break-word; 
+
+}
+
+
+.modeMessenger .msg > div:nth-child(2) {
+    display:inline-grid!important;
+
+    background: #000000ff;
+    border-radius:10px;
+    padding: 0 10px;
+    padding-bottom: 2px;
+    padding-top: 2px;
+
+    margin-left:40px;
+
+    max-width:75%;
+
+}
+.modeMessenger .msg > div:nth-child(2)> div:nth-child(1) {
+font-size:0.8em;
+}
+
+.modeMessenger .msg > div:nth-child(2) >div:not(:nth-child(1))  {
+padding-left: 12px!important;
+padding-top: 1px!important;
+font-size:1.15em;
+}
+.modeMessenger.day .msg>div:nth-child(2) {
+    background: lightblue;
+}
+
+
+/* ajoute pique a bulle message */
+.modeMessenger.cozy .msg::before,
+.modeMessenger.bibw .msg::before,
+.modeMessenger.compact .msg::before
+{
+  content:"";		
+    width: 0;
+  height: 0;
+  border-top: 15px solid transparent;
+  border-right: 40px solid black;
+  border-bottom: 15px solid transparent;
+  position:absolute;
+}
+
+.modeMessenger.day.cozy .msg::before,
+.modeMessenger.day.bibw .msg::before,
+.modeMessenger.day.compact .msg::before
+{
+  border-right: 40px solid lightblue;
+}
+.modeMessenger.backlog::before{
+display:none;
+}
+
+.modeMessenger.cozy .msg::before
+{
+  left:91px;
+  top:20px;
+}
+
+.modeMessenger.bibw .msg::before
+{
+  left:85px;
+  top:20px;
+}
+.modeMessenger.compact .msg::before
+{
+  left:60px;
+  top:20px;
+}
+
+
+/* deplace l'heure a droite*/
+.modeMessenger .msg >div:nth-child(3) {
+    position:absolute;
+    bottom:1px;
+    right:1px;
+}

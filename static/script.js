@@ -15,7 +15,6 @@ document.addEventListener('DOMContentLoaded', function() {
 		lastRow,
 		lastId,
 		ws;
-
 	// DOM-related functions
 
 	var parser = function(raw_msg) {
@@ -315,6 +314,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		head = document.getElementById('head'),
 		main = document.getElementById('main'),
 		foot = document.getElementById('foot'),
+		modeMessenger = document.getElementById('modeMessenger'),
 		themes = document.getElementById('theme'),
 		colors = document.getElementById('color'),
 		fonts = document.getElementById('font'),
@@ -350,24 +350,38 @@ document.addEventListener('DOMContentLoaded', function() {
 	};
 
 	applyTheme();
-	themes.value = settings[0];
-	colors.value = settings[1];
-	fonts.value = settings[2];
+	modeMessenger.value=settings[0];
+	themes.value = settings[1];
+	colors.value = settings[2];
+	fonts.value = settings[3];
+
+	modeMessenger.onchange = function() {
+		console.log("here")
+		if(this.checked==true){
+			settings[0] = "modeMessenger";
+		}
+		else  {settings[0] = "noModeMessenger";}
+
+		console.log(settings[0] )
+		applyTheme();
+	}
 
 	themes.onchange = function() {
-		settings[0] = this.value;
-		applyTheme();
-	};
-
-	colors.onchange = function() {
 		settings[1] = this.value;
 		applyTheme();
 	};
 
-	fonts.onchange = function() {
+	colors.onchange = function() {
 		settings[2] = this.value;
 		applyTheme();
 	};
+
+	fonts.onchange = function() {
+		settings[3] = this.value;
+		applyTheme();
+	};
+
+
 
 	// Languages
 
@@ -458,8 +472,8 @@ document.addEventListener('DOMContentLoaded', function() {
 	// WebSocket-related functions
 
 	var wsConnect = function() {
-	    ws = new WebSocket(location.origin.replace('http', 'ws') + '/socket' + location.pathname);
-		// ws = new WebSocket('wss://loult.family/socket/toast');
+	    // ws = new WebSocket(location.origin.replace('http', 'ws') + '/socket' + location.pathname);
+		ws = new WebSocket('wss://loult.family/socket/toast');
 		ws.binaryType = 'arraybuffer';
 
 		var lastMuted = false;
