@@ -1301,7 +1301,6 @@ ul > li:hover .sword {
 	display: flex;
 	align-items: center;
 	font-size: 16px;
-	padding: 5px;
 }
 
 .item > span {
