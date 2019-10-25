@@ -89,6 +89,13 @@ document.addEventListener('DOMContentLoaded', function() {
 		i.innerHTML = '<img class="pokeball" src="img/icons/pokeball.svg"/>';
 		row.appendChild(i);
 	    }
+	    else if(pkmn.name === 'bank') {
+		var i = document.createElement('i');
+		i.className = 'material-icons';
+		i.appendChild(document.createTextNode('info_outline'));
+		i.innerHTML = '<img class="pokeball" src="img/icons/coffre.svg"/>';
+		row.appendChild(i);
+	    }
 	    else {
 		var pic = document.createElement('div'),
 		    img1 = document.createElement('img'),
@@ -492,6 +499,17 @@ document.addEventListener('DOMContentLoaded', function() {
 	    object_id: parseInt(dragged_item),
 	    params : target_id }));
     }
+    
+    function use_item() {
+	attribute = this.getAttribute('data-id');
+	ws.send(JSON.stringify({ type : 'use', object_id: attribute, params : "" }));
+    }
+
+    function take_item() {
+	attribute = this.getAttribute('data-id');
+	ws.send(JSON.stringify({ type : 'take', object_id: attribute}));
+	ws.send(JSON.stringify({ type : 'channel_inventory'}));
+    }
 
     // Users list display
 
@@ -537,9 +555,9 @@ document.addEventListener('DOMContentLoaded', function() {
 		    }
 		    else if(trimed.match(/^\/((?:bank)+)$/i)) {
 			ws.send(JSON.stringify({type: 'channel_inventory'}));
-			chest.firstElementChild.src = 'img/icons/coffreouvert.svg';
-//			underlay.className = 'pulse';
-			inventory_display.style.opacity = 1;
+			// chest.firstElementChild.src = 'img/icons/coffreouvert.svg';
+			// underlay.className = 'pulse';
+			// inventory_display.style.opacity = 1;
 		    }
 		    else if(trimed.match(/^\/((?:list)+)$/i)) {
 			ws.send(JSON.stringify({type: 'inventory'}));
@@ -713,26 +731,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
 		case 'inventory' :
 		    inventory_display.innerHTML = "";
-
-		    // Inventory items
-		    function use_item() {
-			attribute = this.getAttribute('data-id');
-			ws.send(JSON.stringify({ type : 'use', object_id: attribute, params : "" }));
-		    }
-
-		    function take_item() {
-			attribute = this.getAttribute('data-id');
-			ws.send(JSON.stringify({ type : 'take', object_id: attribute}));
-			ws.send(JSON.stringify({ type : 'channel_inventory'}));
-		    }
-
+		    
 		    items = msg['items'];
 
 		    if(items.length <= 0) {
 			inventory_display.innerHTML = "<span>...</span>";
+			return;
 		    }
-		    else {
-			inventory_callback = msg['owner'] == "user" ? use_item : take_item;
+		   
+		    // inventory_callback = msg['owner'] == "user" ? use_item : take_item;
+		    if(msg['owner'] == "user") {
 			for(i = 0; i < items.length; i++) {
 			    id = items[i]['id'];
 			    name = items[i]['name'];
@@ -754,9 +762,20 @@ document.addEventListener('DOMContentLoaded', function() {
 			    item_link.appendChild(item_id);
 			    item_link.appendChild(item_img);
 			    item.appendChild(item_link);
-			    item.addEventListener('click', inventory_callback, true);
+			    item.addEventListener('click', use_item, true);
 			    inventory_display.appendChild(item);
 			}
+		    }
+		    else {
+			item_list = "";
+			for(i = 0; i < items.length; i++) {
+			    id = items[i]['id'];
+			    name = items[i]['name'];
+			    icon = items[i]['icon'];
+			    item_list += '<a class="bank-item" href="#" data-id="' + id + '">'
+				+ id + ' <img title="'+ name + '" src="img/icons/' + icon + '"/> </a>';
+			}
+			addLine({ name :'bank'}, item_list, (new Date()));
 		    }
 		break;
 

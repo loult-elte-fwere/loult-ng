@@ -1306,3 +1306,10 @@ ul > li:hover .sword {
 .item > span {
     display: block;
 }
+
+.bank-item {
+    color: #fff;
+    font-family: 'Pokemon GB';
+    font-size: 16px;
+    letter-spacing: 5px;
+}

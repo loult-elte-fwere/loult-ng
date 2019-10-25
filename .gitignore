@@ -3,4 +3,4 @@ salt.py
 *.pyc
 venv/
 config.py
-
+.vscode
