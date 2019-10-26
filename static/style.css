@@ -1229,8 +1229,12 @@ ul > li:hover .sword {
     overflow: inherit;
 }
 
+#chest-tooltip {
+    margin-bottom: -25px;
+}
+
 #inventory_display {
-	opacity: 0;
+    opacity: 0;
     position: fixed;
     z-index: 99;
     background:#070c17;
@@ -1249,18 +1253,15 @@ ul > li:hover .sword {
     opacity: 1;
 }
 
-#chest-tooltip {
-    margin-bottom: -25px;
-}
-#inventory_display::after {
-  content: " ";
-  position: absolute;
-  top: 100%;
-  right: 26px;
-  margin-left: -36px;
-  border-width: 15px;
-  border-style: solid;
-  border-color: #070c17 transparent transparent transparent;
+#inventory_display::after, #bank_display::after {
+    content: " ";
+    position: absolute;
+    top: 100%;
+    right: 26px;
+    margin-left: -36px;
+    border-width: 15px;
+    border-style: solid;
+    border-color: #070c17 transparent transparent transparent;
 }
 
 .item {
@@ -1270,11 +1271,11 @@ ul > li:hover .sword {
     justify-content: center;
     height: auto;
     flex: 0 50%;
-	box-sizing: border-box;
-	padding: 5px;
+    box-sizing: border-box;
+    padding: 5px;
 }
 
-#inventory_display > span {
+#inventory_display > span, #bank_display > span {
     letter-spacing: 0px;
     text-align: center;
     width: 100%;
@@ -1289,27 +1290,44 @@ ul > li:hover .sword {
     /* display: inline-block; */
     transition: none;
     transform: none;
-	width: 30px;
+    width: 30px;
     transform: scale(1.2);
     margin-left: 15px;
 }
 
 .item > a {
     text-decoration:none;
-	color: #fff;
-	font-family: 'Pokemon GB';
-	display: flex;
-	align-items: center;
-	font-size: 16px;
+    color: #fff;
+    font-family: 'Pokemon GB';
+    display: flex;
+    align-items: center;
+    font-size: 16px;
 }
 
 .item > span {
     display: block;
 }
 
-.bank-item {
-    color: #fff;
-    font-family: 'Pokemon GB';
-    font-size: 16px;
-    letter-spacing: 5px;
+#bank_display {
+    position:absolute;
+    height: auto;
+    width: auto;
+    position: fixed;
+    z-index: 99;
+    background:#070c17;
+    transition: 200ms linear;
+    border-radius: 30px;
+    display: none;
+    flex-wrap: wrap;
+    left: 20px;
+    bottom: 80px;
+    width: 40%;
+    padding: 10px;
 }
+
+#bank_display > .item {
+    flex: auto;
+    padding: 10px;
+    width: 40px;
+}
+

@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	chat = document.getElementById('chat'),
 	chest = document.getElementById('chest'),
 	inventory_display = document.getElementById('inventory_display'),
+	bank_display = document.getElementById('bank_display'),
 	theme = (localStorage.theme && localStorage.theme.split(' ').length > 2) ? localStorage.theme : 'cozy night sans',
 	waitTime = 1000,
 	banned = false,
@@ -17,7 +18,6 @@ document.addEventListener('DOMContentLoaded', function() {
 	lastRow,
 	lastId,
 	inventory = "",
-        bank = "",
 	item_list = "",
 	dragged_item,
 	ws;
@@ -87,6 +87,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		i.className = 'material-icons';
 		i.appendChild(document.createTextNode('info_outline'));
 		i.innerHTML = '<img class="pokeball" src="img/icons/pokeball.svg"/>';
+		row.id
 		row.appendChild(i);
 	    }
 	    else if(pkmn.name === 'bank') {
@@ -461,6 +462,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	chest.firstElementChild.src = 'img/icons/coffreouvert.svg';
 	ws.send(JSON.stringify({type: 'inventory'}));
 	inventory_display.style.opacity = 1;
+	bank_display.style.display = "none";
     });
 
     chest.addEventListener('mouseleave', function(event) {
@@ -469,8 +471,14 @@ document.addEventListener('DOMContentLoaded', function() {
 	inventory_display.style.opacity = 0;
     });
 
+    bank_display.addEventListener('mouseleave', function(event) {
+	event.stopPropagation();
+	bank_display.style.display = "none";
+    });
+
     inventory_display.addEventListener('mouseover', function(event) {
 	event.stopPropagation();
+	bank_display.style.display = "none";
 	inventory_display.style.opacity = 1;	
     })
 
@@ -503,6 +511,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function use_item() {
 	attribute = this.getAttribute('data-id');
 	ws.send(JSON.stringify({ type : 'use', object_id: attribute, params : "" }));
+	ws.send(JSON.stringify({ type : 'inventory'}));
     }
 
     function take_item() {
@@ -555,13 +564,14 @@ document.addEventListener('DOMContentLoaded', function() {
 		    }
 		    else if(trimed.match(/^\/((?:bank)+)$/i)) {
 			ws.send(JSON.stringify({type: 'channel_inventory'}));
-			// chest.firstElementChild.src = 'img/icons/coffreouvert.svg';
 			// underlay.className = 'pulse';
-			// inventory_display.style.opacity = 1;
+			inventory_display.style.opacity = 0;
+			bank_display.style.display = "flex";
 		    }
 		    else if(trimed.match(/^\/((?:list)+)$/i)) {
 			ws.send(JSON.stringify({type: 'inventory'}));
 			chest.firstElementChild.src = 'img/icons/coffreouvert.svg';
+			bank_display.style.display = "none";
 			inventory_display.style.opacity = 1;
 		    }
 		    else if(trimed.match(/^\/give\s/i)) {
@@ -731,51 +741,42 @@ document.addEventListener('DOMContentLoaded', function() {
 
 		case 'inventory' :
 		    inventory_display.innerHTML = "";
+		    bank_display.innerHTML = "";
 		    
 		    items = msg['items'];
 
 		    if(items.length <= 0) {
 			inventory_display.innerHTML = "<span>...</span>";
+			bank_display.innerHTML = "<span>...</span>";
 			return;
 		    }
-		   
-		    // inventory_callback = msg['owner'] == "user" ? use_item : take_item;
-		    if(msg['owner'] == "user") {
-			for(i = 0; i < items.length; i++) {
-			    id = items[i]['id'];
-			    name = items[i]['name'];
-			    icon = items[i]['icon'];
-			    item = document.createElement('div');
-			    item_link = document.createElement('a');
-			    item_id = document.createElement("span");
-			    item_img = document.createElement('img');
-			    item.setAttribute("class", "item");
-			    item.setAttribute("data-id", id);
-			    item_img.setAttribute("draggable", true);
-			    item_link.setAttribute("title", name);
-			    item_id.innerHTML = id;
-			    item_img.setAttribute("src", "img/icons/" + icon);
-			    item_img.setAttribute("data-id", id);
-			    item_img.addEventListener('drag', function(event) {
-				dragged_item = this.getAttribute('data-id');
-			    });
-			    item_link.appendChild(item_id);
-			    item_link.appendChild(item_img);
-			    item.appendChild(item_link);
-			    item.addEventListener('click', use_item, true);
-			    inventory_display.appendChild(item);
-			}
-		    }
-		    else {
-			item_list = "";
-			for(i = 0; i < items.length; i++) {
-			    id = items[i]['id'];
-			    name = items[i]['name'];
-			    icon = items[i]['icon'];
-			    item_list += '<a class="bank-item" href="#" data-id="' + id + '">'
-				+ id + ' <img title="'+ name + '" src="img/icons/' + icon + '"/> </a>';
-			}
-			addLine({ name :'bank'}, item_list, (new Date()));
+		    
+		    target_display = msg['owner'] == "user" ? inventory_display : bank_display;
+		    item_callback = msg['owner'] == "user" ? use_item : take_item;
+		    
+		    for(i = 0; i < items.length; i++) {
+			id = items[i]['id'];
+			name = items[i]['name'];
+			icon = items[i]['icon'];
+			item = document.createElement('div');
+			item_link = document.createElement('a');
+			item_id = document.createElement("span");
+			item_img = document.createElement('img');
+			item.setAttribute("class", "item");
+			item.setAttribute("data-id", id);
+			item_img.setAttribute("draggable", true);
+			item_link.setAttribute("title", name);
+			item_id.innerHTML = id;
+			item_img.setAttribute("src", "img/icons/" + icon);
+			item_img.setAttribute("data-id", id);
+			item_img.addEventListener('drag', function(event) {
+			    dragged_item = this.getAttribute('data-id');
+			});
+			item_link.appendChild(item_id);
+			item_link.appendChild(item_img);
+			item.appendChild(item_link);
+			item.addEventListener('click', item_callback, true);
+			target_display.appendChild(item);
 		    }
 		break;
 
