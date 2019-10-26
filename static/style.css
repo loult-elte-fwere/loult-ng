@@ -116,7 +116,7 @@ footer {
 	background: linear-gradient(to bottom, #FFF 0%, #EEE 100%);
 }
 
-.icon:nth-of-type(3):hover > img:first-of-type {
+#gear:hover > img:first-of-type {
 	display: none;
 }
 
@@ -961,10 +961,10 @@ select {
 }
 .icon img { 
 	margin: 8px; 
-	transition: 0.1s;
+	transition: 0.25s;
 }
 .icon:hover > img {
-    transform: scale(1.2);
+    transform: scale(1.3);
 }				
 .tooltiptext {
   font-family: "PokemonGB";
@@ -998,6 +998,10 @@ select {
 }
 
 /***** bibw *****/ 
+
+.bibw ::-webkit-scrollbar {
+    display: none;
+}
 
 body.bibw {
   background : -moz-linear-gradient(50% 102.96% 90deg,rgba(2, 58, 104, 1) 0%,rgba(6, 41, 74, 1) 8.72%,rgba(9, 28, 51, 1) 17.44%,rgba(10, 21, 38, 1) 25.72%,rgba(11, 18, 33, 1) 33.07%,rgba(11, 18, 33, 1) 100%);
@@ -1040,7 +1044,6 @@ body.bibw {
 
 .bibw ul > li > i, .bibw select, .bibw footer > div > i {
 	color: #7baaad;
-	margin-right: 5px;
 }
 
 .bibw #close, .bibw #chat > div > div:first-child, .bibw ul > li > div > div:first-child > div {
@@ -1057,11 +1060,14 @@ body.bibw {
     background: none!important;
     position: absolute;
     width: 100%;
-	padding-top: 15px;
 }
 .bibw header > div {
 	background-color: #0B1221;
 	border-radius: 50px;	
+	width: auto;
+	padding-left: 10px;
+	padding-right: 10px;
+	margin-top: 15px;
 }
 .bibw header > div > img {
 	mix-blend-mode: hard-light;
@@ -1086,12 +1092,16 @@ body.bibw {
 .bibw > footer#foot > input { 
 	background: #070c17; 
 	border-radius: 50px; 
-	font-family: "PokemonGB";    
-	font-size: 16px !important;
+	font-family: "Open Sans";    
+	font-size: 20px !important;
 	line-height: 50px;
 	margin-right: 10px;
     margin-left: 25px;
-    padding: 5px 25px;
+	padding: 10px 25px 15px; 
+	
+}
+.bibw > footer#foot > input::placeholder {
+	color: #7baaad;
 }
 
 .bibw #chat > div > div:last-child {
@@ -1114,7 +1124,7 @@ body.bibw {
     margin-left: -2px;
 }
 
-/* targeting crhome */
+/* targeting chrome */
 
 @media screen and (-webkit-min-device-pixel-ratio:0) and (min-resolution:.001dpcm) {
     .item > a > img, .bibw #chat > div > div:first-child > img:nth-child(1) {
@@ -1132,7 +1142,7 @@ body.bibw {
 
 
 .bibw #chat > div > div > div {
-	padding: 4px;
+	padding: 2px;
 }
 
 .bibw #chat > div > :first-child {
@@ -1208,20 +1218,13 @@ ul > li:hover .sword {
 
 .bibw > main {
 	font-family: "Open Sans";
-	font-size: 17px;
+	font-size: 16px;
 }
 
 .bibw ::-webkit-scrollbar-track {
 	opacity: 0;
 	display: none;
 	visibility: hidden;;
-}
-
-.bibw ::-webkit-scrollbar, .bibw ::-webkit-scrollbar-thumb, .bibw #chat::-webkit-scrollbar, .bibw #chat::-webkit-scrollbar-thumb,.bibw #chat::-webkit-scrollbar-track, .bibw #chat::-webkit-scrollbar, .bibw #chat::-webkit-scrollbar-thumb, .bibw ::-webkit-scrollbar-track, .bibw ::-webkit-scrollbar, .bibw ::-webkit-scrollbar-thumb {
-	opacity: 0;
-	display: none;
-	visibility: hidden;    
-	scrollbar-width: none
 }
 
 #chest {
@@ -1239,26 +1242,111 @@ ul > li:hover .sword {
     z-index: 99;
     background:#070c17;
     transition: 200ms linear;
-    right: 150px;
-    border-radius: 30px;
+    right: 110px;
+    border-radius: 50px;
     display: flex;
-    flex-wrap: wrap;
-    max-width: 220px;
-    bottom: 90px;
+	flex-wrap: wrap;
+	align-content: flex-start;
+    max-width: 210px;
+    bottom: 70px;
     min-width: 85px;
-    padding: 10px;
+	padding: 7px;
+	padding: 25px;
 }
+
+.bibw footer > .icon > #inventory_display {
+	right: 130px;
+	bottom: 90px;
+}
+
+.bibw footer > #bank_display {
+	bottom: 90px;
+}
+
+@media screen and (max-width: 680px) {
+
+    .bibw #chat {
+		margin-left: 0;
+	}
+
+
+	.bibw footer {
+		margin-bottom: 0;
+		max-height: 60px!important;
+	}
+
+	.bibw > footer#foot > input { 
+		position: relative;
+		height: 50px;
+		padding-bottom: 8px;
+		bottom: 5px;
+	}
+
+	.bibw #chat > div {
+		display: flex;
+	}
+	.bibw #chat > div > :first-child {
+		width: 50px;
+		height: 50px;
+	}
+
+	.bibw #chat > div > :nth-child(2) {
+		background: rgba(2,58,104,.133);
+		border-radius: 25px;
+		padding: 10px;
+		display: flex;
+		align-items: center;
+	}
+
+	.bibw #chat > .log > div > div {
+		text-align: left;
+	}
+
+	.bibw #chat > .info > div > div {
+		padding-left: 20px;
+	}
+
+	.bibw header > div {
+		background: none;
+		position: fixed;
+		right: 10px;
+		height: auto;
+		transform: scale(0.7);
+	}
+
+
+	.bibw ul > li {
+		background-color: #023a68;
+    	border-radius: 50px;
+	}
+
+	.bibw > footer#foot > input {
+		padding-bottom: 8px;
+	}
+	
+	.bibw > footer#foot > .icon {
+		width: 40px;
+		height: 40px;
+	}
+	.bibw footer > .icon > #inventory_display {
+		right: 100px;
+    	bottom: 80px;
+	}
+
+}
+
+
+/***** INVENTAIRE *****/
 
 #chest:hover > #inventory_display {
     opacity: 1;
 }
 
-#inventory_display::after, #bank_display::after {
+#inventory_display::after {
     content: " ";
     position: absolute;
-    top: 100%;
-    right: 26px;
-    margin-left: -36px;
+    top: 98%;
+	right: 46px;
     border-width: 15px;
     border-style: solid;
     border-color: #070c17 transparent transparent transparent;
@@ -1271,32 +1359,34 @@ ul > li:hover .sword {
     justify-content: center;
     height: auto;
     flex: 0 50%;
-    box-sizing: border-box;
-    padding: 5px;
+	box-sizing: border-box;
+	padding: 5px;
 }
 
 #inventory_display > span, #bank_display > span {
     letter-spacing: 0px;
-    text-align: center;
-    width: 100%;
     font-family: 'Pokemon GB';
-    margin-left: 2px;
     margin-top: 20px;
-    margin-bottom: 20px;
+	margin-bottom: 20px;
+	width: 74px;
+	text-align: center;
+	padding-top: 1px; 
+	padding-bottom: 1px;
 }
 
+#bank_display > span {
+	padding-right: 20px;
+}
+
+
 .item > a > img {
-    vertical-align: middle;
-    /* display: inline-block; */
-    transition: none;
-    transform: none;
-    width: 30px;
-    transform: scale(1.2);
-    margin-left: 15px;
+	width: 32px;
+	height: 32px;
+    margin-left: 10px;
 }
 
 .item > a {
-    text-decoration:none;
+    text-decoration: none;
     color: #fff;
     font-family: 'Pokemon GB';
     display: flex;
@@ -1304,30 +1394,30 @@ ul > li:hover .sword {
     font-size: 16px;
 }
 
-.item > span {
-    display: block;
-}
-
 #bank_display {
-    position:absolute;
-    height: auto;
-    width: auto;
+    display: none;
     position: fixed;
     z-index: 99;
     background:#070c17;
     transition: 200ms linear;
-    border-radius: 30px;
-    display: none;
-    flex-wrap: wrap;
-    left: 20px;
-    bottom: 80px;
-    width: 40%;
-    padding: 10px;
+    border-radius: 50px;
+    left: 25px;
+	bottom: 70px;
+	width: auto;
+	height: auto;
+    max-width: 100%;
+    padding: 15px 10px 15px 25px;
+	margin-right: 225px;
 }
 
 #bank_display > .item {
-    flex: auto;
-    padding: 10px;
-    width: 40px;
+	display: inline-table;
+	padding: 10px 20px 10px 15px;
 }
 
+#bank_display > .item > a > span {
+	display: block;
+	width: 32px;
+	height: auto;
+	text-align: center
+}

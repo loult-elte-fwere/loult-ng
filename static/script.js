@@ -536,7 +536,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     var wsConnect = function() {
 	ws = new WebSocket(location.origin.replace('http', 'ws') + '/socket' + location.pathname);
-	// ws = new WebSocket('wss://loult.family/socket/toast');
+	//ws = new WebSocket('wss://loult.family/socket/toast');
 	ws.binaryType = 'arraybuffer';
 
 	var lastMuted = false;
@@ -566,7 +566,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			ws.send(JSON.stringify({type: 'channel_inventory'}));
 			// underlay.className = 'pulse';
 			inventory_display.style.opacity = 0;
-			bank_display.style.display = "flex";
+			bank_display.style.display = "inline-block";
 		    }
 		    else if(trimed.match(/^\/((?:list)+)$/i)) {
 			ws.send(JSON.stringify({type: 'inventory'}));
