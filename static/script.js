@@ -572,7 +572,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			ws.send(JSON.stringify({type: 'inventory'}));
 			chest.firstElementChild.src = 'img/icons/coffreouvert.svg';
 			bank_display.style.display = "none";
-			inventory_display.style.opacity = 1;
+			inventory_display.style.opacity = inventory_display.style.opacity == 1 ? 0 : 1;
 		    }
 		    else if(trimed.match(/^\/give\s/i)) {
 			var splitted = trimed.split(' ');
