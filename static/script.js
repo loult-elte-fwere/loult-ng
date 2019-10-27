@@ -566,7 +566,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			ws.send(JSON.stringify({type: 'channel_inventory'}));
 			// underlay.className = 'pulse';
 			inventory_display.style.opacity = 0;
-			bank_display.style.display = "flex";
+			bank_display.style.display = bank_display.style.display == "flex" ? "none" : "flex";
 		    }
 		    else if(trimed.match(/^\/((?:list)+)$/i)) {
 			ws.send(JSON.stringify({type: 'inventory'}));
@@ -828,7 +828,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			break;
 
 		    case 'object_taken':
-			addLine({name : 'info'}, 'L\'objet ' + msg.object_name + ' a pris dans l\'inventaire commun.', (new Date), 'log');
+			addLine({name : 'info'}, 'L\'objet ' + msg.object_name + ' a été pris dans l\'inventaire commun.', (new Date), 'log');
 			break;
 		    }
 		    break;
