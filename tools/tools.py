@@ -142,6 +142,7 @@ class SpoilerBipEffect(UtilitaryEffect):
         "fr": ("kiN", "ZiNk"),
         "de": ("kIN", "gINk"),
         "es": ("kin", "xink"),
+        "it": ("ki1ngg", "dZi1ngk")
     }
 
     def __init__(self, renderer: AudioRenderer, voice_params: 'VoiceParameters'):
@@ -193,7 +194,8 @@ class SpoilerBipEffect(UtilitaryEffect):
 links_translation = {'fr': 'cliquez mes petits canards en sucre',
                      'de': 'Klick drauf!',
                      'es': 'Clico JAJAJA',
-                     'en': "Click it mate"}
+                     'en': "Click it mate",
+                     'it': 'Clica clica cuglione!'}
 
 
 def prepare_text_for_tts(text: str, lang: str) -> str:
