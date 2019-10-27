@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	return tests.filter(rule => 'run' in rule).reduce((prev, rule) => rule.run(prev), raw_msg);
     };
     var autoscroll= function(){
-	//auto scroll page down, if scroll bar at the bottom 
+	//auto scroll page down, if scroll bar at the bottom
 	if(Math.floor(chat.scrollTop)+chat.offsetHeight >= (chat.scrollHeight - chat.offsetHeight)){
 
 	    chat.scrollTop = chat.scrollHeight;
@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	let ifrm = document.createElement('iframe');
 	ifrm.setAttribute('src', 'https://www.youtube.com/embed/'+ytbId);
 	ifrm.setAttribute('frameborder',0);
-	lastRow.appendChild(ifrm);	
+	lastRow.appendChild(ifrm);
 	callback();
     }
     var addEmbedNoelshack = function(NsID, callback) {
@@ -169,11 +169,11 @@ document.addEventListener('DOMContentLoaded', function() {
 	row.addEventListener("dragover", item_dragover);
 	row.addEventListener("dragenter", item_dragenter);
 	row.addEventListener("drop", item_drop);
-  	
+
   	// newSpan.appendChild(document.createTextNode(params.name));
 	row.appendChild(document.createTextNode(params.name));
 
-  	// row.appendChild ( newSpan ); 
+  	// row.appendChild ( newSpan );
 	row.style.color = params.color;
 	row.style.backgroundImage = 'url("/img/pokemon/small/' + params.img + '.gif")';
 
@@ -457,7 +457,7 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     // Inventory chest
-    
+
     chest.addEventListener('mouseover', function(event) {
 	chest.firstElementChild.src = 'img/icons/coffreouvert.svg';
 	ws.send(JSON.stringify({type: 'inventory'}));
@@ -479,7 +479,7 @@ document.addEventListener('DOMContentLoaded', function() {
     inventory_display.addEventListener('mouseover', function(event) {
 	event.stopPropagation();
 	bank_display.style.display = "none";
-	inventory_display.style.opacity = 1;	
+	inventory_display.style.opacity = 1;
     })
 
     // Items
@@ -488,7 +488,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	console.log(event);
 	event.preventDefault();
     }
-    
+
     function item_dragover(event) {
 	event.preventDefault();
     }
@@ -507,7 +507,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	    object_id: parseInt(dragged_item),
 	    params : target_id }));
     }
-    
+
     function use_item() {
 	attribute = this.getAttribute('data-id');
 	ws.send(JSON.stringify({ type : 'use', object_id: attribute, params : "" }));
@@ -558,7 +558,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			var splitted = trimed.split(' ');
 			ws.send(JSON.stringify({ type : 'attack', target : splitted[1], order : ((splitted.length === 3) ? parseInt(splitted[2]) : 0) }));
 		    }
-		    else if(trimed.match(/^\/(?:en|es|fr|de)\s/i)) {
+		    else if(trimed.match(/^\/(?:en|es|fr|de|it)\s/i)) {
 			ws.send(JSON.stringify({type: 'msg', msg: trimed.substr(4), lang: trimed.substr(1, 2).toLowerCase()}));
 			underlay.className = 'pulse';
 		    }
@@ -659,17 +659,17 @@ document.addEventListener('DOMContentLoaded', function() {
 			addLine(users[msg.userid], parser(msg.msg), msg.date, msg.type, msg.userid);
 		    if (document.getElementById("embed").checked==true) {
 			//regex to get if msg have youtube link
-			let VID_REGEX =/(?:youtube(?:-nocookie)?\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/; 
+			let VID_REGEX =/(?:youtube(?:-nocookie)?\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
 			if (msg.msg.match(VID_REGEX) ) {
 			    ytbId=msg.msg.split("v=")[1].substring(0, 11);
 			    addEmbedYtb(ytbId,autoscroll);
 			}
-			//if noelshack URL(just url) link	
+			//if noelshack URL(just url) link
 			if (msg.msg.match('http://image.noelshack.com/')|| msg.msg.match('https://image.noelshack.com/')){
 			    var imgId=msg.msg.split("noelshack.com/")[1];
 			    addEmbedNoelshack(imgId,autoscroll);
 			}
-			
+
 		    }
 		    break;
 
@@ -742,7 +742,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		case 'inventory' :
 		    inventory_display.innerHTML = "";
 		    bank_display.innerHTML = "";
-		    
+
 		    items = msg['items'];
 
 		    if(items.length <= 0) {
@@ -750,10 +750,10 @@ document.addEventListener('DOMContentLoaded', function() {
 			bank_display.innerHTML = "<span>...</span>";
 			return;
 		    }
-		    
+
 		    target_display = msg['owner'] == "user" ? inventory_display : bank_display;
 		    item_callback = msg['owner'] == "user" ? use_item : take_item;
-		    
+
 		    for(i = 0; i < items.length; i++) {
 			id = items[i]['id'];
 			name = items[i]['name'];
