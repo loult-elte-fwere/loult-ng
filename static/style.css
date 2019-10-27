@@ -603,6 +603,134 @@ select {
 	border-left: 2px solid #BBB;
 }
 
+/***** INVENTAIRE *****/
+
+
+#chest {
+    position: relative;
+    overflow: inherit;
+}
+
+#chest-tooltip {
+    margin-bottom: -25px;
+}
+
+#chest:hover > #inventory_display {
+    opacity: 1;
+}
+
+#inventory_display {
+    opacity: 0;
+    position: fixed;
+    z-index: 99;
+    background:#070c17;
+    transition: 200ms linear;
+    right: 110px;
+    border-radius: 50px;
+    display: flex;
+	flex-wrap: wrap;
+	align-content: flex-start;
+    max-width: 220px;
+    bottom: 70px;
+    min-width: 85px;
+	padding: 7px;
+    padding: 25px 25px 25px 30px;
+}
+
+#inventory_display::after {
+    content: " ";
+    position: absolute;
+    top: 98%;
+	right: 46px;
+    border-width: 15px;
+    border-style: solid;
+    border-color: #070c17 transparent transparent transparent;
+}
+
+.item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: auto;
+	box-sizing: border-box;
+	padding: 5px;
+}
+
+#inventory_display > span, #bank_display > span {
+    letter-spacing: 0px;
+    font-family: 'Pokemon GB';
+    margin-top: 20px;
+	margin-bottom: 20px;
+	width: 74px;
+	text-align: center;
+	padding-top: 1px; 
+	padding-bottom: 1px;
+}
+
+.item > a {
+    text-decoration: none;
+    color: #fff;
+    font-family: 'Pokemon GB';
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+}
+
+.item > a > img, .bibw #chat > div > div:first-child > img:nth-child(1) {
+	display: block;
+	width: 100%;
+	height: 100%;
+    image-rendering: crisp-edges;
+}
+
+.item > a > img {
+	width: 38px;
+	height: 38px;
+}
+
+#bank_display {
+    display: none;
+    position: fixed;
+    z-index: 99;
+    background:#070c17;
+    transition: 200ms linear;
+    border-radius: 50px;
+    left: 25px;
+	bottom: 70px;
+	width: auto;
+	height: auto;
+    max-width: 100%;
+    padding: 15px 15px 15px 10px;
+	margin-right: 225px;
+	flex-flow: wrap;
+	flex-direction: initial;
+	flex: 1;
+    flex-shrink: 1;
+	align-items: normal;
+}
+
+#bank_display::after {
+  content: "";
+  flex: auto;
+}
+
+
+
+#bank_display > .item {
+	display: inline-table;
+	padding: 10px;
+}
+
+#bank_display > .item > a > span {
+	display: block;
+	width: 32px;
+	height: auto;
+	text-align: center
+}
+
+/***** RESPONSIVE *****/
+
 @media screen and (max-width: 680px) {
 	head {
 		padding-right: 0;
@@ -686,6 +814,34 @@ select {
 	.tooltiptext { 
 		visibility: hidden!important; 
 	}
+
+	#inventory_display {
+		bottom: 120px;
+	}
+
+	#bank_display {
+		bottom: 100px;
+		left: 0;
+		margin-right: 0;
+		flex: 1;
+		align-items: center;
+		margin: 25px;
+	}
+
+	.item { 
+		display: block; 
+		flex: none; 
+	}
+	
+	.item > a > span {
+		padding-right: 5px;
+	}
+
+}
+
+.opensans {
+	font-family: 'Open Sans', sans-serif;
+	font-weight: normal;
 }
 
 .comic {
@@ -1014,12 +1170,18 @@ body.bibw {
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#0B1221',endColorstr='#023A68' , GradientType=0);
 }
 
-.bibw #chat {
-	margin-left: 25px;
+.bibw > main {
+	font-size: 16px;
 }
 
 .bibw > main > #userlist {
 	margin-right: 25px;
+}
+
+.bibw #chat {
+	margin-left: 25px;
+	line-height: 1.6em;
+	scrollbar-width: none;
 }
 
 .bibw #chat > div > :nth-child(2) > div:not(:first-child), .bibw ul > li > div > div {
@@ -1036,6 +1198,8 @@ body.bibw {
 }
 .bibw ul > li {
 	width: 100%;
+	margin-left: 7px;
+	padding-right: 7px;
 }
 
 .bibw ul > li:first-of-type {
@@ -1049,6 +1213,7 @@ body.bibw {
 .bibw #close, .bibw #chat > div > div:first-child, .bibw ul > li > div > div:first-child > div {
 	background: none !important;
 	border: none;
+	top: -10px;
 }
 
 .bibw main, .bibw #window > div:first-child, .bibw footer > div, .bibw footer > div > i, .bibw ul, .bibw #close, .bibw #window, .bibw ul > li > div > div:last-child {
@@ -1063,11 +1228,11 @@ body.bibw {
 }
 .bibw header > div {
 	background-color: #0B1221;
-	border-radius: 50px;	
-	width: auto;
-	padding-left: 10px;
-	padding-right: 10px;
-	margin-top: 15px;
+    border-radius: 40px;
+    width: auto;
+    padding-left: 15px;
+    padding-right: 15px;
+    margin-top: 15px;
 }
 .bibw header > div > img {
 	mix-blend-mode: hard-light;
@@ -1092,7 +1257,6 @@ body.bibw {
 .bibw > footer#foot > input { 
 	background: #070c17; 
 	border-radius: 50px; 
-	font-family: "Open Sans";    
 	font-size: 20px !important;
 	line-height: 50px;
 	margin-right: 10px;
@@ -1113,15 +1277,6 @@ body.bibw {
 }	
 .bibw footer > div:last-of-type {
 	margin-right: 20px;
-}
-
-.item > a > img, .bibw #chat > div > div:first-child > img:nth-child(1) {
-	display: block;
-	width: 100%;
-	height: 100%;
-	top: -15px;
-    image-rendering: crisp-edges;
-    margin-left: -2px;
 }
 
 /* targeting chrome */
@@ -1216,42 +1371,10 @@ ul > li:hover .sword {
     padding-top: 120px;
 }
 
-.bibw > main {
-	font-family: "Open Sans";
-	font-size: 16px;
-}
-
-.bibw ::-webkit-scrollbar-track {
+.bibw ::-webkit-scrollbar-track, .bibw ::-moz-scrollbar-track  {
 	opacity: 0;
 	display: none;
 	visibility: hidden;;
-}
-
-#chest {
-    position: relative;
-    overflow: inherit;
-}
-
-#chest-tooltip {
-    margin-bottom: -25px;
-}
-
-#inventory_display {
-    opacity: 0;
-    position: fixed;
-    z-index: 99;
-    background:#070c17;
-    transition: 200ms linear;
-    right: 110px;
-    border-radius: 50px;
-    display: flex;
-	flex-wrap: wrap;
-	align-content: flex-start;
-    max-width: 210px;
-    bottom: 70px;
-    min-width: 85px;
-	padding: 7px;
-	padding: 25px;
 }
 
 .bibw footer > .icon > #inventory_display {
@@ -1266,9 +1389,15 @@ ul > li:hover .sword {
 @media screen and (max-width: 680px) {
 
     .bibw #chat {
-		margin-left: 0;
+		margin-left: 15px;
+	}
+	#chat > div > :first-child {
+		margin: 0;
 	}
 
+	.bibw > main {
+		font-size: 14px;
+	}
 
 	.bibw footer {
 		margin-bottom: 0;
@@ -1282,20 +1411,10 @@ ul > li:hover .sword {
 		bottom: 5px;
 	}
 
-	.bibw #chat > div {
-		display: flex;
-	}
+
 	.bibw #chat > div > :first-child {
 		width: 50px;
 		height: 50px;
-	}
-
-	.bibw #chat > div > :nth-child(2) {
-		background: rgba(2,58,104,.133);
-		border-radius: 25px;
-		padding: 10px;
-		display: flex;
-		align-items: center;
 	}
 
 	.bibw #chat > .log > div > div {
@@ -1306,10 +1425,16 @@ ul > li:hover .sword {
 		padding-left: 20px;
 	}
 
+	.bibw header {
+		display: flex;
+		align-items: center;
+		justify-content: center;	
+		padding-right: 0;
+	}
+
 	.bibw header > div {
 		background: none;
 		position: fixed;
-		right: 10px;
 		height: auto;
 		transform: scale(0.7);
 	}
@@ -1328,96 +1453,13 @@ ul > li:hover .sword {
 		width: 40px;
 		height: 40px;
 	}
+
 	.bibw footer > .icon > #inventory_display {
 		right: 100px;
     	bottom: 80px;
 	}
-
-}
-
-
-/***** INVENTAIRE *****/
-
-#chest:hover > #inventory_display {
-    opacity: 1;
-}
-
-#inventory_display::after {
-    content: " ";
-    position: absolute;
-    top: 98%;
-	right: 46px;
-    border-width: 15px;
-    border-style: solid;
-    border-color: #070c17 transparent transparent transparent;
-}
-
-.item {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: auto;
-    flex: 0 50%;
-	box-sizing: border-box;
-	padding: 5px;
-}
-
-#inventory_display > span, #bank_display > span {
-    letter-spacing: 0px;
-    font-family: 'Pokemon GB';
-    margin-top: 20px;
-	margin-bottom: 20px;
-	width: 74px;
-	text-align: center;
-	padding-top: 1px; 
-	padding-bottom: 1px;
-}
-
-#bank_display > span {
-	padding-right: 20px;
-}
-
-
-.item > a > img {
-	width: 32px;
-	height: 32px;
-    margin-left: 10px;
-}
-
-.item > a {
-    text-decoration: none;
-    color: #fff;
-    font-family: 'Pokemon GB';
-    display: flex;
-    align-items: center;
-    font-size: 16px;
-}
-
-#bank_display {
-    display: none;
-    position: fixed;
-    z-index: 99;
-    background:#070c17;
-    transition: 200ms linear;
-    border-radius: 50px;
-    left: 25px;
-	bottom: 70px;
-	width: auto;
-	height: auto;
-    max-width: 100%;
-    padding: 15px 10px 15px 25px;
-	margin-right: 225px;
-}
-
-#bank_display > .item {
-	display: inline-table;
-	padding: 10px 20px 10px 15px;
-}
-
-#bank_display > .item > a > span {
-	display: block;
-	width: 32px;
-	height: auto;
-	text-align: center
+	
+	.bibw footer > #bank_display {
+		bottom: 55px;
+	}
 }
