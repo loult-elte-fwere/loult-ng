@@ -566,7 +566,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			ws.send(JSON.stringify({type: 'channel_inventory'}));
 			// underlay.className = 'pulse';
 			inventory_display.style.opacity = 0;
-			bank_display.style.display = bank_display.style.display == "inline-block" ? "none" : "inline-block";
+			bank_display.style.display = "flex";
 		    }
 		    else if(trimed.match(/^\/((?:list)+)$/i)) {
 			ws.send(JSON.stringify({type: 'inventory'}));

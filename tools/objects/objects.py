@@ -82,6 +82,7 @@ class SimpleInstrument(UsableObject):
 
 
 class BaseballBat(UsableObject, DestructibleObject):
+    ICON = "baseballbat.gif"
     FIGHTING_FX_DIR = path.join(DATA_PATH, "fighting/")
     BROKEN_BAT_FX = path.join(DATA_PATH, "broken_bat.mp3")
 
