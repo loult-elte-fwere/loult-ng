@@ -22,6 +22,9 @@ document.addEventListener('DOMContentLoaded', function() {
 	dragged_item,
 	ws;
 
+    inventory_display.innerHTML = "<span>...</span>";
+    bank_display.innerHTML = "<span>...</span>";
+
     // DOM-related functions
 
     var parser = function(raw_msg) {
