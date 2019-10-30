@@ -464,14 +464,14 @@ document.addEventListener('DOMContentLoaded', function() {
     chest.addEventListener('mouseover', function(event) {
 	chest.firstElementChild.src = 'img/icons/coffreouvert.svg';
 	ws.send(JSON.stringify({type: 'inventory'}));
-	inventory_display.style.opacity = 1;
+	inventory_display.style.display = "flex";
 	bank_display.style.display = "none";
     });
 
     chest.addEventListener('mouseleave', function(event) {
 	event.stopPropagation();
 	chest.firstElementChild.src = 'img/icons/coffre.svg';
-	inventory_display.style.opacity = 0;
+	inventory_display.style.display = "none";
     });
 
     bank_display.addEventListener('mouseleave', function(event) {
@@ -482,7 +482,7 @@ document.addEventListener('DOMContentLoaded', function() {
     inventory_display.addEventListener('mouseover', function(event) {
 	event.stopPropagation();
 	bank_display.style.display = "none";
-	inventory_display.style.opacity = 1;	
+	inventory_display.style.display = "flex";	
     })
 
     // Items
@@ -568,14 +568,14 @@ document.addEventListener('DOMContentLoaded', function() {
 		    else if(trimed.match(/^\/((?:bank)+)$/i)) {
 			ws.send(JSON.stringify({type: 'channel_inventory'}));
 			// underlay.className = 'pulse';
-			inventory_display.style.opacity = 0;
+			inventory_display.style.display = "none";
 			bank_display.style.display = bank_display.style.display == "flex" ? "none" : "flex";
 		    }
 		    else if(trimed.match(/^\/((?:list)+)$/i)) {
 			ws.send(JSON.stringify({type: 'inventory'}));
 			chest.firstElementChild.src = 'img/icons/coffreouvert.svg';
 			bank_display.style.display = "none";
-			inventory_display.style.opacity = inventory_display.style.opacity == 1 ? 0 : 1;
+			inventory_display.style.display = inventory_display.style.display == "flex" ? "none" : "flex";
 		    }
 		    else if(trimed.match(/^\/give\s/i)) {
 			var splitted = trimed.split(' ');
