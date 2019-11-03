@@ -616,18 +616,17 @@ select {
 }
 
 #chest:hover > #inventory_display {
-    opacity: 1;
+    /* opacity: 1; */
 }
 
 #inventory_display {
-    opacity: 0;
     position: fixed;
     z-index: 99;
     background:#070c17;
     transition: 200ms linear;
     right: 110px;
     border-radius: 50px;
-    display: flex;
+    display: none;
 	flex-wrap: wrap;
 	align-content: flex-start;
     max-width: 220px;
