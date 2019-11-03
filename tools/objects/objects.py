@@ -350,6 +350,7 @@ class Costume(UsableObject):
     NAME = "costume"
     
     CHARACTERS = ["link", "mario", "wario", "sonic"]
+    COOLDOWN = 30  # in seconds
 
     def __init__(self):
         self.character = random.choice(self.CHARACTERS)  # type:str
@@ -406,6 +407,7 @@ class RectalExam(UsableObject, TargetedObject, DestructibleObject):
 class WealthDetector(UsableObject, TargetedObject):
     NAME = "détecteur de richesse"
     ICON = "detector.gif"
+    COOLDOWN = 30  # in seconds
 
     def use(self, loult_state, server, obj_params):
         target_id, target = self._acquire_target(server, obj_params)
