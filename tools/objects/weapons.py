@@ -211,6 +211,7 @@ class Grenade(UsableObject, DestructibleObject):
 
 
 class RobinHoodsBow(UsableObject, TargetedObject):
+    ICON = "robinhoodsbow.gif"
     NAME = "arc de robin des bois"
     BOW_FX = path.join(DATA_PATH, "bow_fire.mp3")
 
@@ -254,6 +255,7 @@ class RobinHoodsBow(UsableObject, TargetedObject):
 
 
 class Quiver(InertObject, DestructibleObject):
+    ICON = "carquois.gif"
     NAME = "carquois"
 
     def __init__(self, arrows=3):

@@ -8,10 +8,15 @@ def userlist_dist(channel_obj, userid_1, userid_2):
 
 class LoultObject:
     NAME = "stuff"
+    ICON = "question.gif"
 
     @property
     def name(self):
         return self.NAME
+
+    @property
+    def icon(self):
+        return self.ICON
 
     @property
     def destroy(self):

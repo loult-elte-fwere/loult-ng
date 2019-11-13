@@ -36,11 +36,13 @@ class ToolsError(Exception):
 class AudioRenderer:
     lang_voices_mapping = {"fr": ("fr", (1, 2, 3, 4, 5, 6, 7)),
                            "en": ("us", (1, 2, 3)),
+                           "it": ("it", (3, 4)),
                            "es": ("es", (1, 2)),
                            "de": ("de", (4, 5, 6, 7))}
 
     volumes_presets = {'fr1': 1.17138, 'fr2': 1.60851, 'fr3': 1.01283, 'fr4': 1.0964, 'fr5': 2.64384, 'fr6': 1.35412,
-                       'fr7': 1.96092, 'us1': 1.658, 'us2': 1.7486, 'us3': 3.48104, 'es1': 3.26885, 'es2': 1.84053}
+                       'fr7': 1.96092, 'us1': 1.658, 'us2': 1.7486, 'us3': 3.48104, 'es1': 3.26885, 'es2': 1.84053,
+                       'it3': 1.3, 'it4': 1.3}
     PHONEMES_MAX_DURATION = 1000  # 1 second in milliseconds
 
     def _get_additional_params(self, lang, voice_params: 'VoiceParameters'):
@@ -140,6 +142,7 @@ class SpoilerBipEffect(UtilitaryEffect):
         "fr": ("kiN", "ZiNk"),
         "de": ("kIN", "gINk"),
         "es": ("kin", "xink"),
+        "it": ("ki1ngg", "dZi1ngk")
     }
 
     def __init__(self, renderer: AudioRenderer, voice_params: 'VoiceParameters'):
@@ -191,7 +194,8 @@ class SpoilerBipEffect(UtilitaryEffect):
 links_translation = {'fr': 'cliquez mes petits canards en sucre',
                      'de': 'Klick drauf!',
                      'es': 'Clico JAJAJA',
-                     'en': "Click it mate"}
+                     'en': "Click it mate",
+                     'it': 'Clica clica cuglione!'}
 
 
 def prepare_text_for_tts(text: str, lang: str) -> str:

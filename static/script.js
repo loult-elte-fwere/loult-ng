@@ -4,6 +4,9 @@ document.addEventListener('DOMContentLoaded', function() {
 	underlay = document.getElementById('underlay'),
 	input = document.getElementById('input'),
 	chat = document.getElementById('chat'),
+	chest = document.getElementById('chest'),
+	inventory_display = document.getElementById('inventory_display'),
+	bank_display = document.getElementById('bank_display'),
 	theme = (localStorage.theme && localStorage.theme.split(' ').length > 2) ? localStorage.theme : 'cozy night sans',
 	waitTime = 1000,
 	banned = false,
@@ -15,7 +18,13 @@ document.addEventListener('DOMContentLoaded', function() {
 	lastMsg,
 	lastRow,
 	lastId,
+	inventory = "",
+	item_list = "",
+	dragged_item,
 	ws;
+
+    inventory_display.innerHTML = "<span>...</span>";
+    bank_display.innerHTML = "<span>...</span>";
 
     // DOM-related functions
 
@@ -43,7 +52,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	return tests.filter(rule => 'run' in rule).reduce((prev, rule) => rule.run(prev), raw_msg);
     };
     var autoscroll= function(){
-	//auto scroll page down, if scroll bar at the bottom 
+	//auto scroll page down, if scroll bar at the bottom
 	if(Math.floor(chat.scrollTop)+chat.offsetHeight >= (chat.scrollHeight - chat.offsetHeight)){
 
 	    chat.scrollTop = chat.scrollHeight;
@@ -55,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	let ifrm = document.createElement('iframe');
 	ifrm.setAttribute('src', 'https://www.youtube.com/embed/'+ytbId);
 	ifrm.setAttribute('frameborder',0);
-	lastRow.appendChild(ifrm);	
+	lastRow.appendChild(ifrm);
 	callback();
     }
     var addEmbedNoelshack = function(NsID, callback) {
@@ -82,6 +91,14 @@ document.addEventListener('DOMContentLoaded', function() {
 		i.className = 'material-icons';
 		i.appendChild(document.createTextNode('info_outline'));
 		i.innerHTML = '<img class="pokeball" src="img/icons/pokeball.svg"/>';
+		row.id
+		row.appendChild(i);
+	    }
+	    else if(pkmn.name === 'bank') {
+		var i = document.createElement('i');
+		i.className = 'material-icons';
+		i.appendChild(document.createTextNode('info_outline'));
+		i.innerHTML = '<img class="pokeball" src="img/icons/coffre.svg"/>';
 		row.appendChild(i);
 	    }
 	    else {
@@ -140,17 +157,27 @@ document.addEventListener('DOMContentLoaded', function() {
 	let orderId=0;
 
 	for(let a in users){
-//	    console.log(users[a]);
 	    if (users[a].name == params.name) orderId++;
 	}
 	users[userid].orderId=orderId;
-//	console.log(users[userid]); 
 
 	if(ambtn.checked && muted.indexOf(userid) === -1)
 	    if(!params.you) muted.push(userid);
 
 	var row = document.createElement('li');
+        //var newSpan = document.createElement('span');
+
+	// items can be dragged on users to use
+	row.setAttribute("data-id", users[userid].name + " " + users[userid].orderId);
+	row.addEventListener("dragstart", item_dragstart);
+	row.addEventListener("dragover", item_dragover);
+	row.addEventListener("dragenter", item_dragenter);
+	row.addEventListener("drop", item_drop);
+
+  	// newSpan.appendChild(document.createTextNode(params.name));
 	row.appendChild(document.createTextNode(params.name));
+
+  	// row.appendChild ( newSpan );
 	row.style.color = params.color;
 	row.style.backgroundImage = 'url("/img/pokemon/small/' + params.img + '.gif")';
 
@@ -161,8 +188,9 @@ document.addEventListener('DOMContentLoaded', function() {
 	    i.className = 'material-icons';
 	    i.appendChild(document.createTextNode('volume_' + (muted.indexOf(userid) != -1 ? 'off' : 'up')));
 	    row.appendChild(i);
-
-	    i.onmousedown = function() {
+	    muted_button = row.getElementsByClassName('material-icons')[0];
+	    muted_button.onmousedown = function(e) {
+		e.stopPropagation();
 		if(muted.indexOf(userid) != -1) {
 		    muted.splice(muted.indexOf(userid), 1);
 		    i.innerHTML = 'volume_up';
@@ -179,6 +207,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	    underlay.style.backgroundImage = 'url("/img/pokemon/big/' + params.img + '.png")';
 	    you = userid;
 	}
+
 	// Attack button
 	var i2 = document.createElement('img');
 	i2.className = 'sword';
@@ -419,7 +448,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	};
 
 	var changeIcon = function(v) {
-	    vol.src = (v > 0 ? 'img/icons/flute.svg' : 'img/icons/flutenb.svg');
+	    vol.firstElementChild.src = (v > 0 ? 'img/icons/flute.svg' : 'img/icons/flutenb.svg');
 	    //vol.innerHTML = (v > 0 ? (v > 50 ? 'volume_ off' : 'volume_down') : 'volume_mute');
 	};
 
@@ -435,20 +464,71 @@ document.addEventListener('DOMContentLoaded', function() {
 	};
 
 	volrange.oninput = changeVolume;
-    }
+    };
 
     // Inventory chest
-    var chest = document.getElementById('chest');
-    
-    chest.onmouseover = function() {
-	chest.src = 'img/icons/coffreouvert.svg';
+
+    chest.addEventListener('mouseover', function(event) {
+	chest.firstElementChild.src = 'img/icons/coffreouvert.svg';
+	ws.send(JSON.stringify({type: 'inventory'}));
+	inventory_display.style.display = "flex";
+	bank_display.style.display = "none";
+    });
+
+    chest.addEventListener('mouseleave', function(event) {
+	event.stopPropagation();
+	chest.firstElementChild.src = 'img/icons/coffre.svg';
+	inventory_display.style.display = "none";
+    });
+
+    bank_display.addEventListener('mouseleave', function(event) {
+	event.stopPropagation();
+	bank_display.style.display = "none";
+    });
+
+    inventory_display.addEventListener('mouseover', function(event) {
+	event.stopPropagation();
+	bank_display.style.display = "none";
+	inventory_display.style.opacity = 1;	
+    })
+
+    // Items
+    function item_dragstart(event) {
+	event.target.dataTransfer.setData(event.target.getAttribute('data-id'));
+	console.log(event);
+	event.preventDefault();
     }
-    chest.onmouseout = function() {
-	chest.src = 'img/icons/coffre.svg';
+
+    function item_dragover(event) {
+	event.preventDefault();
     }
 
+    function item_dragenter(event) {
+	event.preventDefault();
+    }
 
+    function item_drop(event) {
+	event.preventDefault();
+	target_id = event.target.getAttribute("data-id").split(" ");
+	console.log(dragged_item);
+	console.log(target_id);
+	ws.send(JSON.stringify({
+	    type : 'use',
+	    object_id: parseInt(dragged_item),
+	    params : target_id }));
+    }
 
+    function use_item() {
+	attribute = this.getAttribute('data-id');
+	ws.send(JSON.stringify({ type : 'use', object_id: attribute, params : "" }));
+	ws.send(JSON.stringify({ type : 'inventory'}));
+    }
+
+    function take_item() {
+	attribute = this.getAttribute('data-id');
+	ws.send(JSON.stringify({ type : 'take', object_id: attribute}));
+	ws.send(JSON.stringify({ type : 'channel_inventory'}));
+    }
 
     // Users list display
 
@@ -466,7 +546,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     var wsConnect = function() {
 	ws = new WebSocket(location.origin.replace('http', 'ws') + '/socket' + location.pathname);
-	// ws = new WebSocket('wss://loult.family/socket/toast');
+	//ws = new WebSocket('wss://loult.family/socket/toast');
 	ws.binaryType = 'arraybuffer';
 
 	var lastMuted = false;
@@ -488,16 +568,21 @@ document.addEventListener('DOMContentLoaded', function() {
 			var splitted = trimed.split(' ');
 			ws.send(JSON.stringify({ type : 'attack', target : splitted[1], order : ((splitted.length === 3) ? parseInt(splitted[2]) : 0) }));
 		    }
-		    else if(trimed.match(/^\/(?:en|es|fr|de)\s/i)) {
+		    else if(trimed.match(/^\/(?:en|es|fr|de|it)\s/i)) {
 			ws.send(JSON.stringify({type: 'msg', msg: trimed.substr(4), lang: trimed.substr(1, 2).toLowerCase()}));
 			underlay.className = 'pulse';
 		    }
 		    else if(trimed.match(/^\/((?:bank)+)$/i)) {
 			ws.send(JSON.stringify({type: 'channel_inventory'}));
-			underlay.className = 'pulse';
+			// underlay.className = 'pulse';
+			inventory_display.style.display = "none";
+			bank_display.style.display = bank_display.style.display == "flex" ? "none" : "flex";
 		    }
 		    else if(trimed.match(/^\/((?:list)+)$/i)) {
 			ws.send(JSON.stringify({type: 'inventory'}));
+			chest.firstElementChild.src = 'img/icons/coffreouvert.svg';
+			bank_display.style.display = "none";
+			inventory_display.style.display = inventory_display.style.display == "flex" ? "none" : "flex";
 		    }
 		    else if(trimed.match(/^\/give\s/i)) {
 			var splitted = trimed.split(' ');
@@ -559,7 +644,6 @@ document.addEventListener('DOMContentLoaded', function() {
 		    ws.send(JSON.stringify({type: 'msg', msg: trimed, lang: lang}));
 		    underlay.className = 'pulse';
 		}
-
 		lastMsg = input.value;
 		input.value = '';
 	    }
@@ -594,8 +678,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			if (msg.msg.match('http://image.noelshack.com/')|| msg.msg.match('https://image.noelshack.com/')){
 			    var imgId=msg.msg.split("noelshack.com/")[1];
 			    addEmbedNoelshack(imgId,autoscroll);
-			}
-			
+			}			
 		    }
 		    break;
 
@@ -665,6 +748,47 @@ document.addEventListener('DOMContentLoaded', function() {
 		    addLine({name : 'info'}, msg.msg,("date" in msg) ? msg.date : (new Date), 'info');
 		    break;
 
+		case 'inventory' :
+		    inventory_display.innerHTML = "";
+		    bank_display.innerHTML = "";
+
+		    items = msg['items'];
+
+		    if(items.length <= 0) {
+			inventory_display.innerHTML = "<span>...</span>";
+			bank_display.innerHTML = "<span>...</span>";
+			return;
+		    }
+
+		    target_display = msg['owner'] == "user" ? inventory_display : bank_display;
+		    item_callback = msg['owner'] == "user" ? use_item : take_item;
+
+		    for(i = 0; i < items.length; i++) {
+			id = items[i]['id'];
+			name = items[i]['name'];
+			icon = items[i]['icon'];
+			item = document.createElement('div');
+			item_link = document.createElement('a');
+			item_id = document.createElement("span");
+			item_img = document.createElement('img');
+			item.setAttribute("class", "item");
+			item.setAttribute("data-id", id);
+			item_img.setAttribute("draggable", true);
+			item_link.setAttribute("title", name);
+			item_id.innerHTML = id;
+			item_img.setAttribute("src", "img/icons/" + icon);
+			item_img.setAttribute("data-id", id);
+			item_img.addEventListener('drag', function(event) {
+			    dragged_item = this.getAttribute('data-id');
+			});
+			item_link.appendChild(item_id);
+			item_link.appendChild(item_img);
+			item.appendChild(item_link);
+			item.addEventListener('click', item_callback, true);
+			target_display.appendChild(item);
+		    }
+		break;
+
 		case 'userlist':
 		    // flushing previous user list just in case
 		    for(var i in users)
@@ -713,7 +837,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			break;
 
 		    case 'object_taken':
-			addLine({name : 'info'}, 'L\'objet ' + msg.object_name + ' a pris dans l\'inventaire commun.', (new Date), 'log');
+			addLine({name : 'info'}, 'L\'objet ' + msg.object_name + ' a été pris dans l\'inventaire commun.', (new Date), 'log');
 			break;
 		    }
 		    break;
@@ -753,27 +877,26 @@ document.addEventListener('DOMContentLoaded', function() {
 		});
 	    }
 	};
+//    };
 
-	ws.onerror = function(e) {
-	    console.log(['error', e]);
-	};
+	    ws.onerror = function(e) {
+		console.log(['error', e]);
+	    };
 
-	ws.onclose = function() {
-	    for(var i in users)
-		delUser(i);
-
-	    if(banned)
-		for(var i = 0; i < 500; i++)
-		    addLine({name : 'info'}, 'CIVILISE TOI.', (new Date), 'kick');
-	    else {
-		addLine({name : 'info'}, 'Vous êtes déconnecté.', (new Date), 'part');
-		addLine({name : 'info'}, 'Nouvelle connexion en cours...', (new Date), 'part');
-		waitTime = Math.min(waitTime * 2, 120000);
-		window.setTimeout(wsConnect, waitTime);
-	    }
-	};
+	    ws.onclose = function() {
+		for(var i in users)
+		    delUser(i);
+		
+		if(banned)
+		    for(var i = 0; i < 500; i++)
+			addLine({name : 'info'}, 'CIVILISE TOI.', (new Date), 'kick');
+		else {
+		    addLine({name : 'info'}, 'Vous êtes déconnecté.', (new Date), 'part');
+		    addLine({name : 'info'}, 'Nouvelle connexion en cours...', (new Date), 'part');
+		    waitTime = Math.min(waitTime * 2, 120000);
+		    window.setTimeout(wsConnect, waitTime);
+		}
+	    };
     };
-
     wsConnect();
-
 });

@@ -116,7 +116,7 @@ footer {
 	background: linear-gradient(to bottom, #FFF 0%, #EEE 100%);
 }
 
-footer > div > .icon:nth-of-type(3):hover > img:first-of-type {
+#gear:hover > img:first-of-type {
 	display: none;
 }
 
@@ -322,6 +322,15 @@ a:hover, li > i:hover, footer i:hover, #window input:hover, #window label:hover,
 	cursor: pointer;
 }
 
+/* à refaire */
+input[type=range]#volrange::-webkit-range-track, input[type=range]#volrange::-moz-range-track ; input[type=range]#volrange::-ms-track 
+input[type=range]#volrange::-webkit-slider-thumb {
+	color: red!important;
+	background: white!important;            
+}
+
+
+
 ul > li:hover > div {
 	display: block;
 }
@@ -503,20 +512,22 @@ ul > li > div > div:last-child > i {
 	left: 0;
 	right: 0;
 	bottom: 0;
-	max-width: 680px;
-	max-height: 780px;
 	width: 680px;
-	height: 500px;
+	height: 540px;
 	margin: auto;
 	line-height: 1.5em;
-	font-size: 25px;
+	font-size: 20px;
 	background: #f9f9f9;
 	border: 2px solid #BBB;
+	background: rgba(0,0,0,.8) !important;
+	border-radius: 50px;
 }
 
 #window > div:first-child {
 	border-bottom: 2px solid #BBB;
-	padding-left: 8px;
+	padding: 40px;
+	padding-left: 50px;
+	padding-bottom: 30px;
 	height: 40px;
 	display: -webkit-box;
 	display: -ms-flexbox;
@@ -579,7 +590,7 @@ input[type=range] {
 
 select {
 	background: #f9f9f9;
-	font-size: 25px;
+	font-size: 20px;
 	border: none;
 	outline: 0;
 }
@@ -587,10 +598,137 @@ select {
 #close {
 	cursor: pointer;
 	text-align: center;
-	padding: 7px;
+	/* padding: 7px; */
 	background: #EEE;
 	border-left: 2px solid #BBB;
 }
+
+/***** INVENTAIRE *****/
+
+
+#chest {
+    position: relative;
+    overflow: inherit;
+}
+
+#chest-tooltip {
+    margin-bottom: -25px;
+}
+
+#chest:hover > #inventory_display {
+    /* opacity: 1; */
+}
+
+#inventory_display {
+    position: fixed;
+    z-index: 99;
+    background:#070c17;
+    transition: 200ms linear;
+    right: 110px;
+    border-radius: 50px;
+    display: none;
+	flex-wrap: wrap;
+	align-content: flex-start;
+    max-width: 220px;
+    bottom: 70px;
+    min-width: 85px;
+	padding: 7px;
+    padding: 25px 25px 25px 30px;
+}
+
+#inventory_display::after {
+    content: " ";
+    position: absolute;
+    top: 98%;
+	right: 46px;
+    border-width: 15px;
+    border-style: solid;
+    border-color: #070c17 transparent transparent transparent;
+}
+
+.item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: auto;
+	box-sizing: border-box;
+	padding: 5px;
+}
+
+#inventory_display > span, #bank_display > span {
+    letter-spacing: 0px;
+    font-family: 'Pokemon GB';
+    margin-top: 20px;
+	margin-bottom: 20px;
+	width: 74px;
+	text-align: center;
+	padding-top: 1px; 
+	padding-bottom: 1px;
+}
+
+.item > a {
+    text-decoration: none;
+    color: #fff;
+    font-family: 'Pokemon GB';
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+}
+
+.item > a > img, .bibw #chat > div > div:first-child > img:nth-child(1) {
+	display: block;
+	width: 100%;
+	height: 100%;
+    image-rendering: crisp-edges;
+}
+
+.item > a > img {
+	width: 38px;
+	height: 38px;
+}
+
+#bank_display {
+    display: none;
+    position: fixed;
+    z-index: 99;
+    background:#070c17;
+    transition: 200ms linear;
+    border-radius: 50px;
+    left: 25px;
+	bottom: 70px;
+	width: auto;
+	height: auto;
+    max-width: 100%;
+    padding: 15px 15px 15px 10px;
+	margin-right: 225px;
+	flex-flow: wrap;
+	flex-direction: initial;
+	flex: 1;
+    flex-shrink: 1;
+	align-items: normal;
+}
+
+#bank_display::after {
+  content: "";
+  flex: auto;
+}
+
+
+
+#bank_display > .item {
+	display: inline-table;
+	padding: 10px;
+}
+
+#bank_display > .item > a > span {
+	display: block;
+	width: 32px;
+	height: auto;
+	text-align: center
+}
+
+/***** RESPONSIVE *****/
 
 @media screen and (max-width: 680px) {
 	head {
@@ -675,6 +813,34 @@ select {
 	.tooltiptext { 
 		visibility: hidden!important; 
 	}
+
+	#inventory_display {
+		bottom: 120px;
+	}
+
+	#bank_display {
+		bottom: 100px;
+		left: 0;
+		margin-right: 0;
+		flex: 1;
+		align-items: center;
+		margin: 25px;
+	}
+
+	.item { 
+		display: block; 
+		flex: none; 
+	}
+	
+	.item > a > span {
+		padding-right: 5px;
+	}
+
+}
+
+.opensans {
+	font-family: 'Open Sans', sans-serif;
+	font-weight: normal;
 }
 
 .comic {
@@ -941,8 +1107,8 @@ select {
 
 .icon { 
 	display: inline-block; 
-	width: 50px; 
-	height: 50px; 
+	width: 49px; 
+	height: 49px; 
 	margin: 0; 
 	padding: 0; 
 	border: 0;
@@ -950,10 +1116,10 @@ select {
 }
 .icon img { 
 	margin: 8px; 
-	transition: 0.1s;
+	transition: 0.25s;
 }
-.icon:hover img {
-    transform: scale(1.15);
+.icon:hover > img {
+    transform: scale(1.3);
 }				
 .tooltiptext {
   font-family: "PokemonGB";
@@ -966,9 +1132,9 @@ select {
   height: 10px;					  
   /* Position du tooltip */
   position: absolute;
-  bottom: 80px;
-  right: 0;
-  text-align: left;
+  bottom: 95px;
+  right: 30px;
+  text-align: right;
   z-index: 1;
 }
 .icon:hover .tooltiptext {
@@ -988,19 +1154,40 @@ select {
 
 /***** bibw *****/ 
 
+.bibw ::-webkit-scrollbar {
+    display: none;
+}
+
 body.bibw {
-  background : -moz-linear-gradient(0% 50% 0deg,rgba(42, 82, 152, 1) 0%,rgba(42, 82, 152, 1) 0.36%,rgba(35, 70, 131, 1) 34.53%,rgba(31, 62, 118, 1) 68.07%,rgba(30, 60, 114, 1) 100%);
-  background : -webkit-linear-gradient(0deg, rgba(42, 82, 152, 1) 0%, rgba(42, 82, 152, 1) 0.36%, rgba(35, 70, 131, 1) 34.53%, rgba(31, 62, 118, 1) 68.07%, rgba(30, 60, 114, 1) 100%);
-  background : -webkit-gradient(linear,0% 50% ,100% 50% ,color-stop(0,rgba(42, 82, 152, 1) ),color-stop(0.0036,rgba(42, 82, 152, 1) ),color-stop(0.3453,rgba(35, 70, 131, 1) ),color-stop(0.6807,rgba(31, 62, 118, 1) ),color-stop(1,rgba(30, 60, 114, 1) ));
-  background : -o-linear-gradient(0deg, rgba(42, 82, 152, 1) 0%, rgba(42, 82, 152, 1) 0.36%, rgba(35, 70, 131, 1) 34.53%, rgba(31, 62, 118, 1) 68.07%, rgba(30, 60, 114, 1) 100%);
-  background : -ms-linear-gradient(0deg, rgba(42, 82, 152, 1) 0%, rgba(42, 82, 152, 1) 0.36%, rgba(35, 70, 131, 1) 34.53%, rgba(31, 62, 118, 1) 68.07%, rgba(30, 60, 114, 1) 100%);
-  -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#2A5298', endColorstr='#1E3C72' ,GradientType=0)";
-  background : linear-gradient(90deg, rgba(42, 82, 152, 1) 0%, rgba(42, 82, 152, 1) 0.36%, rgba(35, 70, 131, 1) 34.53%, rgba(31, 62, 118, 1) 68.07%, rgba(30, 60, 114, 1) 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#2A5298',endColorstr='#1E3C72' , GradientType=1);
+  background : -moz-linear-gradient(50% 102.96% 90deg,rgba(2, 58, 104, 1) 0%,rgba(6, 41, 74, 1) 8.72%,rgba(9, 28, 51, 1) 17.44%,rgba(10, 21, 38, 1) 25.72%,rgba(11, 18, 33, 1) 33.07%,rgba(11, 18, 33, 1) 100%);
+  background : -webkit-linear-gradient(90deg, rgba(2, 58, 104, 1) 0%, rgba(6, 41, 74, 1) 8.72%, rgba(9, 28, 51, 1) 17.44%, rgba(10, 21, 38, 1) 25.72%, rgba(11, 18, 33, 1) 33.07%, rgba(11, 18, 33, 1) 100%);
+  background : -webkit-gradient(linear,50% 102.96% ,50% 3.14% ,color-stop(0,rgba(2, 58, 104, 1) ),color-stop(0.0872,rgba(6, 41, 74, 1) ),color-stop(0.1744,rgba(9, 28, 51, 1) ),color-stop(0.2572,rgba(10, 21, 38, 1) ),color-stop(0.3307,rgba(11, 18, 33, 1) ),color-stop(1,rgba(11, 18, 33, 1) ));
+  background : -o-linear-gradient(90deg, rgba(2, 58, 104, 1) 0%, rgba(6, 41, 74, 1) 8.72%, rgba(9, 28, 51, 1) 17.44%, rgba(10, 21, 38, 1) 25.72%, rgba(11, 18, 33, 1) 33.07%, rgba(11, 18, 33, 1) 100%);
+  background : -ms-linear-gradient(90deg, rgba(2, 58, 104, 1) 0%, rgba(6, 41, 74, 1) 8.72%, rgba(9, 28, 51, 1) 17.44%, rgba(10, 21, 38, 1) 25.72%, rgba(11, 18, 33, 1) 33.07%, rgba(11, 18, 33, 1) 100%);
+  -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#023A68', endColorstr='#0B1221' ,GradientType=0)";
+  background : linear-gradient(0deg, rgba(2, 58, 104, 1) 0%, rgba(6, 41, 74, 1) 8.72%, rgba(9, 28, 51, 1) 17.44%, rgba(10, 21, 38, 1) 25.72%, rgba(11, 18, 33, 1) 33.07%, rgba(11, 18, 33, 1) 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#0B1221',endColorstr='#023A68' , GradientType=0);
+}
+
+.bibw > main {
+	font-size: 16px;
+}
+
+.bibw > main > #userlist {
+	margin-right: 25px;
+}
+
+.bibw #chat {
+	margin-left: 25px;
+	line-height: 1.6em;
+	scrollbar-width: none;
 }
 
 .bibw #chat > div > :nth-child(2) > div:not(:first-child), .bibw ul > li > div > div {
-	color: #EEE;
+	color: #ddd;
+}
+.bibw #chat > div > :nth-child(2) .greentext {
+	color: #154DFF;
 }
 
 .bibw, .bibw ul, .bibw #window, .bibw #input, .bibw select {
@@ -1008,18 +1195,24 @@ body.bibw {
 	color: #EEE;
 
 }
+.bibw ul > li {
+	width: 100%;
+	margin-left: 7px;
+	padding-right: 7px;
+}
+
 .bibw ul > li:first-of-type {
 	margin-top: 30px;
 }
 
 .bibw ul > li > i, .bibw select, .bibw footer > div > i {
-	color: #DDD;
-	margin-right: 5px;
+	color: #7baaad;
 }
 
 .bibw #close, .bibw #chat > div > div:first-child, .bibw ul > li > div > div:first-child > div {
 	background: none !important;
 	border: none;
+	top: -10px;
 }
 
 .bibw main, .bibw #window > div:first-child, .bibw footer > div, .bibw footer > div > i, .bibw ul, .bibw #close, .bibw #window, .bibw ul > li > div > div:last-child {
@@ -1031,12 +1224,22 @@ body.bibw {
     background: none!important;
     position: absolute;
     width: 100%;
-    padding-top: 15px;
+}
+.bibw header > div {
+	background-color: #0B1221;
+    border-radius: 40px;
+    width: auto;
+    padding-left: 15px;
+    padding-right: 15px;
+    margin-top: 15px;
+}
+.bibw header > div > img {
+	mix-blend-mode: hard-light;
 }
 
 .bibw footer {
 	background: none !important;
-	margin-bottom: 20px;
+	margin-bottom: 25px;
     margin-right: 0;
 }
 
@@ -1045,63 +1248,63 @@ body.bibw {
 }
 
 .bibw #underlay {
-  -webkit-filter: invert(50%) brightness(200%);
-  filter: invert(50%) brightness(200%);
-}
-
-.bibw ::-webkit-scrollbar-track {
-	background-color: rgba(0,0,0,0); display: none;
-}
-
-.bibw ::-webkit-scrollbar, .bibw ::-webkit-scrollbar-thumb {
-    background-color: rgba(0,0,0,0);
-    color: white;
-}
-
-.bibw ::-webkit-scrollbar-track, .bibw ::-webkit-scrollbar, .bibw ::-webkit-scrollbar-thumb {
-	border-color: #222;
-	border: 0;
+  -webkit-filter: invert(50%) brightness(100%);
+  filter: invert(50%) brightness(100%);
+  background-size: 25%;
 }
 
 .bibw > footer#foot > input { 
-	background: #0C0C0C; 
+	background: #070c17; 
 	border-radius: 50px; 
-	font-family: "PokemonGB";    
-	font-size: 22px!important;
+	font-size: 20px !important;
 	line-height: 50px;
 	margin-right: 10px;
     margin-left: 25px;
-    padding: 5px 25px;
+	padding: 10px 25px 15px; 
+	
+}
+.bibw > footer#foot > input::placeholder {
+	color: #7baaad;
 }
 
 .bibw #chat > div > div:last-child {
 	color: #9AD5D8!important;
-	opacity: .33;
+	opacity: 0!important;
+	visibility: hidden;
     font-size: 10px;
     padding-right: 17px;
 }	
-.bibw footer > div {
+.bibw footer > div:last-of-type {
 	margin-right: 20px;
 }
 
-.bibw #chat > div > div:first-child > img:nth-child(1)/*, .bibw #chat > div > div:first-child > img:nth-child(2), .bibw #chat > div > div:first-child > img:nth-child(3) */{
-	display: block;
-	width: 100%;
-	height: 100%;
-	top: -10px;
-    image-rendering: crisp-edges;
-    margin-left: -2px;
+/* targeting chrome */
+
+@media screen and (-webkit-min-device-pixel-ratio:0) and (min-resolution:.001dpcm) {
+    .item > a > img, .bibw #chat > div > div:first-child > img:nth-child(1) {
+		image-rendering: pixelated;
+    }
 }
+
+/* targeting microsoft edge */
+
+@supports (-ms-ime-align:auto) {
+    .bibw #chat > div > div:first-child > img:nth-child(1) {
+		image-rendering: pixelated;
+    }
+}
+
+
 .bibw #chat > div > div > div {
-	padding: 4px;
+	padding: 2px;
 }
 
 .bibw #chat > div > :first-child {
-    width: 50px;
-    max-width: 50px;
-    max-height: 50px;
-    margin-left: 25px;
+    width: 64px;
+    max-width: 64px;
+    max-height: 64px;
     text-align: center;
+    border-radius: 0;
 }
 
 .bibw footer > div > .icon {
@@ -1122,28 +1325,140 @@ body.bibw {
 .sword {
 	width: 25px;
 	height: 25px;
-	right: 200px;
+	right: 225px;
 	position: absolute;
 	padding-top: 7px;
 	display: none;
 	z-index: 999;
 }
 
-ul > li:hover > .sword {
+ul > li:hover .sword {
 	display: block;
 }
+
 .bibw main #chat div > a {
 	color: #1AC;
 }
 
 .bibw >  #main > #chat > .part > div > div {
-	color: #9AD5D8!important;
+	color: #7baaad!important;
 }
+
+.bibw #chat > .info > div > div {
+	color: #9AD5D8;
+}
+
+.bibw #chat > .log > div > div {
+	color: #7baaad!important;
+}
+
+.bibw #chat > .log > div > div:first-of-type {
+	color: #52c1df!important;
+    text-shadow: #2cf1fb 1px 0px 10px;
+}
+
+.bibw #chat div {
+	animation: fadein 400ms;
+}
+@keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+
 .bibw >  #main > #chat > div:first-of-type {
     padding-top: 120px;
 }
 
-.bibw > main {
-	font-family: "Open Sans";
-	font-size: 17px;
+.bibw ::-webkit-scrollbar-track, .bibw ::-moz-scrollbar-track  {
+	opacity: 0;
+	display: none;
+	visibility: hidden;;
+}
+
+.bibw footer > .icon > #inventory_display {
+	right: 130px;
+	bottom: 90px;
+}
+
+.bibw footer > #bank_display {
+	bottom: 90px;
+}
+
+@media screen and (max-width: 680px) {
+
+    .bibw #chat {
+		margin-left: 15px;
+	}
+	#chat > div > :first-child {
+		margin: 0;
+	}
+
+	.bibw > main {
+		font-size: 14px;
+	}
+
+	.bibw footer {
+		margin-bottom: 0;
+		max-height: 60px!important;
+	}
+
+	.bibw > footer#foot > input { 
+		position: relative;
+		height: 50px;
+		padding-bottom: 8px;
+		bottom: 5px;
+	}
+
+
+	.bibw #chat > div > :first-child {
+		width: 50px;
+		height: 50px;
+	}
+
+	.bibw #chat > .log > div > div {
+		text-align: left;
+	}
+
+	.bibw #chat > .info > div > div {
+		padding-left: 20px;
+	}
+
+	.bibw header {
+		display: flex;
+		align-items: center;
+		justify-content: center;	
+		padding-right: 0;
+	}
+
+	.bibw header > div {
+		background: none;
+		position: fixed;
+		height: auto;
+		transform: scale(0.7);
+	}
+
+
+	.bibw ul > li {
+		background-color: #023a68;
+    	border-radius: 50px;
+	}
+
+	.bibw > footer#foot > input {
+		padding-bottom: 8px;
+	}
+	
+	.bibw > footer#foot > .icon {
+		width: 40px;
+		height: 40px;
+	}
+
+	.bibw footer > .icon > #inventory_display {
+		right: 100px;
+    	bottom: 80px;
+	}
+	
+	.bibw footer > #bank_display {
+		bottom: 55px;
+	}
 }
