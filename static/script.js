@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	lastMsg,
 	lastRow,
 	lastId,
+	lastType = null,
 	inventory = "",
 	item_list = "",
 	dragged_item,
@@ -82,7 +83,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	    uid = uid || null;
 	text.innerHTML = txt;
 
-	if(lastId !== uid) {
+	if(lastId !== uid || lastType !== rowclass) {
 	    var row = document.createElement('div'),
 		msg = document.createElement('div');
 
@@ -143,6 +144,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 	lastRow.appendChild(text);
 	lastId = uid;
+	lastType = rowclass;
 
 	if(atBottom)
 	    chat.scrollTop = chat.scrollHeight;
@@ -495,7 +497,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Items
     function item_dragstart(event) {
 	event.target.dataTransfer.setData(event.target.getAttribute('data-id'));
-	console.log(event);
 	event.preventDefault();
     }
 
@@ -510,8 +511,6 @@ document.addEventListener('DOMContentLoaded', function() {
     function item_drop(event) {
 	event.preventDefault();
 	target_id = event.target.getAttribute("data-id").split(" ");
-	console.log(dragged_item);
-	console.log(target_id);
 	ws.send(JSON.stringify({
 	    type : 'use',
 	    object_id: parseInt(dragged_item),
@@ -877,26 +876,25 @@ document.addEventListener('DOMContentLoaded', function() {
 		});
 	    }
 	};
-//    };
 
-	    ws.onerror = function(e) {
-		console.log(['error', e]);
-	    };
-
-	    ws.onclose = function() {
-		for(var i in users)
-		    delUser(i);
+	ws.onerror = function(e) {
+	    console.log(['error', e]);
+	};
+	
+	ws.onclose = function() {
+	    for(var i in users)
+		delUser(i);
 		
-		if(banned)
-		    for(var i = 0; i < 500; i++)
-			addLine({name : 'info'}, 'CIVILISE TOI.', (new Date), 'kick');
-		else {
-		    addLine({name : 'info'}, 'Vous êtes déconnecté.', (new Date), 'part');
-		    addLine({name : 'info'}, 'Nouvelle connexion en cours...', (new Date), 'part');
-		    waitTime = Math.min(waitTime * 2, 120000);
-		    window.setTimeout(wsConnect, waitTime);
-		}
-	    };
+	    if(banned)
+		for(var i = 0; i < 500; i++)
+		    addLine({name : 'info'}, 'CIVILISE TOI.', (new Date), 'kick');
+	    else {
+		addLine({name : 'info'}, 'Vous êtes déconnecté.', (new Date), 'part');
+		addLine({name : 'info'}, 'Nouvelle connexion en cours...', (new Date), 'part');
+		waitTime = Math.min(waitTime * 2, 120000);
+		window.setTimeout(wsConnect, waitTime);
+	    }
+	};
     };
     wsConnect();
 });
