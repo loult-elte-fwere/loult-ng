@@ -28,7 +28,7 @@
 	background-color: #DDD;
 }
 
-#chat::-webkit-scrollbar { width: 0 !important }
+/* #chat::-webkit-scrollbar { width: 0 !important } */
 
 html, body, header, main, footer, div, i, ul, li, select, input {
 	transition: background-color 200ms linear;
@@ -1374,7 +1374,7 @@ ul > li:hover .sword {
 .bibw ::-webkit-scrollbar-track, .bibw ::-moz-scrollbar-track  {
 	opacity: 0;
 	display: none;
-	visibility: hidden;;
+	visibility: hidden;
 }
 
 .bibw footer > .icon > #inventory_display {
