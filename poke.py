@@ -3,6 +3,7 @@ import argparse
 import logging
 from asyncio import get_event_loop, ensure_future, gather, set_event_loop_policy, get_event_loop_policy
 from itertools import chain
+from quart import Quart
 
 from tools.ban import Ban, BanFail
 from tools.client import ClientRouter, LoultServerProtocol
@@ -85,6 +86,13 @@ if __name__ == "__main__":
         router.add_route(field="mod", value=ban_type, handler_class=BanHandler)
     router.add_route(field="mod", value="grant", handler_class=WeaponsGrantHandler)
 
+    #admin interace
+    admin = Quart(__name__)
+    
+    @admin.route('/')
+    async def admin_main():
+        return "hello"
+
 
     class AutobahnLoultServerProtocol(LoultServerProtocol, WebSocketServerProtocol):
         loult_state = loult_state
@@ -105,7 +113,8 @@ if __name__ == "__main__":
     server = loop.run_until_complete(gather(coro, scheduler_task))
 
     try:
-        loop.run_forever()
+#       loop.run_forever()
+        admin.run(loop=loop, port=5000)
     except KeyboardInterrupt:
         logger.info('Shutting down all connections...')
         for client in chain.from_iterable((channel.clients for channel in loult_state.chans.values())):
