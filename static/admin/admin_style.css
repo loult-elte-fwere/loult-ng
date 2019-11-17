@@ -1,0 +1,23 @@
+body {
+    margin:40px auto;
+    line-height:1.6;
+    font-size:18px;
+    color:#444;
+    padding:0 10px;
+}
+
+h1, h2, h3 {
+    line-height:1.2;
+}
+
+ul {
+    list-style-type:none;
+}
+
+ul > li {
+    padding: 5px;
+}
+
+h1, h2 {
+    text-align: center;
+}
