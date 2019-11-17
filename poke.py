@@ -3,8 +3,9 @@ import argparse
 import logging
 from asyncio import get_event_loop, ensure_future, gather, set_event_loop_policy, get_event_loop_policy
 from itertools import chain
-from quart import Quart
+from quart import Quart, abort, redirect, render_template, request, session, url_for
 
+from config import MOD_COOKIES
 from tools.ban import Ban, BanFail
 from tools.client import ClientRouter, LoultServerProtocol
 from tools.handlers import (MessageHandler, BinaryHandler, TrashHandler, BanHandler, ShadowbanHandler,
@@ -91,7 +92,13 @@ if __name__ == "__main__":
     
     @admin.route('/')
     async def admin_main():
-        return "hello"
+        cookie = request.headers.get("Cookie").encode("latin-1").decode("utf-8") # ouch!
+        print(cookie)
+        for mod in MOD_COOKIES:
+            print(mod in cookie)
+            if mod in cookie:
+                return "authorized"
+        return "non"
 
 
     class AutobahnLoultServerProtocol(LoultServerProtocol, WebSocketServerProtocol):
