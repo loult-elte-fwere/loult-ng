@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Tribunoult</title>
+  </head>
+  <body>
+    <div id="main">
+      <h2>Canaux actifs</h2>
+      {% for key, item in state.chans.items() %}
+	{% if key|length < 1 %}
+	  <h2>Canal Principal</h2>
+	{% else %}
+	  <h2>{{ item.name }}</h2>
+	{% endif %}
+	<ul>
+          {% for key, value in item.users.items() %}
+	    <li><strong>{{ value.poke_params.pokename }} {{ value.poke_params.poke_adj }}</strong>
+		- last connected {{ value.state.connection_time }}</li>
+	  {% endfor %}
+	</ul>
+      {% endfor %}
+    </div>
+  </body>
+</html>

@@ -4,7 +4,7 @@ import logging
 from asyncio import get_event_loop, ensure_future, gather, set_event_loop_policy, get_event_loop_policy
 from itertools import chain
 
-from admin import admin
+from tools.admin import admin
 from tools.ban import Ban, BanFail
 from tools.client import ClientRouter, LoultServerProtocol
 from tools.handlers import (MessageHandler, BinaryHandler, TrashHandler, BanHandler, ShadowbanHandler,
@@ -91,7 +91,7 @@ if __name__ == "__main__":
         client_logger = logging.getLogger('client')
         router = router
 
-
+    admin.admin.config['state'] = loult_state
     factory = WebSocketServerFactory(server='Lou.lt/NG') # 'ws://127.0.0.1:9000',
     factory.protocol = AutobahnLoultServerProtocol
     # Allow 4KiB max size for messages, in a single frame.
@@ -99,7 +99,6 @@ if __name__ == "__main__":
             autoPingInterval=60,
             autoPingTimeout=30,
         )
-
     coro = loop.create_server(factory, '127.0.0.1', 9000)
     coro_task = ensure_future(coro)
     coro_admin = admin.admin.run(loop=loop, host='127.0.0.1', port=5000)
