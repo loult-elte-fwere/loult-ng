@@ -109,12 +109,14 @@ if __name__ == "__main__":
         )
 
     coro = loop.create_server(factory, '127.0.0.1', 9000)
+    coro_task = ensure_future(coro)
+    coro_admin = admin.run(loop=loop, host='127.0.0.1', port=5000)
+    coro_admin_task = ensure_future(coro_admin)
     scheduler_task = ensure_future(scheduler.start())
-    server = loop.run_until_complete(gather(coro, scheduler_task))
+    server = loop.run_until_complete(gather(coro_task, coro_admin_task, scheduler_task))
 
     try:
-#       loop.run_forever()
-        admin.run(loop=loop, port=5000)
+        loop.run_forever()
     except KeyboardInterrupt:
         logger.info('Shutting down all connections...')
         for client in chain.from_iterable((channel.clients for channel in loult_state.chans.values())):
