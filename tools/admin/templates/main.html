@@ -2,20 +2,37 @@
 <html>
   <head>
     <title>Tribunoult</title>
+    <link rel="stylesheet" href="admin_style.css" type="text/css">
   </head>
   <body>
+    <h1>Tribunoult - Surveiller et Punir</h1>
     <div id="main">
+      <h2>Téléphone Rouge</h2>
+      <form action="emergency">
+	<ul>
+	  <li>Slowmode <input type="button" value="activer"/> <i>(état : désactivé)</i></li>
+	  <li>Mode circle-jerk <input type="button" value="activer"/> <i>(état : désactivé)</i></li>
+      </form>
       <h2>Canaux actifs</h2>
       {% for key, item in state.chans.items() %}
 	{% if key|length < 1 %}
-	  <h2>Canal Principal</h2>
+	  <h3>Canal Principal</h3>
 	{% else %}
-	  <h2>{{ item.name }}</h2>
+	  <h3>/{{ item.name }}/</h3>
 	{% endif %}
 	<ul>
           {% for key, value in item.users.items() %}
-	    <li><strong>{{ value.poke_params.pokename }} {{ value.poke_params.poke_adj }}</strong>
-		- last connected {{ value.state.connection_time }}</li>
+	    <li><strong style="color: {{ value.poke_params.color }}">
+		{{ value.poke_params.pokename }} {{ value.poke_params.poke_adj }}</strong>
+	      - last connected {{ value.state.connection_time }}
+		<form method="post" action="/ban">
+		<input type="button" value="kick"/>
+		<input type="button" value="banniw"/>
+		<input type="button" value="slowbanniw"/>
+		<input type="button" value="shadowbanniw"/>
+		<input type="button" value="liste résidents"/>		
+		</form>
+	    </li>
 	  {% endfor %}
 	</ul>
       {% endfor %}
