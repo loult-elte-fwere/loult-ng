@@ -3,9 +3,8 @@ import argparse
 import logging
 from asyncio import get_event_loop, ensure_future, gather, set_event_loop_policy, get_event_loop_policy
 from itertools import chain
-from quart import Quart, abort, redirect, render_template, request, session, url_for
 
-from config import MOD_COOKIES
+from admin import admin
 from tools.ban import Ban, BanFail
 from tools.client import ClientRouter, LoultServerProtocol
 from tools.handlers import (MessageHandler, BinaryHandler, TrashHandler, BanHandler, ShadowbanHandler,
@@ -87,20 +86,6 @@ if __name__ == "__main__":
         router.add_route(field="mod", value=ban_type, handler_class=BanHandler)
     router.add_route(field="mod", value="grant", handler_class=WeaponsGrantHandler)
 
-    #admin interace
-    admin = Quart(__name__)
-    
-    @admin.route('/')
-    async def admin_main():
-        cookie = request.headers.get("Cookie").encode("latin-1").decode("utf-8") # ouch!
-        print(cookie)
-        for mod in MOD_COOKIES:
-            print(mod in cookie)
-            if mod in cookie:
-                return "authorized"
-        return "non"
-
-
     class AutobahnLoultServerProtocol(LoultServerProtocol, WebSocketServerProtocol):
         loult_state = loult_state
         client_logger = logging.getLogger('client')
@@ -117,7 +102,7 @@ if __name__ == "__main__":
 
     coro = loop.create_server(factory, '127.0.0.1', 9000)
     coro_task = ensure_future(coro)
-    coro_admin = admin.run(loop=loop, host='127.0.0.1', port=5000)
+    coro_admin = admin.admin.run(loop=loop, host='127.0.0.1', port=5000)
     coro_admin_task = ensure_future(coro_admin)
     scheduler_task = ensure_future(scheduler.start())
     server = loop.run_until_complete(gather(coro_task, coro_admin_task, scheduler_task))
