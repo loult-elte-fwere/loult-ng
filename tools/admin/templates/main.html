@@ -7,35 +7,61 @@
   <body>
     <h1>Tribunoult - Surveiller et Punir</h1>
     <div id="main">
-      <h2>Téléphone Rouge</h2>
-      <form action="emergency">
-	<ul>
-	  <li>Slowmode <input type="button" value="activer"/> <i>(état : désactivé)</i></li>
-	  <li>Mode circle-jerk <input type="button" value="activer"/> <i>(état : désactivé)</i></li>
-      </form>
+      <div id="message" style="{% if message is not defined %}display:none{%endif%}">Message :
+      {% if message is defined %} {{ message }} {% endif %}</div>
       <h2>Canaux actifs</h2>
-      {% for key, item in state.chans.items() %}
-	{% if key|length < 1 %}
-	  <h3>Canal Principal</h3>
-	{% else %}
-	  <h3>/{{ item.name }}/</h3>
-	{% endif %}
-	<ul>
-          {% for key, value in item.users.items() %}
-	    <li><strong style="color: {{ value.poke_params.color }}">
-		{{ value.poke_params.pokename }} {{ value.poke_params.poke_adj }}</strong>
-	      - last connected {{ value.state.connection_time }}
-		<form method="post" action="/ban">
-		<input type="button" value="kick"/>
-		<input type="button" value="banniw"/>
-		<input type="button" value="slowbanniw"/>
-		<input type="button" value="shadowbanniw"/>
-		<input type="button" value="liste résidents"/>		
-		</form>
-	    </li>
-	  {% endfor %}
-	</ul>
-      {% endfor %}
+      <div class="channel">
+	{% for key, item in state.chans.items() %}
+	  {% if key|length < 1 %}
+	    <h3>Canal Principal</h3>
+	  {% else %}
+	    <h3>/{{ item.name }}/</h3>
+	  {% endif %}
+	  <div class="users">
+	    <ul>
+	      <li>
+		<ul class="col-names user">
+		  <li>Utilisateur</li>
+		  <li>Dernière connexion</li>
+		  <li>Banniw</li>
+		  <li>Dernier Message</li>
+		  <li>Actions</li>
+		</ul>
+	      </li>
+              {% for key, value in item.users.items() %}
+		<li>
+		  <ul class="user">
+		    <li><strong style="color: {{ value.poke_params.color }}">
+			{{ value.poke_params.pokename }} {{ value.poke_params.poke_adj }}</strong></li>
+			<li>{{ value.state.connection_time.strftime('%H:%M:%S (%d/%m/%Y)') }}</li>
+		    <li>{{ value.state.is_shadowbanned }}</li>
+		    <li>{{ value.state.last_message.strftime('%H:%M:%S (%d/%m/%Y)') }}</li>
+		    <li>
+		      <form method="post" action="/admin/manage">
+			<select name="ban_duration">
+			  <option value="0">Durée du ban (en minutes)</option>
+			  <option value="30">30</option>
+			  <option value="60">60</option>
+			  <option value="1440">1440 (un jour)</option>
+			  <option value="10080">10080 (une semaine)</option>
+			</select>
+			<select name="action">
+			  <option value="">Choississez une action</option>
+			  <option value="unban">Plus Banniw</option>
+			  <option value="ban">Banniw</option>
+			  <option value="shadowban">Shadowbanniw</option>
+			  <option value="VIP">Ajouter/Supprimer de la liste VIP</option>
+			</select>
+			<input type="submit" value="valider"/>
+		      </form>
+		    </li>
+		  </ul>
+		</li>
+	      {% endfor %}
+	    </ul>
+	  </div>
+	{% endfor %}
+      </div>
     </div>
   </body>
 </html>

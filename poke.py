@@ -92,6 +92,7 @@ if __name__ == "__main__":
         router = router
 
     admin.admin.config['state'] = loult_state
+    admin.admin.config['router'] = router
     factory = WebSocketServerFactory(server='Lou.lt/NG') # 'ws://127.0.0.1:9000',
     factory.protocol = AutobahnLoultServerProtocol
     # Allow 4KiB max size for messages, in a single frame.
@@ -101,7 +102,7 @@ if __name__ == "__main__":
         )
     coro = loop.create_server(factory, '127.0.0.1', 9000)
     coro_task = ensure_future(coro)
-    coro_admin = admin.admin.run(loop=loop, host='127.0.0.1', port=5000)
+    coro_admin = admin.admin.run(loop=loop, host='127.0.0.1', port=5000, use_reloader=True)
     coro_admin_task = ensure_future(coro_admin)
     scheduler_task = ensure_future(scheduler.start())
     server = loop.run_until_complete(gather(coro_task, coro_admin_task, scheduler_task))

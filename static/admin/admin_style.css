@@ -7,17 +7,42 @@ body {
 }
 
 h1, h2, h3 {
+    margin: 40px 25px;
     line-height:1.2;
 }
 
 ul {
-    list-style-type:none;
+    margin: 0;
+    padding: 0;
 }
 
 ul > li {
-    padding: 5px;
+
+    margin: 0;
 }
 
-h1, h2 {
-    text-align: center;
+.col-names {
+    font-weight: bold;
+}
+
+.users > ul {
+
+}
+
+.users > ul > li {
+    display: inline-block;
+    padding: 10px 0;
+    width: 100%;
+
+}
+
+.user {
+    width: 100%;
+    margin: 0 auto;
+}
+
+.user > li {
+    display: inline-block;
+    margin: 0px 25px;
+    min-width: 12%;
 }
