@@ -167,6 +167,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	    if(!params.you) muted.push(userid);
 
 	var row = document.createElement('li');
+	row.setAttribute('title', params.name + ' ' + params.adjective);
         //var newSpan = document.createElement('span');
 
 	// items can be dragged on users to use
@@ -232,6 +233,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	idiv.appendChild(pimg);
 
 	phead.style.backgroundImage = 'linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0) 35px, rgba(' + parseInt(params.color.slice(1, 3), 16) + ', ' + parseInt(params.color.slice(3, 5), 16) + ', ' + parseInt(params.color.slice(5, 7), 16) + ', 0.2) 35px, ' + params.color + ' 100%)';
+	phead.style.backgroundColor = '#222';
 	phead.appendChild(idiv);
 	phead.appendChild(document.createElement('br'));
 	phead.appendChild(document.createTextNode(params.name + ' ' + params.adjective));
@@ -247,7 +249,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 	pdiv.appendChild(phead);
 	pdiv.appendChild(pbody);
-	row.appendChild(pdiv);
+//	row.appendChild(pdiv);
 
 	userlist.appendChild(row);
 	users[userid].dom = row;
