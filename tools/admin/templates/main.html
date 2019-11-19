@@ -38,6 +38,7 @@
 		    <li>{{ value.state.last_message.strftime('%H:%M:%S (%d/%m/%Y)') }}</li>
 		    <li>
 		      <form method="post" action="/admin/manage">
+			<input name="userid" type="hidden" value="{{ value.user_id }}">
 			<select name="ban_duration">
 			  <option value="0">Durée du ban (en minutes)</option>
 			  <option value="30">30</option>
