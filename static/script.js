@@ -659,10 +659,10 @@ document.addEventListener('DOMContentLoaded', function() {
 		evt.preventDefault();
 		input.value = (lastMsg && !input.value ? lastMsg : '');
 	    }
-	    else if(evt.keyCode == 39) {
+	    else if(evt.keyCode == 39 && input.value == "") {
 		display_inventory();
 	    }
-	    else if(evt.keyCode == 37) {
+	    else if(evt.keyCode == 37 && input.value == "") {
 		display_bank();
 	    }
 	};
