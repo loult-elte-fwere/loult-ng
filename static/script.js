@@ -167,6 +167,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	    if(!params.you) muted.push(userid);
 
 	var row = document.createElement('li');
+	row.setAttribute('title', params.name + ' ' + params.adjective);
         //var newSpan = document.createElement('span');
 
 	// items can be dragged on users to use
@@ -232,6 +233,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	idiv.appendChild(pimg);
 
 	phead.style.backgroundImage = 'linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0) 35px, rgba(' + parseInt(params.color.slice(1, 3), 16) + ', ' + parseInt(params.color.slice(3, 5), 16) + ', ' + parseInt(params.color.slice(5, 7), 16) + ', 0.2) 35px, ' + params.color + ' 100%)';
+	phead.style.backgroundColor = '#222';
 	phead.appendChild(idiv);
 	phead.appendChild(document.createElement('br'));
 	phead.appendChild(document.createTextNode(params.name + ' ' + params.adjective));
@@ -247,7 +249,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 	pdiv.appendChild(phead);
 	pdiv.appendChild(pbody);
-	row.appendChild(pdiv);
+//	row.appendChild(pdiv);
 
 	userlist.appendChild(row);
 	users[userid].dom = row;
@@ -529,6 +531,19 @@ document.addEventListener('DOMContentLoaded', function() {
 	ws.send(JSON.stringify({ type : 'channel_inventory'}));
     }
 
+    function display_bank() {
+	ws.send(JSON.stringify({type: 'channel_inventory'}));
+	inventory_display.style.display = "none";
+	bank_display.style.display = bank_display.style.display == "flex" ? "none" : "flex";	    
+    }
+
+    function display_inventory() {
+	ws.send(JSON.stringify({type: 'inventory'}));
+	chest.firstElementChild.src = 'img/icons/coffreouvert.svg';
+	bank_display.style.display = "none";
+	inventory_display.style.display = inventory_display.style.display == "flex" ? "none" : "flex";
+    }
+
     // Users list display
 
     var userswitch = document.getElementById('userswitch');
@@ -572,16 +587,10 @@ document.addEventListener('DOMContentLoaded', function() {
 			underlay.className = 'pulse';
 		    }
 		    else if(trimed.match(/^\/((?:bank)+)$/i)) {
-			ws.send(JSON.stringify({type: 'channel_inventory'}));
-			// underlay.className = 'pulse';
-			inventory_display.style.display = "none";
-			bank_display.style.display = bank_display.style.display == "flex" ? "none" : "flex";
+			display_bank();
 		    }
 		    else if(trimed.match(/^\/((?:list)+)$/i)) {
-			ws.send(JSON.stringify({type: 'inventory'}));
-			chest.firstElementChild.src = 'img/icons/coffreouvert.svg';
-			bank_display.style.display = "none";
-			inventory_display.style.display = inventory_display.style.display == "flex" ? "none" : "flex";
+			display_inventory();
 		    }
 		    else if(trimed.match(/^\/give\s/i)) {
 			var splitted = trimed.split(' ');
@@ -649,6 +658,12 @@ document.addEventListener('DOMContentLoaded', function() {
 	    else if(evt.keyCode === 38 || evt.keyCode === 40) {
 		evt.preventDefault();
 		input.value = (lastMsg && !input.value ? lastMsg : '');
+	    }
+	    else if(evt.keyCode == 39) {
+		display_inventory();
+	    }
+	    else if(evt.keyCode == 37) {
+		display_bank();
 	    }
 	};
 
