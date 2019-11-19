@@ -531,6 +531,19 @@ document.addEventListener('DOMContentLoaded', function() {
 	ws.send(JSON.stringify({ type : 'channel_inventory'}));
     }
 
+    function display_bank() {
+	ws.send(JSON.stringify({type: 'channel_inventory'}));
+	inventory_display.style.display = "none";
+	bank_display.style.display = bank_display.style.display == "flex" ? "none" : "flex";	    
+    }
+
+    function display_inventory() {
+	ws.send(JSON.stringify({type: 'inventory'}));
+	chest.firstElementChild.src = 'img/icons/coffreouvert.svg';
+	bank_display.style.display = "none";
+	inventory_display.style.display = inventory_display.style.display == "flex" ? "none" : "flex";
+    }
+
     // Users list display
 
     var userswitch = document.getElementById('userswitch');
@@ -574,16 +587,10 @@ document.addEventListener('DOMContentLoaded', function() {
 			underlay.className = 'pulse';
 		    }
 		    else if(trimed.match(/^\/((?:bank)+)$/i)) {
-			ws.send(JSON.stringify({type: 'channel_inventory'}));
-			// underlay.className = 'pulse';
-			inventory_display.style.display = "none";
-			bank_display.style.display = bank_display.style.display == "flex" ? "none" : "flex";
+			display_bank();
 		    }
 		    else if(trimed.match(/^\/((?:list)+)$/i)) {
-			ws.send(JSON.stringify({type: 'inventory'}));
-			chest.firstElementChild.src = 'img/icons/coffreouvert.svg';
-			bank_display.style.display = "none";
-			inventory_display.style.display = inventory_display.style.display == "flex" ? "none" : "flex";
+			display_inventory();
 		    }
 		    else if(trimed.match(/^\/give\s/i)) {
 			var splitted = trimed.split(' ');
@@ -651,6 +658,12 @@ document.addEventListener('DOMContentLoaded', function() {
 	    else if(evt.keyCode === 38 || evt.keyCode === 40) {
 		evt.preventDefault();
 		input.value = (lastMsg && !input.value ? lastMsg : '');
+	    }
+	    else if(evt.keyCode == 39) {
+		display_inventory();
+	    }
+	    else if(evt.keyCode == 37) {
+		display_bank();
 	    }
 	};
 
