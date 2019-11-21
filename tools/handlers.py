@@ -321,7 +321,7 @@ class IpBanHandler(MsgBaseHandler):
     async def handle(self, msg_data: Dict):
         user_id = msg_data['userid']
         channel = msg_data['channel']
-        duration = int(msg_data['duration']) if msg_data['duration'] is not "" else BAN_TIME
+        duration = int(msg_data['duration']) if msg_data['duration'] is not "" else BAN_TIME # kk
         
         banned_user = self.loult_state.chans.get(channel).users[user_id]
         if msg_data["action"] == "apply":
@@ -333,7 +333,7 @@ class IpBanHandler(MsgBaseHandler):
         elif msg_data["action"] == "remove":
             for client in banned_user.clients:
                 if client.user is not None and client.user.user_id == user_id:
-                    self.loult_state.banned_ip.remove(client.ip)
+                    self.loult_state.banned_ips.remove(client.ip)
             self.server.send_json(type="ipban", userid=user_id, state="remove_ok")
 
             

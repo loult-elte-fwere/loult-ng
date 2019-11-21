@@ -4,9 +4,16 @@ from ..handlers import cookie_check
 
 admin = Quart(__name__)
 
-# @cookie_check(MOD_COOKIES)
 @admin.route('/')
 async def admin_main():
-    state = admin.config['state']
+    # maybe this whole block could be replace with @cookie_check(MOD_COOKIES)
     req = request.headers.get("Cookie")
-    return await render_template('main.html', state=state)    
+    if req is not None:
+        cookie = req.encode("latin-1").decode("utf-8") # ouch!
+        for mod in MOD_COOKIES:
+            if mod in cookie:
+                state = admin.config['state']
+                return await render_template('main.html', state=state)
+        return "nonnw"
+    else:
+        return "nonnw"
