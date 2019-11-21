@@ -3,6 +3,7 @@
   <head>
     <title>Tribunoult</title>
     <link rel="stylesheet" href="admin_style.css" type="text/css">
+    <script src="admin_client.js"></script>
   </head>
   <body>
     <h1>Tribunoult - Surveiller et Punir</h1>
@@ -37,8 +38,9 @@
 		    <li>{{ value.state.is_shadowbanned }}</li>
 		    <li>{{ value.state.last_message.strftime('%H:%M:%S (%d/%m/%Y)') }}</li>
 		    <li>
-		      <form method="post" action="/admin/manage">
+		      <form method="post">
 			<input name="userid" type="hidden" value="{{ value.user_id }}">
+			<input name="channel" type="hidden" value="{{ item.name }}">
 			<select name="ban_duration">
 			  <option value="0">Durée du ban (en minutes)</option>
 			  <option value="30">30</option>
@@ -48,10 +50,8 @@
 			</select>
 			<select name="action">
 			  <option value="">Choississez une action</option>
-			  <option value="unban">Plus Banniw</option>
-			  <option value="ban">Banniw</option>
-			  <option value="shadowban">Shadowbanniw</option>
-			  <option value="VIP">Ajouter/Supprimer de la liste VIP</option>
+			  <option value="apply">Banniw</option>
+			  <option value="remove">Plus Banniw</option>
 			</select>
 			<input type="submit" value="valider"/>
 		      </form>

@@ -7,7 +7,7 @@ from typing import Dict
 from scipy.io import wavfile
 
 from config import ATTACK_RESTING_TIME, MOD_COOKIES, SOUND_BROADCASTER_COOKIES, TIME_BEFORE_TALK, \
-    MAX_ITEMS_IN_INVENTORY, MILITIA_COOKIES
+    MAX_ITEMS_IN_INVENTORY, MILITIA_COOKIES, BAN_TIME
 from tools.objects.base import ClonableObject, MilitiaWeapon
 from tools.objects.weapons import MilitiaSniper, MilitiaSniperAmmo, Civilisator, \
     Screamer
@@ -282,8 +282,10 @@ class ShadowbanHandler(MsgBaseHandler):
     @cookie_check(MOD_COOKIES)
     async def handle(self, msg_data: Dict):
         user_id = msg_data['userid']
-
-        shadowbanned_user = self.channel_obj.users[user_id]
+        channel = msg_data['channel']
+        
+        #shadowbanned_user = self.channel_obj.users[user_id]
+        shadowbanned_user = self.loult_state.chans.get(channel).users[user_id]
         if msg_data["action"] == "apply":
             shadowbanned_user.state.is_shadowbanned = True
             self.loult_state.shadowbanned_cookies.add(shadowbanned_user.cookie_hash)
@@ -299,8 +301,9 @@ class TrashHandler(MsgBaseHandler):
     @cookie_check(MOD_COOKIES)
     async def handle(self, msg_data: Dict):
         user_id = msg_data['userid']
-
-        trashed_user = self.channel_obj.users[user_id]
+        channel = msg_data['channel']
+        
+        trashed_user = self.loult_state.chans.get(channel).users[user_id]
         if msg_data["action"] == "apply":
             self.loult_state.trashed_cookies.add(trashed_user.cookie_hash)
             self.server.send_json(type="trash", userid=user_id, state="apply_ok")
@@ -311,7 +314,29 @@ class TrashHandler(MsgBaseHandler):
             self.loult_state.trashed_cookies.remove(trashed_user.cookie_hash)
             self.server.send_json(type="trash", userid=user_id, state="remove_ok")
 
+            
+class IpBanHandler(MsgBaseHandler):
 
+    @cookie_check(MOD_COOKIES)
+    async def handle(self, msg_data: Dict):
+        user_id = msg_data['userid']
+        channel = msg_data['channel']
+        duration = int(msg_data['duration']) if msg_data['duration'] is not "" else BAN_TIME
+        
+        banned_user = self.loult_state.chans.get(channel).users[user_id]
+        if msg_data["action"] == "apply":
+            for client in banned_user.clients:
+                if client.user is not None and client.user.user_id == user_id:
+                    self.loult_state.ban_ip(client.ip, duration)
+                    client.sendClose(code=4006, reason="Reconnect later.")
+            self.server.send_json(type="ipban", userid=user_id, state="apply_ok")
+        elif msg_data["action"] == "remove":
+            for client in banned_user.clients:
+                if client.user is not None and client.user.user_id == user_id:
+                    self.loult_state.banned_ip.remove(client.ip)
+            self.server.send_json(type="ipban", userid=user_id, state="remove_ok")
+
+            
 class InventoryListingHandler(MsgBaseHandler):
 
     async def handle(self, msg_data: Dict):

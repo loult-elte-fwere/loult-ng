@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 import argparse
 import logging
 from asyncio import get_event_loop, ensure_future, gather, set_event_loop_policy, get_event_loop_policy
@@ -7,7 +7,7 @@ from itertools import chain
 from tools.admin import admin
 from tools.ban import Ban, BanFail
 from tools.client import ClientRouter, LoultServerProtocol
-from tools.handlers import (MessageHandler, BinaryHandler, TrashHandler, BanHandler, ShadowbanHandler,
+from tools.handlers import (MessageHandler, BinaryHandler, TrashHandler, BanHandler, IpBanHandler, ShadowbanHandler,
                             NoRenderMsgHandler, AttackHandler, PrivateMessageHandler, MoveHandler,
                             InventoryListingHandler, ObjectGiveHandler, ObjectUseHandler, ObjectTrashHandler,
                             ListChannelInventoryHandler, ObjectTakeHandler, WeaponsGrantHandler)
@@ -80,6 +80,7 @@ if __name__ == "__main__":
     router.add_route(field="type", value="take", handler_class=ObjectTakeHandler)
 
     #moderation handlers
+    router.add_route(field="mod", value="ipban", handler_class=IpBanHandler)
     router.add_route(field="mod", value="trash", handler_class=TrashHandler)
     router.add_route(field="mod", value="shadowban", handler_class=ShadowbanHandler)
     for ban_type in Ban.ban_types:
