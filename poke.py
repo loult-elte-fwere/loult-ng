@@ -64,19 +64,19 @@ if __name__ == "__main__":
     router = ClientRouter()
     router.set_binary_route(BinaryHandler)
     router.add_route(field="type", value="msg", handler_class=MessageHandler)
-    router.add_route(field="type", value="private_msg", handler_class=PrivateMessageHandler)
-    router.add_route(field="type", value="attack", handler_class=AttackHandler)
+    # router.add_route(field="type", value="private_msg", handler_class=PrivateMessageHandler)
+    # router.add_route(field="type", value="attack", handler_class=AttackHandler)
     router.add_route(field="type", value="move", handler_class=MoveHandler)
     router.add_route(field="type", value="me", handler_class=NoRenderMsgHandler)
     router.add_route(field="type", value="bot", handler_class=NoRenderMsgHandler)
 
     # objects-related handlers
     router.add_route(field="type", value="inventory", handler_class=InventoryListingHandler)
-    router.add_route(field="type", value="give", handler_class=ObjectGiveHandler)
+    # router.add_route(field="type", value="give", handler_class=ObjectGiveHandler)
     router.add_route(field="type", value="use", handler_class=ObjectUseHandler)
     router.add_route(field="type", value="trash", handler_class=ObjectTrashHandler)
-    router.add_route(field="type", value="channel_inventory", handler_class=ListChannelInventoryHandler)
-    router.add_route(field="type", value="take", handler_class=ObjectTakeHandler)
+    # router.add_route(field="type", value="channel_inventory", handler_class=ListChannelInventoryHandler)
+    # router.add_route(field="type", value="take", handler_class=ObjectTakeHandler)
 
     #moderation handlers
     router.add_route(field="mod", value="trash", handler_class=TrashHandler)
@@ -101,8 +101,9 @@ if __name__ == "__main__":
         )
 
     coro = loop.create_server(factory, '127.0.0.1', 9000)
-    scheduler_task = ensure_future(scheduler.start())
-    server = loop.run_until_complete(gather(coro, scheduler_task))
+    # scheduler_task = ensure_future(scheduler.start())
+    # server = loop.run_until_complete(gather(coro, scheduler_task))
+    server = loop.run_until_complete(coro)
 
     try:
         loop.run_forever()
