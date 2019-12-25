@@ -107,13 +107,16 @@ document.addEventListener('DOMContentLoaded', function() {
 		    img1 = document.createElement('img'),
 		    img2 = document.createElement('img'),
 		    img3 = document.createElement('img');
+		    img4 = document.createElement('img');
 
 		img1.src = '/img/pokemon/small/' + pkmn.img + '.gif';
 		img2.src = '/img/pokemon/medium/' + pkmn.img + '.gif';
 		img3.src = '/img/pokemon/big/' + pkmn.img + '.png';
+		img4.src = '/img/pokemon/mini/' + pkmn.img + '.png';
 		pic.appendChild(img1);
 		pic.appendChild(img2);
 		pic.appendChild(img3);
+		pic.appendChild(img4);
 		row.appendChild(pic);
 
 		var name = document.createElement('div');
