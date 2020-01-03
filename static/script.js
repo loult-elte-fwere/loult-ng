@@ -690,7 +690,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			if (msg.msg.match(VID_REGEX) ) {
 			    ytbId = '';
 			    if(msg.msg.match('youtu.be/'))
-				tbId=msg.msg.split(".be/")[1].substring(0, 11);
+				ytbId=msg.msg.split(".be/")[1].substring(0, 11);
 			    else
 				ytbId=msg.msg.split("v=")[1].substring(0, 11);
 			    addEmbedYtb(ytbId,autoscroll);
