@@ -688,9 +688,14 @@ document.addEventListener('DOMContentLoaded', function() {
 			//regex to get if msg have youtube link
 			let VID_REGEX =/^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$/gm; 
 			if (msg.msg.match(VID_REGEX) ) {
-			    ytbId=msg.msg.split("v=")[1].substring(0, 11);
+			    ytbId = '';
+			    if(msg.msg.match('youtu.be/'))
+				tbId=msg.msg.split(".be/")[1].substring(0, 11);
+			    else
+				ytbId=msg.msg.split("v=")[1].substring(0, 11);
 			    addEmbedYtb(ytbId,autoscroll);
 			}
+			
 			//if noelshack URL(just url) link	
 			if (msg.msg.match('http://image.noelshack.com/')|| msg.msg.match('https://image.noelshack.com/')){
 			    var imgId=msg.msg.split("noelshack.com/")[1];
