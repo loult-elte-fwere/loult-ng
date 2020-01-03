@@ -11,7 +11,7 @@ from tools.objects.weapons import Revolver, RevolverCartridges, SniperRifle, \
 # objects which can be given to users and are not specifically linked to any events
 AVAILABLE_OBJECTS = [MagicWand, Crown, SimpleInstrument, Scolopamine,
                      AlcoholBottle, PolynectarPotion, Microphone, C4,
-                     Detonator, SuicideJacket, Flower, Quiver, WealthDetector,
+                     Detonator, SuicideJacket, Flower, Quiver,
                      RectalExam, Costume, Cigarettes, Lighter, MollyChute, CaptainHaddockPipe,
                      Cocaine]
 

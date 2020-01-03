@@ -12,11 +12,13 @@ document.addEventListener('DOMContentLoaded', function() {
 	banned = false,
 	users = {},
 	muted = JSON.parse(localStorage.getItem('mutedUsers')) ? JSON.parse(localStorage.getItem('mutedUsers')) : [],
+	embed = localStorage.getItem('embed') ? localStorage.getItem('embed') : [],
 	you = null,
 	count = 0,
 	lastMsg,
 	lastRow,
 	lastId,
+	lastType = null,
 	inventory = "",
 	item_list = "",
 	dragged_item,
@@ -81,7 +83,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	    uid = uid || null;
 	text.innerHTML = txt;
 
-	if(lastId !== uid) {
+	if(lastId !== uid || lastType !== rowclass) {
 	    var row = document.createElement('div'),
 		msg = document.createElement('div');
 
@@ -105,13 +107,16 @@ document.addEventListener('DOMContentLoaded', function() {
 		    img1 = document.createElement('img'),
 		    img2 = document.createElement('img'),
 		    img3 = document.createElement('img');
+		    img4 = document.createElement('img');
 
 		img1.src = '/img/pokemon/small/' + pkmn.img + '.gif';
 		img2.src = '/img/pokemon/medium/' + pkmn.img + '.gif';
 		img3.src = '/img/pokemon/big/' + pkmn.img + '.png';
+		img4.src = '/img/pokemon/mini/' + pkmn.img + '.png';
 		pic.appendChild(img1);
 		pic.appendChild(img2);
 		pic.appendChild(img3);
+		pic.appendChild(img4);
 		row.appendChild(pic);
 
 		var name = document.createElement('div');
@@ -142,6 +147,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 	lastRow.appendChild(text);
 	lastId = uid;
+	lastType = rowclass;
 
 	if(atBottom)
 	    chat.scrollTop = chat.scrollHeight;
@@ -164,6 +170,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	    if(!params.you) muted.push(userid);
 
 	var row = document.createElement('li');
+	row.setAttribute('title', params.name + ' ' + params.adjective);
         //var newSpan = document.createElement('span');
 
 	// items can be dragged on users to use
@@ -229,6 +236,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	idiv.appendChild(pimg);
 
 	phead.style.backgroundImage = 'linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0) 35px, rgba(' + parseInt(params.color.slice(1, 3), 16) + ', ' + parseInt(params.color.slice(3, 5), 16) + ', ' + parseInt(params.color.slice(5, 7), 16) + ', 0.2) 35px, ' + params.color + ' 100%)';
+	phead.style.backgroundColor = '#222';
 	phead.appendChild(idiv);
 	phead.appendChild(document.createElement('br'));
 	phead.appendChild(document.createTextNode(params.name + ' ' + params.adjective));
@@ -244,7 +252,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 	pdiv.appendChild(phead);
 	pdiv.appendChild(pbody);
-	row.appendChild(pdiv);
+//	row.appendChild(pdiv);
 
 	userlist.appendChild(row);
 	users[userid].dom = row;
@@ -339,6 +347,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var gear = document.getElementById('gear'),
 	overlay = document.getElementById('overlay'),
 	cover = document.getElementById('cover'),
+      	embedbtn = document.getElementById('embed'),
 	close = document.getElementById('close'),
 	ambtn = document.getElementById('am'),
 	head = document.getElementById('head'),
@@ -350,9 +359,14 @@ document.addEventListener('DOMContentLoaded', function() {
 	settings = theme.split(' ');
 
     ambtn.checked = localStorage.getItem('automute') == 'true' ? true : false;
+    embedbtn.checked = localStorage.getItem('embed') == 'true' ? true : false;
 
     ambtn.onchange = function() {
 	localStorage.setItem('automute', ambtn.checked);
+    }
+
+    embedbtn.onchange = function() {
+	localStorage.setItem('embed', embedbtn.checked);
     }
 
     var openWindow = function() {
@@ -488,7 +502,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Items
     function item_dragstart(event) {
 	event.target.dataTransfer.setData(event.target.getAttribute('data-id'));
-	console.log(event);
 	event.preventDefault();
     }
 
@@ -503,8 +516,6 @@ document.addEventListener('DOMContentLoaded', function() {
     function item_drop(event) {
 	event.preventDefault();
 	target_id = event.target.getAttribute("data-id").split(" ");
-	console.log(dragged_item);
-	console.log(target_id);
 	ws.send(JSON.stringify({
 	    type : 'use',
 	    object_id: parseInt(dragged_item),
@@ -521,6 +532,19 @@ document.addEventListener('DOMContentLoaded', function() {
 	attribute = this.getAttribute('data-id');
 	ws.send(JSON.stringify({ type : 'take', object_id: attribute}));
 	ws.send(JSON.stringify({ type : 'channel_inventory'}));
+    }
+
+    function display_bank() {
+	ws.send(JSON.stringify({type: 'channel_inventory'}));
+	inventory_display.style.display = "none";
+	bank_display.style.display = bank_display.style.display == "flex" ? "none" : "flex";	    
+    }
+
+    function display_inventory() {
+	ws.send(JSON.stringify({type: 'inventory'}));
+	chest.firstElementChild.src = 'img/icons/coffreouvert.svg';
+	bank_display.style.display = "none";
+	inventory_display.style.display = inventory_display.style.display == "flex" ? "none" : "flex";
     }
 
     // Users list display
@@ -566,16 +590,10 @@ document.addEventListener('DOMContentLoaded', function() {
 			underlay.className = 'pulse';
 		    }
 		    else if(trimed.match(/^\/((?:bank)+)$/i)) {
-			ws.send(JSON.stringify({type: 'channel_inventory'}));
-			// underlay.className = 'pulse';
-			inventory_display.style.display = "none";
-			bank_display.style.display = bank_display.style.display == "flex" ? "none" : "flex";
+			display_bank();
 		    }
 		    else if(trimed.match(/^\/((?:list)+)$/i)) {
-			ws.send(JSON.stringify({type: 'inventory'}));
-			chest.firstElementChild.src = 'img/icons/coffreouvert.svg';
-			bank_display.style.display = "none";
-			inventory_display.style.display = inventory_display.style.display == "flex" ? "none" : "flex";
+			display_inventory();
 		    }
 		    else if(trimed.match(/^\/give\s/i)) {
 			var splitted = trimed.split(' ');
@@ -644,6 +662,12 @@ document.addEventListener('DOMContentLoaded', function() {
 		evt.preventDefault();
 		input.value = (lastMsg && !input.value ? lastMsg : '');
 	    }
+	    else if(evt.keyCode == 39 && input.value == "") {
+		display_inventory();
+	    }
+	    else if(evt.keyCode == 37 && input.value == "") {
+		display_bank();
+	    }
 	};
 
 	ws.onopen = function() {
@@ -660,19 +684,18 @@ document.addEventListener('DOMContentLoaded', function() {
 		case 'bot':
 		    if(!lastMuted)
 			addLine(users[msg.userid], parser(msg.msg), msg.date, msg.type, msg.userid);
-		    if (document.getElementById("embed").checked==true) {
+		    if (embedbtn.checked==true) {
 			//regex to get if msg have youtube link
-			let VID_REGEX =/(?:youtube(?:-nocookie)?\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+			let VID_REGEX =/(?:youtube(?:-nocookie)?\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/; 
 			if (msg.msg.match(VID_REGEX) ) {
 			    ytbId=msg.msg.split("v=")[1].substring(0, 11);
 			    addEmbedYtb(ytbId,autoscroll);
 			}
-			//if noelshack URL(just url) link
+			//if noelshack URL(just url) link	
 			if (msg.msg.match('http://image.noelshack.com/')|| msg.msg.match('https://image.noelshack.com/')){
 			    var imgId=msg.msg.split("noelshack.com/")[1];
 			    addEmbedNoelshack(imgId,autoscroll);
-			}
-
+			}			
 		    }
 		    break;
 
@@ -875,11 +898,11 @@ document.addEventListener('DOMContentLoaded', function() {
 	ws.onerror = function(e) {
 	    console.log(['error', e]);
 	};
-
+	
 	ws.onclose = function() {
 	    for(var i in users)
 		delUser(i);
-
+		
 	    if(banned)
 		for(var i = 0; i < 500; i++)
 		    addLine({name : 'info'}, 'CIVILISE TOI.', (new Date), 'kick');
