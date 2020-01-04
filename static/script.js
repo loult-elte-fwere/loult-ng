@@ -686,11 +686,16 @@ document.addEventListener('DOMContentLoaded', function() {
 			addLine(users[msg.userid], parser(msg.msg), msg.date, msg.type, msg.userid);
 		    if (embedbtn.checked==true) {
 			//regex to get if msg have youtube link
-			let VID_REGEX =/(?:youtube(?:-nocookie)?\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/; 
+			let VID_REGEX =/^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$/gm; 
 			if (msg.msg.match(VID_REGEX) ) {
-			    ytbId=msg.msg.split("v=")[1].substring(0, 11);
+			    ytbId = '';
+			    if(msg.msg.match('youtu.be/'))
+				ytbId=msg.msg.split(".be/")[1].substring(0, 11);
+			    else
+				ytbId=msg.msg.split("v=")[1].substring(0, 11);
 			    addEmbedYtb(ytbId,autoscroll);
 			}
+			
 			//if noelshack URL(just url) link	
 			if (msg.msg.match('http://image.noelshack.com/')|| msg.msg.match('https://image.noelshack.com/')){
 			    var imgId=msg.msg.split("noelshack.com/")[1];
