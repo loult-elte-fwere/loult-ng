@@ -22,9 +22,9 @@ class Channel:
         # this is used to track how many cookies we have per connected IP in that channel
         self.ip_cookies_tracker = dict()  # type: Dict[str,Set[bytes]]
         self.inventory = UserInventory()
-        # filling the channel's inventory with some random items
-        # for _ in range(CHANNEL_SETUP_INVENTORY_COUNT):
-        #     self.inventory.add(get_random_object())
+        # filling the channel's inventory with some random items
+        for _ in range(CHANNEL_SETUP_INVENTORY_COUNT):
+            self.inventory.add(get_random_object())
 
     def _signal_user_connect(self, client, user: User):
         client.send_json(type='connect', date=timestamp() * 1000, **user.info)
