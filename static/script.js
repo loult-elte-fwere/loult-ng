@@ -171,6 +171,9 @@ document.addEventListener('DOMContentLoaded', function() {
 	}
 	users[userid].orderId=orderId;
 
+	localStorage.setItem('mutedUsers', JSON.stringify(muted));
+	localStorage.setItem('unmutedUsers', JSON.stringify(unmuted));
+	
 	/* first connection, page refreshed, or any cases where a user can 
 	   be in neither of both *muted list */
 	if(muted.indexOf(userid) === -1 && unmuted.indexOf(userid) === -1){
@@ -754,7 +757,6 @@ document.addEventListener('DOMContentLoaded', function() {
 		    break;
 
 		case 'connect':
-		    // is_muted = (ambtn.checked && unmuted.indexOf(msg.userid) === -1) ? true : false;
 		    addUser(msg.userid, msg.params, msg.profile);
 		    if(!lastMuted)
 			addLine({name : 'info'}, 'Un ' + msg.params.name + ' ' + msg.params.adjective + ' apparaît !', msg.date, 'log', msg.type);
