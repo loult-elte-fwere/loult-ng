@@ -36,8 +36,12 @@ document.addEventListener('DOMContentLoaded', function() {
 		run: msg => msg.replace(/https?:\/\/[^< ]*[^<*.,?! :]/g, '<a href="$&" target="_blank">$&</a>')
 	    },
 	    {
-		test: msg => msg.includes('://vocaroo.com/i/'),
-		run: msg => msg.replace(/<a href="https?:\/\/vocaroo.com\/i\/(\w+)" target="_blank">https?:\/\/vocaroo.com\/i\/\w+<\/a>/g, '<audio controls><source src="https://vocaroo.com/media_command.php?media=$1&command=download_mp3" type="audio/mpeg"><source src="https://vocaroo.com/media_command.php?media=$1&command=download_webm" type="audio/webm"></audio>$&')
+                test: msg => msg.includes('://old.vocaroo.com/i/'),
+                run: msg => msg.replace(/<a href="https?:\/\/old.vocaroo.com\/i\/(\w+)" target="_blank">https?:\/\/old.vocaroo.com\/i\/\w+<\/a>/g, '<audio controls><source src="https://old.vocaroo.com/media_command.php?media=$1&command=download_mp3" type="audio/mpeg"><source src="https://old.vocaroo.com/media_command.php?media=$1&command=download_webm" type="audio/webm"></audio>$&')
+            },
+	    {
+		test: msg => (msg.includes('://vocaroo.com/') || msg.includes('://voca.ro/')),
+		run: msg => msg.replace(/<a href="https?:\/\/(?:vocaroo.com|voca.ro)\/(\w+)" target="_blank">https?:\/\/(?:vocaroo.com|voca.ro)\/\w+<\/a>/g, '<audio controls><source src="https://media.vocaroo.com/mp3/$1" type="audio/mpeg"></source></audio>$&')
 	    },
 	    {
 		test: msg => msg.includes('**'),
@@ -686,11 +690,16 @@ document.addEventListener('DOMContentLoaded', function() {
 			addLine(users[msg.userid], parser(msg.msg), msg.date, msg.type, msg.userid);
 		    if (embedbtn.checked==true) {
 			//regex to get if msg have youtube link
-			let VID_REGEX =/(?:youtube(?:-nocookie)?\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/; 
+			let VID_REGEX =/^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$/gm; 
 			if (msg.msg.match(VID_REGEX) ) {
-			    ytbId=msg.msg.split("v=")[1].substring(0, 11);
+			    ytbId = '';
+			    if(msg.msg.match('youtu.be/'))
+				ytbId=msg.msg.split(".be/")[1].substring(0, 11);
+			    else
+				ytbId=msg.msg.split("v=")[1].substring(0, 11);
 			    addEmbedYtb(ytbId,autoscroll);
 			}
+			
 			//if noelshack URL(just url) link	
 			if (msg.msg.match('http://image.noelshack.com/')|| msg.msg.match('https://image.noelshack.com/')){
 			    var imgId=msg.msg.split("noelshack.com/")[1];
