@@ -174,7 +174,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	/* first connection, page refreshed, or any cases where a user can 
 	   be in neither of both *muted list */
 	if(muted.indexOf(userid) === -1 && unmuted.indexOf(userid) === -1){
-	    if(ambtn.checked)
+	    if(ambtn.checked && !params.you)
 		muted.push(userid);
 	    else
 		unmuted.push(userid);
