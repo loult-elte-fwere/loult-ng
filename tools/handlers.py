@@ -153,18 +153,24 @@ class NoRenderMsgHandler(FloodCheckerHandler):
 class PrivateMessageHandler(FloodCheckerHandler):
 
     async def handle(self, msg_data: Dict):
+        now = datetime.now()
         # cleaning up none values in case of fuckups
         msg_data = {key: value for key, value in msg_data.items() if value is not None}
-        target = self.channel_obj.users.get(msg_data.get("userid"))
+        #target = self.channel_obj.users.get(msg_data.get("target"))
+        target_id, target = self.channel_obj.get_user_by_name(msg_data.get("target",
+                                                              self.user.poke_params.pokename),
+                                                              msg_data.get("order", 1) - 1)
+
         output_msg = escape(msg_data['msg'])
         if self._check_flood(output_msg):
             return
 
         if target is None:
-            self.server.send_json(type='private_msg', event='invalid')
+            self.server.send_json(type='private_msg', event='invalid_target')
+            return
         for client in self.channel_obj.clients:
             if client.user == target:
-                client.send_json(type='private_msg', msg=msg_data["msg"])
+                client.send_json(type='private_msg', msg=msg_data['msg'], userid=self.user.user_id)
 
 
 class AttackHandler(MsgBaseHandler):
