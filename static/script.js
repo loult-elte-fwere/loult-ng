@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	banned = false,
 	users = {},
 	muted = JSON.parse(localStorage.getItem('mutedUsers')) ? JSON.parse(localStorage.getItem('mutedUsers')) : [],
+	unmuted = JSON.parse(localStorage.getItem('unmutedUsers')) ? JSON.parse(localStorage.getItem('unmutedUsers')) : [],
 	embed = localStorage.getItem('embed') ? localStorage.getItem('embed') : [],
 	you = null,
 	count = 0,
@@ -170,8 +171,14 @@ document.addEventListener('DOMContentLoaded', function() {
 	}
 	users[userid].orderId=orderId;
 
-	if(ambtn.checked && muted.indexOf(userid) === -1)
-	    if(!params.you) muted.push(userid);
+	/* first connection, page refreshed, or any cases where a user can 
+	   be in neither of both *muted list */
+	if(muted.indexOf(userid) === -1 && unmuted.indexOf(userid) === -1){
+	    if(ambtn.checked)
+		muted.push(userid);
+	    else
+		unmuted.push(userid);
+	}
 
 	var row = document.createElement('li');
 	row.setAttribute('title', params.name + ' ' + params.adjective);
@@ -195,23 +202,28 @@ document.addEventListener('DOMContentLoaded', function() {
 
 	    // Muted button
 	    var i = document.createElement('i');
+	    
 	    i.className = 'material-icons';
-	    i.appendChild(document.createTextNode('volume_' + (muted.indexOf(userid) != -1 ? 'off' : 'up')));
+	    i.appendChild(document.createTextNode('volume_' + (
+		unmuted.indexOf(userid) === -1 ? 'off' : 'up')));
 	    row.appendChild(i);
 	    muted_button = row.getElementsByClassName('material-icons')[0];
 	    muted_button.onmousedown = function(e) {
 		e.stopPropagation();
-		if(muted.indexOf(userid) != -1) {
+		
+		if(muted.indexOf(userid) !== -1) {
 		    muted.splice(muted.indexOf(userid), 1);
+		    unmuted.push(userid);
 		    i.innerHTML = 'volume_up';
 		}
 		else {
+		    unmuted.splice(unmuted.indexOf(userid), 1);
 		    muted.push(userid);
 		    i.innerHTML = 'volume_off';
 		}
 		localStorage.setItem('mutedUsers', JSON.stringify(muted));
+		localStorage.setItem('unmutedUsers', JSON.stringify(unmuted));
 	    };
-
 	}
 	else {
 	    underlay.style.backgroundImage = 'url("/img/pokemon/big/' + params.img + '.png")';
@@ -714,6 +726,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		    break;
 
 		case 'connect':
+		    // is_muted = (ambtn.checked && unmuted.indexOf(msg.userid) === -1) ? true : false;
 		    addUser(msg.userid, msg.params, msg.profile);
 		    if(!lastMuted)
 			addLine({name : 'info'}, 'Un ' + msg.params.name + ' ' + msg.params.adjective + ' apparaît !', msg.date, 'log', msg.type);
