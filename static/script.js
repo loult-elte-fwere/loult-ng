@@ -36,8 +36,8 @@ document.addEventListener('DOMContentLoaded', function() {
 		run: msg => msg.replace(/https?:\/\/[^< ]*[^<*.,?! :]/g, '<a href="$&" target="_blank">$&</a>')
 	    },
 	    {
-		test: msg => msg.includes('://vocaroo.com/i/'),
-		run: msg => msg.replace(/<a href="https?:\/\/vocaroo.com\/i\/(\w+)" target="_blank">https?:\/\/vocaroo.com\/i\/\w+<\/a>/g, '<audio controls><source src="https://vocaroo.com/media_command.php?media=$1&command=download_mp3" type="audio/mpeg"><source src="https://vocaroo.com/media_command.php?media=$1&command=download_webm" type="audio/webm"></audio>$&')
+		test: msg => (msg.includes('://vocaroo.com/') || msg.includes('://voca.ro/')),
+		run: msg => msg.replace(/<a href="https?:\/\/(?:vocaroo.com|voca.ro)\/(\w+)" target="_blank">https?:\/\/(?:vocaroo.com|voca.ro)\/\w+<\/a>/g, '<audio controls><source src="https://media.vocaroo.com/mp3/$1" type="audio/mpeg"></source></audio>$&')
 	    },
 	    {
 		test: msg => msg.includes('**'),
