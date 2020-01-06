@@ -715,7 +715,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			addLine(users[msg.userid], parser(msg.msg), msg.date, msg.type, msg.userid);
 		    if (embedbtn.checked==true) {
 			//regex to get if msg have youtube link
-			let VID_REGEX =/^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$/gm; 
+			let VID_REGEX =/^(?:.*)?((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)(?:.*)??$/gm; 
 			if (msg.msg.match(VID_REGEX) ) {
 			    ytbId = '';
 			    if(msg.msg.match('youtu.be/'))
