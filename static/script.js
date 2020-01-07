@@ -81,6 +81,30 @@ document.addEventListener('DOMContentLoaded', function() {
 	imgDiv.setAttribute('style', 'width:auto;height:30vh;maxWidth:60vw');
 	lastRow.appendChild(imgDiv);
 	callback();
+	}
+	const emojisList = [
+		{"name":"wow","id":"1","format":"gif"},
+		{"name":"crepse","id":"2","format":"gif"},
+		{"name":"rr","id":"3","format":"png"},
+		{"name":"bulbi","id":"3","format":"png"}
+	]
+	const getDivWithSmileyAndText= (string,smileyList) => {  //Make a <div> with <img> for emojis from a simple string 
+        var DivToMake = document.createElement('div'); //final Div with emoji and text
+
+        string.split(" ",string.length).forEach(function(elWord){//check each world
+            if (elWord[0]===":" && elWord[elWord.length-1]===":") {// if world start & end with ":"
+                keyWorld=elWord.slice(1,-1).toLowerCase(); //delete ":"
+                
+                if(smileyList.map( (el) =>{ return el.name; }).includes(keyWorld)){ //check if this smiley is on smileyList 
+                    let emoji = document.createElement('img');
+                    emoji.src = `/img/smileys/${keyWorld}.${smileyList.filter(val=> val.name==keyWorld)[0].format}`;
+                    DivToMake.appendChild(emoji);
+                }
+                else DivToMake.innerHTML += elWord+" "; //if emojis doesnt exist write as text ":smileyname:" without charging <img>
+            }
+            else DivToMake.innerHTML += elWord+" ";
+        })
+      return DivToMake;
     }
     var addLine = function(pkmn, txt, datemsg, rowclass, uid) {
 	var atBottom = (chat.scrollTop >= (chat.scrollHeight - chat.offsetHeight)-50),
@@ -150,7 +174,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		document.title = '(' + ++count + ') Loult.family';
 	}
 
-	lastRow.appendChild(text);
+	lastRow.appendChild(getDivWithSmileyAndText(txt,emojisList));
 	lastId = uid;
 	lastType = rowclass;
 
