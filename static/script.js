@@ -468,9 +468,18 @@ document.addEventListener('DOMContentLoaded', function() {
 	    volume = (context.createGain ? context.createGain() : context.createGainNode());
 	volume.connect(context.destination);
 
+	if(!localStorage.global_gain) {
+	    localStorage.global_gain = volume.gain.value;
+	}
+	
+	if(!localStorage.global_range) {
+	    localStorage.global_range = localStorage.global_gain * 100;
+	}
+
 	var changeVolume = function() {
-	    localStorage.volume = volume.gain.value = volrange.value * 0.01;
-	    changeIcon(volrange.value);
+	    localStorage.global_range = volrange.value;
+	    localStorage.global_gain = volume.gain.value = volrange.value * 0.01;
+	    changeIcon(volume.gain.value * 100);
 	};
 
 	var changeIcon = function(v) {
@@ -478,19 +487,20 @@ document.addEventListener('DOMContentLoaded', function() {
 	    //vol.innerHTML = (v > 0 ? (v > 50 ? 'volume_ off' : 'volume_down') : 'volume_mute');
 	};
 
-	if(localStorage.volume) {
-	    volrange.value = localStorage.volume * 100;
-	    volume.gain.value = localStorage.volume;
-	    changeIcon(volrange.value);
-	}
-
 	vol.onclick = function() {
 	    volume.gain.value = (volume.gain.value > 0 ? 0 : volrange.value * 0.01);
-	    changeIcon(volume.gain.value * 100);
+	    localStorage.global_gain = volume.gain.value;
+	    changeIcon(localStorage.global_gain);
 	};
+
+	// restore saved volume value at load
+	volume.gain.value = localStorage.global_gain;
+	volrange.value = localStorage.global_range;
+	changeIcon(localStorage.global_gain)
 
 	volrange.oninput = changeVolume;
     };
+
 
     // Inventory chest
 
