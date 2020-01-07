@@ -43,9 +43,8 @@ if __name__ == "__main__":
     # setting up events
     from tools.events import (EventScheduler, BienChantewEvent, MaledictionEvent,
                               UsersVoicesShuffleEvent, MusicalEvent,
-                              CloneArmyEvent, ThemeRenameEvent, ObjectDropEvent, InfectionEvent,
-                              LynchingEvent, PubBrawlEvent, FireworksEvent, RobinHoodEvent,
-                              TreizeNRV)
+                              ThemeRenameEvent, InfectionEvent,
+                              LynchingEvent, PubBrawlEvent, FireworksEvent, RobinHoodEvent)
 
     scheduler = EventScheduler(loult_state,
                                [BienChantewEvent(), MaledictionEvent(), UsersVoicesShuffleEvent(),
@@ -63,7 +62,7 @@ if __name__ == "__main__":
     router = ClientRouter()
     router.set_binary_route(BinaryHandler)
     router.add_route(field="type", value="msg", handler_class=MessageHandler)
-    # router.add_route(field="type", value="private_msg", handler_class=PrivateMessageHandler)
+    router.add_route(field="type", value="private_msg", handler_class=PrivateMessageHandler)
     router.add_route(field="type", value="attack", handler_class=AttackHandler)
     router.add_route(field="type", value="move", handler_class=MoveHandler)
     router.add_route(field="type", value="me", handler_class=NoRenderMsgHandler)
