@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     var audio = (window.AudioContext || typeof webkitAudioContext !== 'undefined'),
+	audio_sources = {},
 	userlist = document.getElementById('userlist'),
 	underlay = document.getElementById('underlay'),
 	input = document.getElementById('input'),
@@ -223,6 +224,14 @@ document.addEventListener('DOMContentLoaded', function() {
 		    unmuted.splice(unmuted.indexOf(userid), 1);
 		    muted.push(userid);
 		    i.innerHTML = 'volume_off';
+
+		    // stop all sounds coming from user *now*
+		    if(audio && audio_sources[userid] !== 'undefined'){
+			audio_sources[userid].forEach(function(value, index) {
+			    value.stop();
+			});
+			audio_sources[userid] = [];
+		    }
 		}
 		localStorage.setItem('mutedUsers', JSON.stringify(muted));
 		localStorage.setItem('unmutedUsers', JSON.stringify(unmuted));
@@ -960,7 +969,16 @@ document.addEventListener('DOMContentLoaded', function() {
 		    var source = context.createBufferSource();
 		    source.buffer = buf;
 		    source.connect(volume);
+		    // remove node from array once the song is played (or stopped)
+		    source.onended = function(event) {
+			let index = audio_sources[lastId].indexOf(source);
+			if(index > -1)
+			    audio_sources[lastId].splice(index, 1);
+		    };
 		    source.start();
+		    if(typeof audio_sources[lastId] === 'undefined')
+			audio_sources[lastId] = [];
+		    audio_sources[lastId].push(source);
 		});
 	    }
 	};
