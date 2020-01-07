@@ -612,10 +612,17 @@ document.addEventListener('DOMContentLoaded', function() {
 			var splitted = trimed.split(' : ');
 			var msg_content = splitted[1];
 			var msg_meta = splitted[0].split(' ');
-			ws.send(JSON.stringify({ type : 'private_msg',
-						 msg: msg_content,
-						 target: msg_meta[1],
-						 order : ((msg_meta.length === 3) ? parseInt(msg_meta[2]) : 0)}));
+
+			ws.send(JSON.stringify(
+			    { type : 'private_msg',
+			      msg: msg_content,
+			      target: msg_meta[1],
+			      order : ((msg_meta.length === 3) ? parseInt(msg_meta[2]) : 0)}));
+			
+			addLine(
+			    {name : 'info'},
+			    'MP envoyé à ' + msg_meta[1] + ' : ' + parser(msg_content),
+			    (new Date), 'msg', undefined);
 		    }
 		    else if(trimed.match(/^\/((?:bank)+)$/i)) {
 			display_bank();
@@ -741,6 +748,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			    break;
 			}
 		    }
+		    
 		    else {
 			if(!lastMuted)
 			    addLine({name : 'info'},
