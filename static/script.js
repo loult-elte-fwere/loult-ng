@@ -171,10 +171,13 @@ document.addEventListener('DOMContentLoaded', function() {
 	}
 	users[userid].orderId=orderId;
 
+	localStorage.setItem('mutedUsers', JSON.stringify(muted));
+	localStorage.setItem('unmutedUsers', JSON.stringify(unmuted));
+	
 	/* first connection, page refreshed, or any cases where a user can 
 	   be in neither of both *muted list */
 	if(muted.indexOf(userid) === -1 && unmuted.indexOf(userid) === -1){
-	    if(ambtn.checked)
+	    if(ambtn.checked && !params.you)
 		muted.push(userid);
 	    else
 		unmuted.push(userid);
@@ -465,9 +468,18 @@ document.addEventListener('DOMContentLoaded', function() {
 	    volume = (context.createGain ? context.createGain() : context.createGainNode());
 	volume.connect(context.destination);
 
+	if(!localStorage.global_gain) {
+	    localStorage.global_gain = volume.gain.value;
+	}
+	
+	if(!localStorage.global_range) {
+	    localStorage.global_range = localStorage.global_gain * 100;
+	}
+
 	var changeVolume = function() {
-	    localStorage.volume = volume.gain.value = volrange.value * 0.01;
-	    changeIcon(volrange.value);
+	    localStorage.global_range = volrange.value;
+	    localStorage.global_gain = volume.gain.value = volrange.value * 0.01;
+	    changeIcon(volume.gain.value * 100);
 	};
 
 	var changeIcon = function(v) {
@@ -475,19 +487,20 @@ document.addEventListener('DOMContentLoaded', function() {
 	    //vol.innerHTML = (v > 0 ? (v > 50 ? 'volume_ off' : 'volume_down') : 'volume_mute');
 	};
 
-	if(localStorage.volume) {
-	    volrange.value = localStorage.volume * 100;
-	    volume.gain.value = localStorage.volume;
-	    changeIcon(volrange.value);
-	}
-
 	vol.onclick = function() {
 	    volume.gain.value = (volume.gain.value > 0 ? 0 : volrange.value * 0.01);
-	    changeIcon(volume.gain.value * 100);
+	    localStorage.global_gain = volume.gain.value;
+	    changeIcon(localStorage.global_gain);
 	};
+
+	// restore saved volume value at load
+	volume.gain.value = localStorage.global_gain;
+	volrange.value = localStorage.global_range;
+	changeIcon(localStorage.global_gain)
 
 	volrange.oninput = changeVolume;
     };
+
 
     // Inventory chest
 
@@ -605,6 +618,22 @@ document.addEventListener('DOMContentLoaded', function() {
 			ws.send(JSON.stringify({type: 'msg', msg: trimed.substr(4), lang: trimed.substr(1, 2).toLowerCase()}));
 			underlay.className = 'pulse';
 		    }
+		    else if(trimed.match(/^\/(pm|mp)\s+(.*)+ :/i)) {
+			var splitted = trimed.split(' : ');
+			var msg_content = splitted[1];
+			var msg_meta = splitted[0].split(' ');
+
+			ws.send(JSON.stringify(
+			    { type : 'private_msg',
+			      msg: msg_content,
+			      target: msg_meta[1],
+			      order : ((msg_meta.length === 3) ? parseInt(msg_meta[2]) : 0)}));
+			
+			addLine(
+			    {name : 'info'},
+			    'MP envoyé à ' + msg_meta[1] + ' : ' + parser(msg_content),
+			    (new Date), 'msg', undefined);
+		    }
 		    else if(trimed.match(/^\/((?:bank)+)$/i)) {
 			display_bank();
 		    }
@@ -649,6 +678,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			addLine({name : 'info'}, '/bank : Afficher l\inventaire public du salon', d, 'part', 'help');
 			addLine({name : 'info'}, '/trash : Jeter un objet de son inventaire. Exemple: /trash 3', d, 'part', 'help');
 			addLine({name : 'info'}, '/take : Prendre un object dans l\'inventaire public du salon. Exemple: /take 4', d, 'part', 'help');
+			addLine({name : 'info'}, '/pm, /mp : Envoyer un message privé. Exemple : /pm Machopeur 2 : On se retrouve 18h à la salle', d, 'part', 'help');
 			addLine({name : 'info'}, '> : Indique une citation. Exemple : >Je ne reviendrais plus ici !', d, 'part', 'help');
 			addLine({name : 'info'}, '** ** : Masquer une partie d\'un message. Exemple : Carapuce est un **chic type** !', d, 'part', 'help');
 		    }
@@ -702,7 +732,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			addLine(users[msg.userid], parser(msg.msg), msg.date, msg.type, msg.userid);
 		    if (embedbtn.checked==true) {
 			//regex to get if msg have youtube link
-			let VID_REGEX =/^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$/gm; 
+			let VID_REGEX =/^(?:.*)?((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)(?:.*)??$/gm; 
 			if (msg.msg.match(VID_REGEX) ) {
 			    ytbId = '';
 			    if(msg.msg.match('youtu.be/'))
@@ -720,13 +750,31 @@ document.addEventListener('DOMContentLoaded', function() {
 		    }
 		    break;
 
+		case 'private_msg':
+		    if(msg.event){
+			switch(msg.event) {
+			case 'invalid_target':
+			    addLine({name : 'info'}, 'Utilisateur récepteur inexistant', (new Date), 'kick', 'invalid');
+			    break;
+			}
+		    }
+		    
+		    else {
+			if(!lastMuted)
+			    addLine({name : 'info'},
+				    'MP de ' + users[msg.userid].name + ' ' + users[msg.userid].adjective + ' : ' +
+				    parser(msg.msg),
+				    (new Date), msg.type, msg.userid);
+		    }
+		    break;
+		    
+
 		case 'me':
 		    if(!lastMuted)
 			addLine({name : 'info', color : users[msg.userid].color}, 'Le ' + users[msg.userid].name + ' ' + users[msg.userid].adjective + ' ' + parser(msg.msg), msg.date, 'me', msg.userid);
 		    break;
 
 		case 'connect':
-		    // is_muted = (ambtn.checked && unmuted.indexOf(msg.userid) === -1) ? true : false;
 		    addUser(msg.userid, msg.params, msg.profile);
 		    if(!lastMuted)
 			addLine({name : 'info'}, 'Un ' + msg.params.name + ' ' + msg.params.adjective + ' apparaît !', msg.date, 'log', msg.type);
