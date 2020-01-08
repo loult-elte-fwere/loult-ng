@@ -83,7 +83,7 @@ L'administrateur et gestionnaire du projet peut refuser de merger votre code pou
 
 ## Trop Long; Pas Lu.
 
-+ On ne touche __jamais__ à la branche __master__ *sauf* pour 1) Les mettre une nouvelles *versions* 2) corriger des bugs critiques (*hotfix*)
++ On ne touche __jamais__ à la branche __master__ *sauf* pour 1) fusionner une nouvelle *version* 2) corriger des bugs critiques (*hotfix*)
 + Le développement se fait sur __dev__, directement si le changement est mineur, dans le doute et de préférence via des branches temporaires qu'on fusionne une fois le travail terminé.
 + Si vous avez du mal avec Git ou doutez que vos changements soient acceptés, ouvrez une pull request, et implémentez __après__ la confirmation de celui qui gère le projet. Les bénéfices sont mutuels. 
 
