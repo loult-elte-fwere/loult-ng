@@ -43,15 +43,13 @@ if __name__ == "__main__":
     # setting up events
     from tools.events import (EventScheduler, BienChantewEvent, MaledictionEvent,
                               UsersVoicesShuffleEvent, MusicalEvent,
-                              CloneArmyEvent, ThemeRenameEvent, ObjectDropEvent, InfectionEvent,
-                              LynchingEvent, PubBrawlEvent, FireworksEvent, RobinHoodEvent,
-                              TreizeNRV)
+                              ThemeRenameEvent, InfectionEvent,
+                              LynchingEvent, PubBrawlEvent, FireworksEvent, RobinHoodEvent)
 
     scheduler = EventScheduler(loult_state,
                                [BienChantewEvent(), MaledictionEvent(), UsersVoicesShuffleEvent(),
-                                MusicalEvent(), CloneArmyEvent(),
-                                ThemeRenameEvent(), ObjectDropEvent(), InfectionEvent(), LynchingEvent(),
-                                PubBrawlEvent(), FireworksEvent(), RobinHoodEvent(), TreizeNRV()])
+                                MusicalEvent(), ThemeRenameEvent(), InfectionEvent(), LynchingEvent(),
+                                PubBrawlEvent(), FireworksEvent(), RobinHoodEvent()])
 
     try:
         loop.run_until_complete(Ban.test_ban())
@@ -103,6 +101,7 @@ if __name__ == "__main__":
     coro = loop.create_server(factory, '127.0.0.1', 9000)
     scheduler_task = ensure_future(scheduler.start())
     server = loop.run_until_complete(gather(coro, scheduler_task))
+    # server = loop.run_until_complete(coro)
 
     try:
         loop.run_forever()
