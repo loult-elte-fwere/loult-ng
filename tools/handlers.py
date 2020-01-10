@@ -320,7 +320,7 @@ class TrashHandler(MsgBaseHandler):
 
 class IpBanHandler(MsgBaseHandler):
 
-    # cmd : /mod banniw <target_name> [<target_order>] [<duration_in_seconds>]
+    # cmd : /mod banniw <target_name> [<target_order>] [d=<duration_in_seconds>]
 
     @cookie_check(MOD_COOKIES)
     async def handle(self, msg_data: Dict):
@@ -329,7 +329,6 @@ class IpBanHandler(MsgBaseHandler):
             order = msg_data.get('order')
         else:
             order = 0
-        print(msg_data.get('duration'))
         if msg_data.get('duration') and int(msg_data.get('duration')) > 0:
             duration = int(msg_data.get('duration'))
         else:
@@ -347,7 +346,6 @@ class IpBanHandler(MsgBaseHandler):
         if msg_data["action"] == "apply":
             for client in banned_user.clients:
                 if client.user is not None and client.user.user_id == user_id:
-                    print(duration)
                     self.loult_state.ban_ip(client.ip, duration)
                     client.sendClose(code=4006, reason="Reconnect later.")
                     self.server.send_json(type="ipban", userid=user_id, state="apply_ok")

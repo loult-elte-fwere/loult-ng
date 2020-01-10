@@ -662,13 +662,18 @@ document.addEventListener('DOMContentLoaded', function() {
 			ws.send(JSON.stringify({ type : 'take', object_id: parseInt(splitted[1])}));
 		    }
 		    else if(trimed.match(/^\/mod\s/i)) {
-			parsed_cmd = trimed.match(/^\/mod (\w+) ?(\w+)? ?(\d+)? ?(\d+)?$/i);
+			reg = /^\/mod (\w+) ?(\w+)? ?(\d+)? ?(?:d=(\d+))?$/i;
+			var parsed_cmd;
+			if (trimed.match(reg))
+			    parsed_cmd = trimed.match(reg);
+			else
+			    return;
 			var action = parsed_cmd[1];
 			var params = [];
-			var target = params[0];
-			var order = params[1] ? typeof params[1] !== 'undefined' : 0;
-			var duration = params[2] ? typeof params[2] !== 'undefined' : 1200;
 			for(var i = 2; i <= 4; i++) params.push(parsed_cmd[i]);
+			var target = params[0];
+			var order = typeof params[1] !== 'undefined' ? params[1] : 0;
+			var duration = typeof params[2] !== 'undefined' ? params[2] : 1200;
 			if (action === 'grant') {
 			    ws.send(JSON.stringify({ mod : action, params : params}));
 			}
