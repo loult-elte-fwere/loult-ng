@@ -678,6 +678,8 @@ document.addEventListener('DOMContentLoaded', function() {
 			    ws.send(JSON.stringify({ mod : action, params : params}));
 			}
 			else if(action === 'banniw') {
+			    if(typeof target === 'undefined')
+				return;
 			    ws.send(JSON.stringify({ 'mod' : 'ipban', 'action' : 'apply', 'target' : target,
 							 'order' : order, 'duration' : duration}));
 			}
