@@ -318,6 +318,46 @@ class TrashHandler(MsgBaseHandler):
             self.server.send_json(type="trash", userid=user_id, state="remove_ok")
 
 
+class IpBanHandler(MsgBaseHandler):
+
+    # cmd : /mod banniw <target_name> [<target_order>] [<duration_in_seconds>]
+
+    @cookie_check(MOD_COOKIES)
+    async def handle(self, msg_data: Dict):
+        msg_data = {key: value for key, value in msg_data.items() if value is not None}
+        if msg_data.get('order') and int(msg_data.get('order')) > 0:
+            order = msg_data.get('order')
+        else:
+            order = 0
+        print(msg_data.get('duration'))
+        if msg_data.get('duration') and int(msg_data.get('duration')) > 0:
+            duration = int(msg_data.get('duration'))
+        else:
+            duration = 1200
+
+        # banned_user = self.loult_state.chans.get(channel).users[user_id]
+        user_id, banned_user = self.channel_obj.get_user_by_name(msg_data.get("target",
+                                                              self.user.poke_params.pokename),
+                                                              msg_data.get("order", 1) - 1)
+
+        if banned_user is None:
+            self.server.send_json(type='ipban', event='invalid_target')
+            return
+
+        if msg_data["action"] == "apply":
+            for client in banned_user.clients:
+                if client.user is not None and client.user.user_id == user_id:
+                    print(duration)
+                    self.loult_state.ban_ip(client.ip, duration)
+                    client.sendClose(code=4006, reason="Reconnect later.")
+                    self.server.send_json(type="ipban", userid=user_id, state="apply_ok")
+        elif msg_data["action"] == "remove":
+            for client in banned_user.clients:
+                if client.user is not None and client.user.user_id == user_id:
+                    self.loult_state.banned_ips.remove(client.ip)
+                    self.server.send_json(type="ipban", userid=user_id, state="remove_ok")
+
+
 class InventoryListingHandler(MsgBaseHandler):
 
     async def handle(self, msg_data: Dict):

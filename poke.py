@@ -6,7 +6,7 @@ from itertools import chain
 
 from tools.ban import Ban, BanFail
 from tools.client import ClientRouter, LoultServerProtocol
-from tools.handlers import (MessageHandler, BinaryHandler, TrashHandler, BanHandler, ShadowbanHandler,
+from tools.handlers import (MessageHandler, BinaryHandler, TrashHandler, IpBanHandler,  BanHandler, ShadowbanHandler,
                             NoRenderMsgHandler, AttackHandler, PrivateMessageHandler, MoveHandler,
                             InventoryListingHandler, ObjectGiveHandler, ObjectUseHandler, ObjectTrashHandler,
                             ListChannelInventoryHandler, ObjectTakeHandler, WeaponsGrantHandler)
@@ -79,6 +79,7 @@ if __name__ == "__main__":
     #moderation handlers
     router.add_route(field="mod", value="trash", handler_class=TrashHandler)
     router.add_route(field="mod", value="shadowban", handler_class=ShadowbanHandler)
+    router.add_route(field="mod", value="ipban", handler_class=IpBanHandler)
     for ban_type in Ban.ban_types:
         router.add_route(field="mod", value=ban_type, handler_class=BanHandler)
     router.add_route(field="mod", value="grant", handler_class=WeaponsGrantHandler)

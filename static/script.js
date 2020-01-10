@@ -662,8 +662,20 @@ document.addEventListener('DOMContentLoaded', function() {
 			ws.send(JSON.stringify({ type : 'take', object_id: parseInt(splitted[1])}));
 		    }
 		    else if(trimed.match(/^\/mod\s/i)) {
-			var splitted = trimed.split(' ');
-			ws.send(JSON.stringify({ mod : splitted[1], params : splitted.slice(2)}));
+			parsed_cmd = trimed.match(/^\/mod (\w+) ?(\w+)? ?(\d+)? ?(\d+)?$/i);
+			var action = parsed_cmd[1];
+			var params = [];
+			var target = params[0];
+			var order = params[1] ? typeof params[1] !== 'undefined' : 0;
+			var duration = params[2] ? typeof params[2] !== 'undefined' : 1200;
+			for(var i = 2; i <= 4; i++) params.push(parsed_cmd[i]);
+			if (action === 'grant') {
+			    ws.send(JSON.stringify({ mod : action, params : params}));
+			}
+			else if(action === 'banniw') {
+			    ws.send(JSON.stringify({ 'mod' : 'ipban', 'action' : 'apply', 'target' : target,
+							 'order' : order, 'duration' : duration}));
+			}
 		    }
 		    else if(trimed.match(/^\/trash\s/i)) {
 			var splitted = trimed.split(' ');
