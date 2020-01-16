@@ -48,7 +48,7 @@ class Flower(LoultObject):
     def use(self, obj_params):
         if self.remaining_uses == 0:
             msg = "cette fleur est complètement fanée."
-            self.self.notify_serv(msg=msg)
+            self.notify_serv(msg=msg)
             self.should_be_destroyed = True
         else:
             name = self.user.poke_params.fullname
