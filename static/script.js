@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     var audio = (window.AudioContext || typeof webkitAudioContext !== 'undefined'),
+	audio_sources = {},
 	userlist = document.getElementById('userlist'),
 	underlay = document.getElementById('underlay'),
 	input = document.getElementById('input'),
@@ -223,6 +224,14 @@ document.addEventListener('DOMContentLoaded', function() {
 		    unmuted.splice(unmuted.indexOf(userid), 1);
 		    muted.push(userid);
 		    i.innerHTML = 'volume_off';
+
+		    // stop all sounds coming from user *now*
+		    if(audio && audio_sources[userid] !== 'undefined'){
+			audio_sources[userid].forEach(function(value, index) {
+			    value.stop();
+			});
+			audio_sources[userid] = [];
+		    }
 		}
 		localStorage.setItem('mutedUsers', JSON.stringify(muted));
 		localStorage.setItem('unmutedUsers', JSON.stringify(unmuted));
@@ -468,9 +477,18 @@ document.addEventListener('DOMContentLoaded', function() {
 	    volume = (context.createGain ? context.createGain() : context.createGainNode());
 	volume.connect(context.destination);
 
+	if(!localStorage.global_gain) {
+	    localStorage.global_gain = volume.gain.value;
+	}
+	
+	if(!localStorage.global_range) {
+	    localStorage.global_range = localStorage.global_gain * 100;
+	}
+
 	var changeVolume = function() {
-	    localStorage.volume = volume.gain.value = volrange.value * 0.01;
-	    changeIcon(volrange.value);
+	    localStorage.global_range = volrange.value;
+	    localStorage.global_gain = volume.gain.value = volrange.value * 0.01;
+	    changeIcon(volume.gain.value * 100);
 	};
 
 	var changeIcon = function(v) {
@@ -478,19 +496,20 @@ document.addEventListener('DOMContentLoaded', function() {
 	    //vol.innerHTML = (v > 0 ? (v > 50 ? 'volume_ off' : 'volume_down') : 'volume_mute');
 	};
 
-	if(localStorage.volume) {
-	    volrange.value = localStorage.volume * 100;
-	    volume.gain.value = localStorage.volume;
-	    changeIcon(volrange.value);
-	}
-
 	vol.onclick = function() {
 	    volume.gain.value = (volume.gain.value > 0 ? 0 : volrange.value * 0.01);
-	    changeIcon(volume.gain.value * 100);
+	    localStorage.global_gain = volume.gain.value;
+	    changeIcon(localStorage.global_gain);
 	};
+
+	// restore saved volume value at load
+	volume.gain.value = localStorage.global_gain;
+	volrange.value = localStorage.global_range;
+	changeIcon(localStorage.global_gain)
 
 	volrange.oninput = changeVolume;
     };
+
 
     // Inventory chest
 
@@ -612,10 +631,17 @@ document.addEventListener('DOMContentLoaded', function() {
 			var splitted = trimed.split(' : ');
 			var msg_content = splitted[1];
 			var msg_meta = splitted[0].split(' ');
-			ws.send(JSON.stringify({ type : 'private_msg',
-						 msg: msg_content,
-						 target: msg_meta[1],
-						 order : ((msg_meta.length === 3) ? parseInt(msg_meta[2]) : 0)}));
+
+			ws.send(JSON.stringify(
+			    { type : 'private_msg',
+			      msg: msg_content,
+			      target: msg_meta[1],
+			      order : ((msg_meta.length === 3) ? parseInt(msg_meta[2]) : 0)}));
+			
+			addLine(
+			    {name : 'info'},
+			    'MP envoyé à ' + msg_meta[1] + ' : ' + parser(msg_content),
+			    (new Date), 'msg', undefined);
 		    }
 		    else if(trimed.match(/^\/((?:bank)+)$/i)) {
 			display_bank();
@@ -741,6 +767,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			    break;
 			}
 		    }
+		    
 		    else {
 			if(!lastMuted)
 			    addLine({name : 'info'},
@@ -942,7 +969,16 @@ document.addEventListener('DOMContentLoaded', function() {
 		    var source = context.createBufferSource();
 		    source.buffer = buf;
 		    source.connect(volume);
+		    // remove node from array once the song is played (or stopped)
+		    source.onended = function(event) {
+			let index = audio_sources[lastId].indexOf(source);
+			if(index > -1)
+			    audio_sources[lastId].splice(index, 1);
+		    };
 		    source.start();
+		    if(typeof audio_sources[lastId] === 'undefined')
+			audio_sources[lastId] = [];
+		    audio_sources[lastId].push(source);
 		});
 	    }
 	};
