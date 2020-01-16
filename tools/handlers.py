@@ -169,8 +169,9 @@ class PrivateMessageHandler(FloodCheckerHandler):
             self.server.send_json(type='private_msg', event='invalid_target')
             return
         for client in target.clients:
-            if client.user == target:
-                client.send_json(type='private_msg', msg=msg_data['msg'], userid=self.user.user_id)
+            client.send_json(type='private_msg',
+                             msg=msg_data['msg'],
+                             userid=self.user.user_id)
 
 
 class AttackHandler(MsgBaseHandler):
