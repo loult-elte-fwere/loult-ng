@@ -157,6 +157,7 @@ def clonable(klass: Type[LoultObject]):
     klass.CLONABLE = True
     return klass
 
+
 def for_militia(klass: Type[LoultObject]):
     """Sets the object class as inert (no usage)"""
     klass.FOR_MILITIA = True

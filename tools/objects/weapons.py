@@ -124,8 +124,6 @@ class MilitiaSniperAmmo(LoultObject):
         self.should_be_destroyed = True
 
 
-@for_militia
-@targeted
 class ClientSidePunitiveObject(LoultObject):
     EVENT = "none"
     MSG = ""
