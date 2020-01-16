@@ -169,12 +169,6 @@ class LoultServerProtocol:
         except UnauthorizedCookie: # this means the user's cookie was denied
             self.sendClose(code=4005, reason='Too many cookies already connected to your IP')
 
-        # small touch of perfection
-        if self.raw_cookie in MOD_COOKIES:
-            self.user.set_moderator()
-        elif self.raw_cookie in MILITIA_COOKIES:
-            self.user.set_militia()
-
         # setting up routing table once all objects are functionnal
         self.routing_table = self.router.get_router(self.loult_state, self)
 
