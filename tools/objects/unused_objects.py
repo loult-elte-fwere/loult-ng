@@ -36,7 +36,7 @@ class SimpleInstrument(LoultObject):
 
 
 @destructible
-@targeted
+@targeted()
 class PolynectarPotion(LoultObject):
     NAME = "potion polynectar"
     ICON = "polynectar.gif"
@@ -54,7 +54,7 @@ class PolynectarPotion(LoultObject):
 
 
 @destructible
-@targeted
+@targeted()
 class Cocaine(LoultObject):
     NAME = "poudre de perlinpinpin"
     ICON = "c.png"
@@ -65,13 +65,14 @@ class Cocaine(LoultObject):
         self.should_be_destroyed = True
 
 
-@targeted
+@targeted()
 class Revolver(LoultObject):
     GUNSHOT_FX = path.join(DATA_PATH, "gun/gunshot.mp3")
     EMPTY_FX = path.join(DATA_PATH, "gun/empty_mag.mp3")
     NAME = "Walther PKK"
 
     def __init__(self, bullets=5):
+        super().__init__()
         self.remaining_bullets = bullets
 
     @property
@@ -123,7 +124,7 @@ class RevolverCartridges(LoultObject):
         self.should_be_destroyed = True
 
 
-@targeted
+@targeted()
 class SniperRifle(LoultObject):
     SNIPER_FX = path.join(DATA_PATH, "sniper_fx.mp3")
     NAME = "Fusil de précision"
@@ -187,7 +188,7 @@ class SniperBullets(LoultObject):
             self.should_be_destroyed = True
 
 
-@targeted
+@targeted()
 class RPG(LoultObject):
     NAME = "lance-roquette"
     RPG_FX = path.join(DATA_PATH, "rpg_rocket.mp3")

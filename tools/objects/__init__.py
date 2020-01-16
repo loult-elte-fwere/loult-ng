@@ -1,4 +1,6 @@
 import random
+from typing import Type
+
 from .base import LoultObject
 from .objects import (ScrollOfQurk,
                       Crown, Scolopamine, AlcoholBottle, Microphone, C4, Detonator, SuicideJacket, Flower,
@@ -18,4 +20,5 @@ AVAILABLE_OBJECTS = [Crown, Scolopamine,
 
 
 def get_random_object() -> LoultObject:
-    return random.choice(AVAILABLE_OBJECTS)()
+    obj_class: Type[LoultObject] = random.choice(AVAILABLE_OBJECTS)
+    return obj_class()

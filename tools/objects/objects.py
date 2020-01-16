@@ -120,7 +120,7 @@ class Crown(LoultObject):
         self.should_be_destroyed = True
 
 
-@targeted
+@targeted()
 @destructible
 class ScrollOfQurk(LoultObject):
     NAME = "Parchemin du Qurk"
@@ -148,7 +148,7 @@ class ScrollOfQurk(LoultObject):
         self.channel.update_userlist()
 
 
-@targeted
+@targeted()
 @destructible
 class Scolopamine(LoultObject):
     NAME = "Scolopamine"
@@ -198,7 +198,7 @@ class AlcoholBottle(LoultObject):
                 self.notify_serv(msg="Trop loin pour lancer la bouteille dessus!")
                 return
 
-            if self.target_user is self.user:
+            if self.targeted_user is self.user:
                 msg = f"{self.user_fullname} se casse une {self.name} su'l'crâne!"
             else:
                 msg = f"{self.user.poke_params.fullname} lance une {self.name} sur {self.targeted_user.poke_params.fullname}!"
@@ -332,7 +332,7 @@ class RectalExam(LoultObject):
         self.should_be_destroyed = True
 
 
-@targeted
+@targeted()
 @cooldown(30)
 class WealthDetector(LoultObject):
     NAME = "détecteur de richesse"

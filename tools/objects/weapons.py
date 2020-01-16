@@ -6,7 +6,7 @@ from .base import LoultObject, destructible, targeted, for_militia, userlist_dis
 from tools.objects.objects import DATA_PATH
 
 
-@targeted
+@targeted()
 @cooldown(5)
 class RobinHoodsBow(LoultObject):
     ICON = "robinhoodsbow.gif"
@@ -67,7 +67,7 @@ class Quiver(LoultObject):
 
 
 @for_militia
-@targeted
+@targeted()
 class MilitiaSniper(LoultObject):
     NAME = "PGM Hecate II"
     SNIPER_FX = path.join(DATA_PATH, "sniper_headshot.mp3")
@@ -136,7 +136,7 @@ class ClientSidePunitiveObject(LoultObject):
 
 
 @for_militia
-@targeted
+@targeted()
 class Civilisator(ClientSidePunitiveObject):
     NAME = "Civilizator"
     EVENT = "taser"
@@ -144,7 +144,7 @@ class Civilisator(ClientSidePunitiveObject):
 
 
 @for_militia
-@targeted
+@targeted()
 class Screamer(ClientSidePunitiveObject):
     NAME = "SCR34-MR"
     EVENT = "cactus"
