@@ -190,24 +190,6 @@ class User:
         self._info = None
         self.is_moderator, self.is_militia = None, None
 
-    def set_moderator(self):
-        self.is_moderator = True
-        self.poke_profile.job = "Modérateur"
-
-    def set_militia(self):
-        self.is_militia = True
-        self.poke_profile.job = "Milicien"
-
-    def reload_params_from_cookie(self):
-        self._info = None
-        self.voice_params = VoiceParameters.from_cookie_hash(self.cookie_hash)
-        self.poke_params = PokeParameters.from_cookie_hash(self.cookie_hash)
-        self.poke_profile = PokeProfile.from_cookie_hash(self.cookie_hash)
-        if self.is_moderator:
-            self.poke_profile.job = "Modérateur"
-        elif self.is_militia:
-            self.poke_profile.job = "Milicien"
-
     def __hash__(self):
         return self.user_id.__hash__()
 
@@ -217,6 +199,10 @@ class User:
     def throw_dice(self, type="attack") -> Tuple[int, int]:
         bonus = (datetime.now() - self.state.last_attack).seconds // ATTACK_RESTING_TIME if type == "attack" else 0
         return random.randint(1, 100), bonus
+
+    def disconnect_all_clients(self, code: int, reason: str):
+        for client in self.clients:
+            client.sendClose(code=code,reason=reason)
 
     @property
     def info(self):

@@ -1,7 +1,7 @@
 from typing import List
 import random
 
-from .base import LoultObject, DestructibleObject
+from .base import LoultObject
 
 
 class UserInventory:

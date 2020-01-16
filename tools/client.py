@@ -16,7 +16,6 @@ from autobahn.websocket.types import ConnectionDeny
 
 from config import TIME_BETWEEN_CONNECTIONS, MOD_COOKIES, MILITIA_COOKIES, FILTER_DOMAINS, AUTHORIZED_DOMAINS
 from salt import SALT
-from tools.objects.base import ClonableObject, MilitiaWeapon
 from .tools import encode_json
 
 
@@ -220,7 +219,7 @@ class LoultServerProtocol:
             self.channel_obj.channel_leave(self, self.user)
             # emptying user inventory to the channel's common inventory
             for obj in self.user.state.inventory.objects:
-                if not isinstance(obj, (ClonableObject, MilitiaWeapon)): # except for clonable object
+                if not (obj.CLONABLE or obj.FOR_MILITIA): # except for clonable object
                     self.channel_obj.inventory.add(obj)
 
         msg = 'left with reason "{}"'.format(reason) if reason else 'left'

@@ -8,12 +8,12 @@ from scipy.io import wavfile
 
 from config import ATTACK_RESTING_TIME, MOD_COOKIES, SOUND_BROADCASTER_COOKIES, TIME_BEFORE_TALK, \
     MAX_ITEMS_IN_INVENTORY, MILITIA_COOKIES
-from tools.objects.base import ClonableObject, MilitiaWeapon
-from tools.objects.weapons import MilitiaSniper, MilitiaSniperAmmo, Civilisator, \
+from .objects.weapons import MilitiaSniper, MilitiaSniperAmmo, Civilisator, \
     Screamer
 from tools.tools import open_sound_file
 from .ban import Ban, BanFail
 from .combat import CombatSimulator
+from .objects import LoultObject
 
 
 def cookie_check(cookie_list):
@@ -86,7 +86,7 @@ class FloodCheckerHandler(MsgBaseHandler):
             self.user.state.reset_flood_detection()
             self.user.state.has_been_warned = True
             self.server.send_json(type='antiflood', event='flood_warning',
-                           date=timestamp() * 1000)
+                                  date=timestamp() * 1000)
             alarm_sound = open_sound_file("data/alerts/alarm.wav")
             self.server.send_binary(alarm_sound)
             self.server.logger.info('has been warned for flooding')
@@ -125,7 +125,7 @@ class MessageHandler(FloodCheckerHandler):
                                            binary_payload=wav if synth else None)
         else:  # we just send the message to the current client
             self.server.send_json(type='msg', userid=self.user.user_id,
-                           msg=output_msg, date=info['date'])
+                                  msg=output_msg, date=info['date'])
             if synth:
                 self.server.send_binary(wav)
 
@@ -147,7 +147,7 @@ class NoRenderMsgHandler(FloodCheckerHandler):
                                        userid=user_id, date=info['date'])
         else:  # user is shadowbanned, so it's only sent to the
             self.server.send_json(type=msg_type, msg=output_msg,
-                           userid=user_id, date=info['date'])
+                                  userid=user_id, date=info['date'])
 
 
 class PrivateMessageHandler(FloodCheckerHandler):
@@ -158,7 +158,7 @@ class PrivateMessageHandler(FloodCheckerHandler):
         msg_data = {key: value for key, value in msg_data.items() if value is not None}
         #target = self.channel_obj.users.get(msg_data.get("target"))
         target_id, target = self.channel_obj.get_user_by_name(msg_data.get("target",
-                                                              self.user.poke_params.pokename),
+                                                                           self.user.poke_params.pokename),
                                                               msg_data.get("order", 1) - 1)
 
         output_msg = escape(msg_data['msg'])
@@ -339,7 +339,7 @@ class ObjectGiveHandler(MsgBaseHandler):
             return
 
         try:
-            given_obj = self.user.state.inventory.get_object_by_id(int(msg_data.get("object_id")))
+            given_obj: LoultObject = self.user.state.inventory.get_object_by_id(int(msg_data.get("object_id")))
         except TypeError:
             return self.server.send_json(type="object", response="invalid_id")
         if given_obj is None:
@@ -355,7 +355,7 @@ class ObjectGiveHandler(MsgBaseHandler):
             return self.server.send_json(type="notification",
                                          msg="Déjà trop d'objets dans l'inventaire de votre ami!")
 
-        if not isinstance(given_obj, ClonableObject):
+        if not given_obj.CLONABLE:
             self.user.state.inventory.remove(given_obj)
         beneficiary.state.inventory.add(given_obj)
 
@@ -372,27 +372,27 @@ class ObjectUseHandler(MsgBaseHandler):
 
     async def handle(self, msg_data: Dict):
         try:
-            selected_obj = self.user.state.inventory.get_object_by_id(int(msg_data.get("object_id")))
+            selected_obj: LoultObject = self.user.state.inventory.get_object_by_id(int(msg_data.get("object_id")))
         except TypeError:
             return self.server.send_json(type="object", response="invalid_id")
 
         if selected_obj is None:
             return self.server.send_json(type="object", response="invalid_id")
 
-        selected_obj.use(self.loult_state, self.server, msg_data['params'])
+        selected_obj(self.loult_state, self.server, msg_data['params'])
         self.user.state.inventory.destroy_used_objects()
 
 
 class ObjectTrashHandler(MsgBaseHandler):
 
     async def handle(self, msg_data: Dict):
-        selected_obj = self.user.state.inventory.get_object_by_id(int(msg_data.get("object_id")))
+        selected_obj: LoultObject = self.user.state.inventory.get_object_by_id(int(msg_data.get("object_id")))
         if selected_obj is None:
             self.server.send_json(type="object", response="invalid_id")
             return
 
         self.user.state.inventory.remove(selected_obj)
-        if not isinstance(selected_obj, (ClonableObject, MilitiaWeapon)):
+        if not (selected_obj.CLONABLE or selected_obj.FOR_MILITIA):
             self.channel_obj.inventory.add(selected_obj)
         self.server.send_json(type="object", response="object_trashed",
                               object_name=selected_obj.name)
@@ -418,7 +418,7 @@ class ObjectTakeHandler(MsgBaseHandler):
             return self.server.send_json(type="notification",
                                          msg="Déjà trop d'objets dans votre inventaire!")
         try:
-            selected_obj = self.channel_obj.inventory.get_object_by_id(int(msg_data.get("object_id")))
+            selected_obj: LoultObject = self.channel_obj.inventory.get_object_by_id(int(msg_data.get("object_id")))
         except TypeError:
             return self.server.send_json(type="object", response="invalid_id")
 
@@ -427,7 +427,7 @@ class ObjectTakeHandler(MsgBaseHandler):
 
         if (datetime.now() - self.last_take).seconds < self.RATE_LIMIT:
             return self.server.send_json(type="notification",
-                                  msg="Attendez un peu avant de piller la banque!")
+                                         msg="Attendez un peu avant de piller la banque!")
 
         self.channel_obj.inventory.remove(selected_obj)
         self.user.state.inventory.add(selected_obj)
