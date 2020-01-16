@@ -90,9 +90,9 @@ class MilitiaSniper(LoultObject):
         self.remaining_bullets -= 1
         self.notify_channel(msg=f"{self.user_fullname} tire au fusil sniper calibre .50 sur {self.targeted_user.poke_params.fullname}",
                             binary_payload=self._load_byte(self.SNIPER_FX))
-        self.channel(type='antiflood', event='banned',
-                     flooder_id=self.targeted_userid,
-                     date=timestamp() * 1000)
+        self.channel.broadcast(type='antiflood', event='banned',
+                               flooder_id=self.targeted_userid,
+                               date=timestamp() * 1000)
         for client in self.targeted_user.clients:
             self.loult_state.ban_ip(client.ip)
             client.sendClose(code=4006, reason="Reconnect later.")
