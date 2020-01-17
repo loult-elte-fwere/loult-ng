@@ -188,7 +188,12 @@ class User:
         self.clients = [client]
         self.state = UserState()
         self._info = None
-        self.is_moderator, self.is_militia = None, None
+
+    def reload_params_from_cookie(self):
+        self._info = None
+        self.voice_params = VoiceParameters.from_cookie_hash(self.cookie_hash)
+        self.poke_params = PokeParameters.from_cookie_hash(self.cookie_hash)
+        self.poke_profile = PokeProfile.from_cookie_hash(self.cookie_hash)
 
     def __hash__(self):
         return self.user_id.__hash__()
