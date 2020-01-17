@@ -226,7 +226,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		    i.innerHTML = 'volume_off';
 
 		    // stop all sounds coming from user *now*
-		    if(audio && audio_sources[userid] !== 'undefined'){
+		    if(audio && audio_sources[userid] !== undefined){
 			audio_sources[userid].forEach(function(value, index) {
 			    value.stop();
 			});
@@ -500,7 +500,16 @@ document.addEventListener('DOMContentLoaded', function() {
 	    volume.gain.value = (volume.gain.value > 0 ? 0 : volrange.value * 0.01);
 	    localStorage.global_gain = volume.gain.value;
 	    changeIcon(localStorage.global_gain);
-	};
+	    if(localStorage.global_gain == 0) {
+		// global mute stop and remove all currently playing audio buffers
+		if(audio){
+		    Object.keys(audio_sources).forEach(function(key) {
+			audio_sources[key].forEach(function(value) { value.stop() });
+			audio_sources[key] = [];
+		    });
+		}
+	    }
+	}
 
 	// restore saved volume value at load
 	volume.gain.value = localStorage.global_gain;
@@ -970,9 +979,11 @@ document.addEventListener('DOMContentLoaded', function() {
 		    source.connect(volume);
 		    // remove node from array once the song is played (or stopped)
 		    source.onended = function(event) {
-			let index = audio_sources[lastId].indexOf(source);
-			if(index > -1)
-			    audio_sources[lastId].splice(index, 1);
+			if(audio_sources[lastId] !== undefined) {
+			    let index = audio_sources[lastId].indexOf(source);
+			    if(index > -1)
+				audio_sources[lastId].splice(index, 1);
+			}
 		    };
 		    source.start();
 		    if(typeof audio_sources[lastId] === 'undefined')
