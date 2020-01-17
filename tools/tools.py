@@ -105,7 +105,7 @@ class AudioRenderer:
         process = await create_subprocess_shell(phonem_synth_string,
                                                 stdout=PIPE, stderr=PIPE)
         phonems, err = await process.communicate()
-        return PhonemeList(phonems.decode('utf-8').strip())
+        return PhonemeList.from_pho_str(phonems.decode('utf-8').strip())
 
     @staticmethod
     async def to_f32_16k(wav: bytes) -> numpy.ndarray:
@@ -167,25 +167,25 @@ class SpoilerBipEffect(UtilitaryEffect):
             for occ, tagged_occ in zip(occ_list, tagged_occ_list):
                 text = text.replace(occ, tagged_occ)
             # getting the phonemic form of the text
-            phonems = await self.renderer.string_to_phonemes(text, lang, self.voice_params)
+            phonemes = await self.renderer.string_to_phonemes(text, lang, self.voice_params)
             # then using a simple state machine (in_beep is the state), replaces the phonems between
             # the right phonemic occurence with the phonems of a beep
             in_beep = False
             output, buffer = PhonemeList([]), PhonemeList([])
-            while phonems:
-                if PhonemeList(phonems[:3]).phonemes_str == self._tags_phonems[lang][0] and not in_beep:
+            while phonemes:
+                if PhonemeList(phonemes[:3]).phonemes_str == self._tags_phonems[lang][0] and not in_beep:
                     in_beep, buffer = True, PhonemeList([])
-                    phonems = PhonemeList(phonems[3:])
-                elif PhonemeList(phonems[:4]).phonemes_str == self._tags_phonems[lang][1] and in_beep:
+                    phonemes = PhonemeList(phonemes[3:])
+                elif PhonemeList(phonemes[:4]).phonemes_str == self._tags_phonems[lang][1] and in_beep:
                     in_beep = False
                     # creating a beep of the buffer's duration
                     if buffer:
                         output += self._gen_beep(sum([pho.duration for pho in buffer]), lang)
-                    phonems = phonems[4:]
+                    phonemes = phonemes[4:]
                 elif not in_beep:
-                    output.append(phonems.pop(0))
+                    output.append(phonemes.pop(0))
                 elif in_beep:
-                    buffer.append(phonems.pop(0))
+                    buffer.append(phonemes.pop(0))
             return output
         else:
             return text

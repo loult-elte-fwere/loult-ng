@@ -627,21 +627,18 @@ document.addEventListener('DOMContentLoaded', function() {
 			ws.send(JSON.stringify({type: 'msg', msg: trimed.substr(4), lang: trimed.substr(1, 2).toLowerCase()}));
 			underlay.className = 'pulse';
 		    }
-		    else if(trimed.match(/^\/(pm|mp)\s+(.*)+ :/i)) {
-			var splitted = trimed.split(' : ');
-			var msg_content = splitted[1];
-			var msg_meta = splitted[0].split(' ');
+		    else if(trimed.match(/^\/(pm|mp) (\w+) ?(\d+)? ?:(.+)/i)) {
+			var index = trimed.indexOf(':');
+			var msg_content = trimed.substr(index + 1).trim();
+			var msg_meta = trimed.substr(0, index).split(' ');
 
 			ws.send(JSON.stringify(
 			    { type : 'private_msg',
 			      msg: msg_content,
 			      target: msg_meta[1],
-			      order : ((msg_meta.length === 3) ? parseInt(msg_meta[2]) : 0)}));
-			
-			addLine(
-			    {name : 'info'},
-			    'MP envoyé à ' + msg_meta[1] + ' : ' + parser(msg_content),
-			    (new Date), 'msg', undefined);
+			      order : ((msg_meta.length === 3) ? parseInt(msg_meta[2]) : 0)
+			    }
+			));
 		    }
 		    else if(trimed.match(/^\/((?:bank)+)$/i)) {
 			display_bank();
@@ -765,15 +762,17 @@ document.addEventListener('DOMContentLoaded', function() {
 			case 'invalid_target':
 			    addLine({name : 'info'}, 'Utilisateur récepteur inexistant', (new Date), 'kick', 'invalid');
 			    break;
+			case 'success':
+			    addLine({name : 'info'}, 'Message envoyé avec succès', (new Date), 'info');
 			}
 		    }
-		    
 		    else {
 			if(!lastMuted)
-			    addLine({name : 'info'},
-				    'MP de ' + users[msg.userid].name + ' ' + users[msg.userid].adjective + ' : ' +
-				    parser(msg.msg),
-				    (new Date), msg.type, msg.userid);
+			    addLine(
+				{name : 'info'},
+				'MP de ' + users[msg.userid].name + ' ' +
+				users[msg.userid].adjective + ' : ' + parser(msg.msg),
+				(new Date), msg.type, msg.userid);
 		    }
 		    break;
 		    
