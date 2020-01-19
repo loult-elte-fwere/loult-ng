@@ -55,8 +55,10 @@ class LoultObject:
         else:
             return False
 
-    def notify_serv(self, msg: str):
+    def notify_serv(self, msg: str, bin_payload: bytes = None):
         self.server.send_json(type="notification", msg=msg)
+        if bin_payload:
+            self.server.send_binary(bin_payload)
 
     def notify_channel(self, msg: str, binary_payload: bytes = None):
         self.channel.broadcast(type="notification", msg=msg, binary_payload=binary_payload)
