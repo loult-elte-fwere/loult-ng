@@ -241,6 +241,7 @@ class Detonator(LoultObject):
     NAME = "Détonateur"
     ICON = "detonator.gif"
     EXPLOSION_FX = DATA_PATH / Path("explosion.mp3")
+    DETONATOR_CLICK_FX = DATA_PATH / Path("detonator_switch.mp3")
 
     def use(self, obj_params):
         if random.randint(1, 6) == 1:
@@ -248,6 +249,7 @@ class Detonator(LoultObject):
                                 binary_payload=self._load_byte(self.EXPLOSION_FX))
             self.user.disconnect_all_clients(4006, "Reconnect please")
             self.should_be_destroyed = True
+            return
 
         blown_up_users = []
         for user in self.channel.users.values():
@@ -262,6 +264,8 @@ class Detonator(LoultObject):
         if blown_up_users:
             self.notify_channel(msg=f"{self.user_fullname} a fait sauter {', '.join(blown_up_users)}!",
                                 binary_payload=self._load_byte(self.EXPLOSION_FX))
+        else:
+            self.server.send_binary(self._load_byte(self.DETONATOR_CLICK_FX))
 
 
 @destructible
@@ -642,6 +646,7 @@ class SantasSack(LoultObject):
             self.present_count = random.randint(3, 8)
         else:
             self.present_count = presents
+        self.last_recipient = None
 
     def use(self, obj_params: List):
         if self.targeted_user is self.user:
@@ -652,11 +657,16 @@ class SantasSack(LoultObject):
             self.notify_serv("L'utilisateur cible a déjà trop d'objets!")
             return
 
+        if self.targeted_user is self.last_recipient:
+            self.notify_serv("Pas toujours le même espèce de père noël de carnaval!")
+            return
+
         from ..objects import get_random_object
         obj = get_random_object()
         self.targeted_user.state.inventory.add(obj)
         self.notify_channel(
             f"{self.user_fullname} a offert un beau {obj.name} à {self.targeted_user.poke_params.fullname}!")
         self.present_count -= 1
+        self.last_recipient = self.targeted_user
         if self.present_count <= 0:
             self.should_be_destroyed = True
