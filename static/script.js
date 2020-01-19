@@ -636,7 +636,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			ws.send(JSON.stringify({type: 'msg', msg: trimed.substr(4), lang: trimed.substr(1, 2).toLowerCase()}));
 			underlay.className = 'pulse';
 		    }
-		    else if(trimed.match(/^\/(pm|mp) (\w+) ?(\d+)? ?:(.+)/i)) {
+		    else if(trimed.match(/^\/(pm|mp) ([a-zA-Z-À-ž]+) ?(\d+)? ?:(.+)/i)) {
 			var index = trimed.indexOf(':');
 			var msg_content = trimed.substr(index + 1).trim();
 			var msg_meta = trimed.substr(0, index).split(' ');
@@ -671,7 +671,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			var splitted = trimed.split(' ');
 			ws.send(JSON.stringify({ mod : splitted[1], params : splitted.slice(2)}));
 		    }
-		    else if(trimed.match(/^\/trash\s/i)) {
+		    else if(trimed.match(/^\/trash|drop\s/i)) {
 			var splitted = trimed.split(' ');
 			ws.send(JSON.stringify({ type : 'trash', object_id: parseInt(splitted[1])}));
 		    }
