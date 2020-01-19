@@ -619,3 +619,23 @@ class Transmutator(LoultObject):
         self.user_inventory.add(new_obj)
         self.notify_serv(f"Objet {rdm_obj.name} changé en {new_obj.name}")
 
+
+@destructible
+@cooldown(2)
+@targeted(mandatory=True)
+class SantasSack(LoultObject):
+    NAME = "hotte du père noël"
+    ICON = "cadeau.gif"
+
+    def __init__(self):
+        super().__init__()
+        self.present_count = random.randint(5,10)
+
+    def use(self, obj_params: List):
+        from ..objects import get_random_object
+        obj = get_random_object()
+        self.targeted_user.state.inventory.add(obj)
+        self.notify_channel(f"{self.user_fullname} a offert un beau {obj.name} à {self.targeted_user.poke_params.fullname}!")
+        self.present_count -= 1
+        if self.present_count <= 0:
+            self.should_be_destroyed = True
