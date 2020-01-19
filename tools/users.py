@@ -5,7 +5,7 @@ from colorsys import hsv_to_rgb
 from datetime import timedelta, datetime
 from re import compile as regex
 from struct import pack
-from typing import Tuple, List
+from typing import Tuple, List, Dict, Type
 from os import path
 import json
 
@@ -95,10 +95,12 @@ class UserState:
 
     def __init__(self, banned_words=BANNED_WORDS):
         from tools.effects import AudioEffect, HiddenTextEffect, ExplicitTextEffect, PhonemicEffect, \
-            VoiceEffect
+            VoiceEffect, Effect
 
-        self.effects = {cls: [] for cls in
-                        (AudioEffect, HiddenTextEffect, ExplicitTextEffect, PhonemicEffect, VoiceEffect)}
+        self.effects: Dict[Type[Effect], List[Effect]] = {
+            cls: [] for cls in
+            (AudioEffect, HiddenTextEffect, ExplicitTextEffect, PhonemicEffect, VoiceEffect)
+        }
         self.connection_time = datetime.now()
         self.last_attack = datetime.now()  # any user has to wait some time before attacking, after entering the chan
         self.last_message = datetime.now()

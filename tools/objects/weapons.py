@@ -1,9 +1,9 @@
 from itertools import cycle
-from os import path
+from pathlib import Path
 from time import time as timestamp
 
-from .base import LoultObject, destructible, targeted, for_militia, userlist_dist, cooldown, inert
 from tools.objects.objects import DATA_PATH
+from .base import LoultObject, destructible, targeted, for_militia, userlist_dist, cooldown, inert
 
 
 @targeted()
@@ -11,7 +11,7 @@ from tools.objects.objects import DATA_PATH
 class RobinHoodsBow(LoultObject):
     ICON = "robinhoodsbow.gif"
     NAME = "arc de robin des bois"
-    BOW_FX = path.join(DATA_PATH, "bow_fire.mp3")
+    BOW_FX = DATA_PATH / Path("bow_fire.mp3")
 
     def use(self, obj_params):
         if self.user is self.targeted_user:
@@ -70,7 +70,7 @@ class Quiver(LoultObject):
 @targeted()
 class MilitiaSniper(LoultObject):
     NAME = "PGM Hecate II"
-    SNIPER_FX = path.join(DATA_PATH, "sniper_headshot.mp3")
+    SNIPER_FX = DATA_PATH / Path("sniper_headshot.mp3")
 
     def __init__(self):
         super().__init__()
@@ -107,7 +107,7 @@ class MilitiaSniper(LoultObject):
 @destructible
 class MilitiaSniperAmmo(LoultObject):
     NAME = "Chargeur PGM"
-    RELOADING_FX = path.join(DATA_PATH, "gun/reloading.mp3")
+    RELOADING_FX = DATA_PATH / Path("gun/reloading.mp3")
 
     def use(self, obj_params):
         # searching in the user's inventory for the emptiest gun to be used on
