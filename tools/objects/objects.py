@@ -495,7 +495,6 @@ class LaxativeBox(LoultObject):
     def __init__(self):
         super().__init__()
         self.remaining_use = 6
-        self.fx_file = random.choice(list(self.FX_DIR.iterdir()))
 
     @property
     def name(self):
@@ -512,7 +511,8 @@ class LaxativeBox(LoultObject):
         else:
             msg = f"{self.user_fullname} fait faire kk paw tèw à {target.poke_params.fullname}!"
             target.state.inventory.add(Poop(target.poke_params.fullname))
-        self.notify_channel(msg, binary_payload=self._load_byte(self.fx_file))
+        fx_file = random.choice(list(self.FX_DIR.iterdir()))
+        self.notify_channel(msg, binary_payload=self._load_byte(fx_file))
         self.remaining_use -= 1
 
         if self.remaining_use <= 0:
