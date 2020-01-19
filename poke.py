@@ -41,15 +41,8 @@ if __name__ == "__main__":
     loult_state = LoultServerState()
 
     # setting up events
-    from tools.events import (EventScheduler, BienChantewEvent, MaledictionEvent,
-                              UsersVoicesShuffleEvent, MusicalEvent,
-                              ThemeRenameEvent, InfectionEvent,
-                              LynchingEvent, PubBrawlEvent, FireworksEvent, RobinHoodEvent)
-
-    scheduler = EventScheduler(loult_state,
-                               [BienChantewEvent(), MaledictionEvent(), UsersVoicesShuffleEvent(),
-                                MusicalEvent(), ThemeRenameEvent(), InfectionEvent(), LynchingEvent(),
-                                PubBrawlEvent(), FireworksEvent(), RobinHoodEvent()])
+    from tools.events import events_factory, EventScheduler
+    scheduler = EventScheduler(loult_state, events_factory())
 
     try:
         loop.run_until_complete(Ban.test_ban())

@@ -10,6 +10,7 @@ from functools import lru_cache
 from io import BytesIO
 from itertools import chain
 from os import path
+from pathlib import Path
 from re import sub
 from shlex import quote
 from struct import pack
@@ -269,3 +270,8 @@ class CachedOpener:
 
 
 cached_loader = CachedOpener()
+
+
+def load_bytes(filepath: Path):
+    with open(str(filepath), "rb") as binfile:
+        return binfile.read()

@@ -3,7 +3,7 @@ import re
 from datetime import datetime
 from pathlib import Path
 from time import time as timestamp
-from typing import List
+from typing import List, Optional
 
 import yaml
 
@@ -67,8 +67,8 @@ class BaseballBat(LoultObject):
 
     def __init__(self, target_userid, target_username):
         super().__init__()
-        self.target_name = target_username
-        self.target_userid = target_userid
+        self.lynched_name = target_username
+        self.lynched_userid = target_userid
         self.remaining_hits = random.randint(5, 15)
         self.sounds = []
         for filename in self.FIGHTING_FX_DIR.iterdir():
@@ -76,22 +76,22 @@ class BaseballBat(LoultObject):
 
     @property
     def name(self):
-        return "Batte pour frapper %s" % self.target_name
+        return "Batte pour frapper %s" % self.lynched_name
 
     def use(self, obj_params):
         # checking if target user is present, sending a notif and a sound
-        if self.targeted_userid in self.channel.users:
+        if self.lynched_userid in self.channel.users:
             if self.remaining_hits > 0:
-                self.notify_channel(msg=f"{self.user_fullname} donne un coup de batte à {self.target_name}",
+                self.notify_channel(msg=f"{self.user_fullname} donne un coup de batte à {self.lynched_name}",
                                     binary_payload=random.choice(self.sounds))
             self.remaining_hits -= 1
         else:
-            self.notify_serv(msg=f"Cette batte ne sert qu'à taper {self.target_name}")
+            self.notify_serv(msg=f"Cette batte ne sert qu'à taper {self.lynched_name}")
 
         # if it's the last hit, notifying and destroying the object
         if self.remaining_hits <= 0:
             self.should_be_destroyed = True
-            self.notify_channel(msg=f"{self.user_fullname} a cassé sa batte sur {self.target_name}",
+            self.notify_channel(msg=f"{self.user_fullname} a cassé sa batte sur {self.lynched_name}",
                                 binary_payload=cached_loader.load_byte(str(self.BROKEN_BAT_FX)))
 
 
@@ -636,9 +636,12 @@ class SantasSack(LoultObject):
     NAME = "hotte du père noël"
     ICON = "cadeau.gif"
 
-    def __init__(self):
+    def __init__(self, presents: Optional[int] = None):
         super().__init__()
-        self.present_count = random.randint(3, 8)
+        if presents is None:
+            self.present_count = random.randint(3, 8)
+        else:
+            self.present_count = presents
 
     def use(self, obj_params: List):
         if self.targeted_user is self.user:
