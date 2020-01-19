@@ -233,13 +233,19 @@ class C4(LoultObject):
     ICON = "c4.gif"
 
 
+@destructible
 class Detonator(LoultObject):
     NAME = "Détonateur"
     ICON = "detonator.gif"
     EXPLOSION_FX = DATA_PATH / Path("explosion.mp3")
 
     def use(self, obj_params):
-        # TODO : add fumble where the detonator blows up the user
+        if random.randint(1, 6) == 1:
+            self.notify_channel(f"{self.user_fullname} a mal réglé son détonateur et s'est fait sauté",
+                                binary_payload=self._load_byte(self.EXPLOSION_FX))
+            self.user.disconnect_all_clients(4006, "Reconnect please")
+            self.should_be_destroyed = True
+
         blown_up_users = []
         for user in self.channel.users.values():
             if user.state.inventory.search_by_class(C4):
