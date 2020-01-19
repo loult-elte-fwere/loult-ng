@@ -146,6 +146,7 @@ class ScrollOfQurk(LoultObject):
         params.pokename = "Qurkee"
         target._info = None
         self.channel.update_userlist()
+        self.should_be_destroyed = True
 
 
 @targeted()
