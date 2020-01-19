@@ -604,4 +604,18 @@ class PandorasBox(LoultObject):
         self.should_be_destroyed = True
 
 
+@cooldown(60)
+class Transmutator(LoultObject):
+    NAME = "transmutateur d'objets"
+    ICON = "transmutateur.gif"
+
+    def use(self, obj_params: List):
+        from ..objects import get_random_object
+        other_objs = [obj for obj in self.user_inventory.objects
+                      if obj is not self]
+        rdm_obj: LoultObject = random.choice(other_objs)
+        new_obj = get_random_object()
+        self.user_inventory.remove(rdm_obj)
+        self.user_inventory.add(new_obj)
+        self.notify_serv(f"Objet {rdm_obj.name} changé en {new_obj.name}")
 
