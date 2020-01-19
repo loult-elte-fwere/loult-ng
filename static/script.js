@@ -226,7 +226,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		    i.innerHTML = 'volume_off';
 
 		    // stop all sounds coming from user *now*
-		    if(audio && audio_sources[userid] !== 'undefined'){
+		    if(audio && audio_sources[userid] !== undefined){
 			audio_sources[userid].forEach(function(value, index) {
 			    value.stop();
 			});
@@ -500,7 +500,16 @@ document.addEventListener('DOMContentLoaded', function() {
 	    volume.gain.value = (volume.gain.value > 0 ? 0 : volrange.value * 0.01);
 	    localStorage.global_gain = volume.gain.value;
 	    changeIcon(localStorage.global_gain);
-	};
+	    if(localStorage.global_gain == 0) {
+		// global mute stop and remove all currently playing audio buffers
+		if(audio){
+		    Object.keys(audio_sources).forEach(function(key) {
+			audio_sources[key].forEach(function(value) { value.stop() });
+			audio_sources[key] = [];
+		    });
+		}
+	    }
+	}
 
 	// restore saved volume value at load
 	volume.gain.value = localStorage.global_gain;
@@ -627,21 +636,18 @@ document.addEventListener('DOMContentLoaded', function() {
 			ws.send(JSON.stringify({type: 'msg', msg: trimed.substr(4), lang: trimed.substr(1, 2).toLowerCase()}));
 			underlay.className = 'pulse';
 		    }
-		    else if(trimed.match(/^\/(pm|mp)\s+(.*)+ :/i)) {
-			var splitted = trimed.split(' : ');
-			var msg_content = splitted[1];
-			var msg_meta = splitted[0].split(' ');
+		    else if(trimed.match(/^\/(pm|mp) (\w+) ?(\d+)? ?:(.+)/i)) {
+			var index = trimed.indexOf(':');
+			var msg_content = trimed.substr(index + 1).trim();
+			var msg_meta = trimed.substr(0, index).split(' ');
 
 			ws.send(JSON.stringify(
 			    { type : 'private_msg',
 			      msg: msg_content,
 			      target: msg_meta[1],
-			      order : ((msg_meta.length === 3) ? parseInt(msg_meta[2]) : 0)}));
-			
-			addLine(
-			    {name : 'info'},
-			    'MP envoyé à ' + msg_meta[1] + ' : ' + parser(msg_content),
-			    (new Date), 'msg', undefined);
+			      order : ((msg_meta.length === 3) ? parseInt(msg_meta[2]) : 0)
+			    }
+			));
 		    }
 		    else if(trimed.match(/^\/((?:bank)+)$/i)) {
 			display_bank();
@@ -765,15 +771,17 @@ document.addEventListener('DOMContentLoaded', function() {
 			case 'invalid_target':
 			    addLine({name : 'info'}, 'Utilisateur récepteur inexistant', (new Date), 'kick', 'invalid');
 			    break;
+			case 'success':
+			    addLine({name : 'info'}, 'Message envoyé avec succès', (new Date), 'info');
 			}
 		    }
-		    
 		    else {
 			if(!lastMuted)
-			    addLine({name : 'info'},
-				    'MP de ' + users[msg.userid].name + ' ' + users[msg.userid].adjective + ' : ' +
-				    parser(msg.msg),
-				    (new Date), msg.type, msg.userid);
+			    addLine(
+				{name : 'info'},
+				'MP de ' + users[msg.userid].name + ' ' +
+				users[msg.userid].adjective + ' : ' + parser(msg.msg),
+				(new Date), msg.type, msg.userid);
 		    }
 		    break;
 		    
@@ -971,9 +979,11 @@ document.addEventListener('DOMContentLoaded', function() {
 		    source.connect(volume);
 		    // remove node from array once the song is played (or stopped)
 		    source.onended = function(event) {
-			let index = audio_sources[lastId].indexOf(source);
-			if(index > -1)
-			    audio_sources[lastId].splice(index, 1);
+			if(audio_sources[lastId] !== undefined) {
+			    let index = audio_sources[lastId].indexOf(source);
+			    if(index > -1)
+				audio_sources[lastId].splice(index, 1);
+			}
 		    };
 		    source.start();
 		    if(typeof audio_sources[lastId] === 'undefined')

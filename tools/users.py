@@ -230,7 +230,7 @@ class User:
     @staticmethod
     def apply_effects(input_obj, effect_list: List['Effect']):
         if effect_list:
-            for effect in effect_list:
+            for effect in list(effect_list):
                 if effect.is_expired():
                     effect_list.remove(effect)  # if the effect has expired, remove it
                 else:

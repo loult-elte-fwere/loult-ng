@@ -165,13 +165,16 @@ class PrivateMessageHandler(FloodCheckerHandler):
         if self._check_flood(output_msg):
             return
 
-        if target is None:
+        if target is None or target_id == self.user.user_id:
             self.server.send_json(type='private_msg', event='invalid_target')
             return
+        
         for client in target.clients:
             client.send_json(type='private_msg',
-                             msg=msg_data['msg'],
-                             userid=self.user.user_id)
+                             msg=output_msg,
+                             userid=self.user.user_id,
+                             targetid=target_id)
+        self.server.send_json(type='private_msg', event='success')
 
 
 class AttackHandler(MsgBaseHandler):

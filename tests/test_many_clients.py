@@ -14,7 +14,11 @@ from os import urandom
 from config import MAX_COOKIES_PER_IP
 
 MESSAGES = ['c le nwe nwe rce ennw?', 'c le nwe nwe rce ennw!', 'we', '&we', 'de']
-
+"""
+MESSAGES_FLOOD = ['WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW',
+            'AaaaaaAAAaaaAAaaaAaaaAaaAAaaAAaaaAaaaAaaaAaaaAaaaAaaaAaaaAAaaAaaaAAaaAAaaAAaaaAaa',
+            '3242343442342356756756657  _768786868678678678678678 67867868678688676787 -87686786787678 76868678']
+"""
 
 async def send_message(websocket, message):
     if message is not None:
@@ -33,7 +37,7 @@ async def client(loop):
             
         async def echo(loop):
 
-            await send_message(websocket, random.choice(MESSAGES))
+            await send_message(websocket, random.choice(MESSAGES_FLOOD))
             await asyncio.sleep(random.randint(1, 6), loop=loop)
             await asyncio.sleep(5, loop=loop)
 
@@ -42,7 +46,7 @@ async def client(loop):
                 data = await websocket.recv()
                 if isinstance(data, str):
                     print("[client {}] Message : {}".format(ck, data))
-                #await echo(loop)
+   #             await echo(loop)
             except (websockets.exceptions.ConnectionClosed) as e:
                 print(e)
                 await reconnect(loop)
