@@ -671,7 +671,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			var splitted = trimed.split(' ');
 			ws.send(JSON.stringify({ mod : splitted[1], params : splitted.slice(2)}));
 		    }
-		    else if(trimed.match(/^\/trash\s/i)) {
+		    else if(trimed.match(/^\/trash|drop\s/i)) {
 			var splitted = trimed.split(' ');
 			ws.send(JSON.stringify({ type : 'trash', object_id: parseInt(splitted[1])}));
 		    }
