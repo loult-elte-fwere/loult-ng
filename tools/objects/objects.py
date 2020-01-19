@@ -3,7 +3,7 @@ import re
 from datetime import datetime
 from pathlib import Path
 from time import time as timestamp
-from typing import List
+from typing import List, Optional
 
 import yaml
 
@@ -67,8 +67,8 @@ class BaseballBat(LoultObject):
 
     def __init__(self, target_userid, target_username):
         super().__init__()
-        self.target_name = target_username
-        self.target_userid = target_userid
+        self.lynched_name = target_username
+        self.lynched_userid = target_userid
         self.remaining_hits = random.randint(5, 15)
         self.sounds = []
         for filename in self.FIGHTING_FX_DIR.iterdir():
@@ -76,22 +76,22 @@ class BaseballBat(LoultObject):
 
     @property
     def name(self):
-        return "Batte pour frapper %s" % self.target_name
+        return "Batte pour frapper %s" % self.lynched_name
 
     def use(self, obj_params):
         # checking if target user is present, sending a notif and a sound
-        if self.targeted_userid in self.channel.users:
+        if self.lynched_userid in self.channel.users:
             if self.remaining_hits > 0:
-                self.notify_channel(msg=f"{self.user_fullname} donne un coup de batte à {self.target_name}",
+                self.notify_channel(msg=f"{self.user_fullname} donne un coup de batte à {self.lynched_name}",
                                     binary_payload=random.choice(self.sounds))
             self.remaining_hits -= 1
         else:
-            self.notify_serv(msg=f"Cette batte ne sert qu'à taper {self.target_name}")
+            self.notify_serv(msg=f"Cette batte ne sert qu'à taper {self.lynched_name}")
 
         # if it's the last hit, notifying and destroying the object
         if self.remaining_hits <= 0:
             self.should_be_destroyed = True
-            self.notify_channel(msg=f"{self.user_fullname} a cassé sa batte sur {self.target_name}",
+            self.notify_channel(msg=f"{self.user_fullname} a cassé sa batte sur {self.lynched_name}",
                                 binary_payload=cached_loader.load_byte(str(self.BROKEN_BAT_FX)))
 
 
@@ -125,6 +125,7 @@ class Crown(LoultObject):
 class ScrollOfQurk(LoultObject):
     NAME = "Parchemin du Qurk"
     ICON = "parchemin.gif"
+    FX_FILE = DATA_PATH / Path("magic_spell.mp3")
 
     class DuckEffect(ExplicitTextEffect):
         TIMEOUT = 300
@@ -135,13 +136,13 @@ class ScrollOfQurk(LoultObject):
     def use(self, obj_params):
         if random.randint(1, 5) == 1:
             target = self.user
-            self.notify_channel(msg=f"{self.user_fullname} a mal lu le parchemin du Qurk et s'est changé en canard!")
+            msg = f"{self.user_fullname} a mal lu le parchemin du Qurk et s'est changé en canard!"
         else:
             target = self.targeted_user
-            self.notify_channel(msg=f"{self.user_fullname} a changé {target.poke_params.fullname} en canard!")
-
+            msg = f"{self.user_fullname} a changé {target.poke_params.fullname} en canard!"
+        self.notify_channel(msg=msg, binary_payload=self._load_byte(self.FX_FILE))
         target.state.add_effect(self.DuckEffect())
-        params = self.targeted_user.poke_params
+        params = target.poke_params
         params.img_id = "qurk"
         params.pokename = "Qurkee"
         target._info = None
@@ -160,7 +161,8 @@ class Scolopamine(LoultObject):
         self.targeted_user.state.inventory.objects = []
         self.targeted_user.state.add_effect(GrandSpeechMasterEffect())
 
-        self.notify_channel(msg=f"{self.user.poke_params.fullname} a drogué {self.targeted_user.poke_params.fullname} et puis a piqué tout son inventaire!")
+        self.notify_channel(
+            msg=f"{self.user.poke_params.fullname} a drogué {self.targeted_user.poke_params.fullname} et puis a piqué tout son inventaire!")
         self.should_be_destroyed = True
 
 
@@ -239,6 +241,7 @@ class Detonator(LoultObject):
     NAME = "Détonateur"
     ICON = "detonator.gif"
     EXPLOSION_FX = DATA_PATH / Path("explosion.mp3")
+    DETONATOR_CLICK_FX = DATA_PATH / Path("detonator_switch.mp3")
 
     def use(self, obj_params):
         if random.randint(1, 6) == 1:
@@ -246,6 +249,7 @@ class Detonator(LoultObject):
                                 binary_payload=self._load_byte(self.EXPLOSION_FX))
             self.user.disconnect_all_clients(4006, "Reconnect please")
             self.should_be_destroyed = True
+            return
 
         blown_up_users = []
         for user in self.channel.users.values():
@@ -260,6 +264,8 @@ class Detonator(LoultObject):
         if blown_up_users:
             self.notify_channel(msg=f"{self.user_fullname} a fait sauter {', '.join(blown_up_users)}!",
                                 binary_payload=self._load_byte(self.EXPLOSION_FX))
+        else:
+            self.server.send_binary(self._load_byte(self.DETONATOR_CLICK_FX))
 
 
 @destructible
@@ -273,8 +279,9 @@ class SuicideJacket(LoultObject):
                     if userlist_dist(self.channel, self.user.user_id, usr.user_id) < 3
                     and usr is not self.user]
 
-        self.notify_channel(msg=f"{self.user.poke_params.fullname} s'est fait sauter, emportant avec lui {', '.join([usr.poke_params.fullname for usr in hit_usrs])}",
-                            binary_payload=self._load_byte(self.EXPLOSION_FX))
+        self.notify_channel(
+            msg=f"{self.user.poke_params.fullname} s'est fait sauter, emportant avec lui {', '.join([usr.poke_params.fullname for usr in hit_usrs])}",
+            binary_payload=self._load_byte(self.EXPLOSION_FX))
 
         for user in hit_usrs:
             user.disconnect_all_clients(code=4006, reason="Reconnect please")
@@ -327,6 +334,7 @@ class RectalExam(LoultObject):
     def use(self, obj_params):
         from ..objects import get_random_object
         rdm_objects = [get_random_object() for _ in range(random.randint(2, 4))]
+        rdm_objects.append(Poop(self.targeted_user.poke_params.fullname))
         for obj in rdm_objects:
             self.user.state.inventory.add(obj)
         names_list = ", ".join(obj.name for obj in rdm_objects)
@@ -347,8 +355,10 @@ class WealthDetector(LoultObject):
     ICON = "detector.gif"
 
     def use(self, obj_params):
-        self.notify_channel(msg=f"{self.user_fullname} utilise le détecteur de richesse sur {self.targeted_user.poke_params.fullname}")
-        self.notify_serv(msg=f"{self.targeted_user.poke_params.fullname} a {len(self.targeted_user.state.inventory.objects):d} objets dans son inventaire")
+        self.notify_channel(
+            msg=f"{self.user_fullname} utilise le détecteur de richesse sur {self.targeted_user.poke_params.fullname}")
+        self.notify_serv(
+            msg=f"{self.targeted_user.poke_params.fullname} a {len(self.targeted_user.state.inventory.objects):d} objets dans son inventaire")
 
 
 @destructible
@@ -485,7 +495,6 @@ class LaxativeBox(LoultObject):
     def __init__(self):
         super().__init__()
         self.remaining_use = 6
-        self.fx_file = random.choice(list(self.FX_DIR.iterdir()))
 
     @property
     def name(self):
@@ -501,8 +510,9 @@ class LaxativeBox(LoultObject):
             msg = f"{self.user_fullname} prend un laxatif et fait kk paw tèw!"
         else:
             msg = f"{self.user_fullname} fait faire kk paw tèw à {target.poke_params.fullname}!"
-        target.state.inventory.add(Poop(target.poke_params.fullname))
-        self.notify_channel(msg, binary_payload=self._load_byte(self.fx_file))
+            target.state.inventory.add(Poop(target.poke_params.fullname))
+        fx_file = random.choice(list(self.FX_DIR.iterdir()))
+        self.notify_channel(msg, binary_payload=self._load_byte(fx_file))
         self.remaining_use -= 1
 
         if self.remaining_use <= 0:
@@ -534,7 +544,7 @@ class Poop(LoultObject):
             msg = f"{self.user_fullname} lance le {self.name} sur {self.targeted_user.poke_params.fullname}!"
             self.notify_channel(msg=msg, binary_payload=self._load_byte(self.fx_file))
             self.targeted_user.disconnect_all_clients(code=4006, reason="Reconnect please")
-        elif self.targeted_user is not None or self.targeted_user is self.user:
+        elif self.targeted_user is None or self.targeted_user is self.user:
             self.notify_channel(msg=f"{self.user.poke_params.fullname} s'étale le {self.name} sur le corps!")
         self.should_be_destroyed = True
 
@@ -583,11 +593,12 @@ class EffectsStealer(LoultObject):
             for effect in effects:
                 self.user.state.add_effect(effect)
 
-        # removing effects from the targeted user's effects list
+        #  removing effects from the targeted user's effects list
         for effect_type in self.targeted_user.state.effects:
             self.targeted_user.state.effects[effect_type] = []
 
-        self.notify_channel(f"{self.user_fullname} s'est accaparé les effets de {self.targeted_user.poke_params.fullname}!")
+        self.notify_channel(
+            f"{self.user_fullname} s'est accaparé les effets de {self.targeted_user.poke_params.fullname}!")
 
 
 @destructible
@@ -604,24 +615,27 @@ class PandorasBox(LoultObject):
         self.should_be_destroyed = True
 
 
-@cooldown(60)
+@cooldown(120)
 class Transmutator(LoultObject):
     NAME = "transmutateur d'objets"
     ICON = "transmutateur.gif"
 
-    def use(self, obj_params: List):
-        if self.targeted_user is self.user:
-            self.notify_serv("On offre les cadeau aux autres, pas à soit-même, espèce d'égoïste de merde!")
-            return
+    FX_FILE = DATA_PATH / Path("transmutator.mp3")
 
+    def use(self, obj_params: List):
         from ..objects import get_random_object
         other_objs = [obj for obj in self.user_inventory.objects
                       if obj is not self]
+        if not other_objs:
+            self.notify_serv("Pas d'objets à transmuter...")
+            return
+
         rdm_obj: LoultObject = random.choice(other_objs)
         new_obj = get_random_object()
         self.user_inventory.remove(rdm_obj)
         self.user_inventory.add(new_obj)
-        self.notify_serv(f"Objet {rdm_obj.name} changé en {new_obj.name}")
+        self.notify_serv(f"Objet {rdm_obj.name} changé en {new_obj.name}",
+                         bin_payload=self._load_byte(self.FX_FILE))
 
 
 @destructible
@@ -631,15 +645,33 @@ class SantasSack(LoultObject):
     NAME = "hotte du père noël"
     ICON = "cadeau.gif"
 
-    def __init__(self):
+    def __init__(self, presents: Optional[int] = None):
         super().__init__()
-        self.present_count = random.randint(5,10)
+        if presents is None:
+            self.present_count = random.randint(3, 8)
+        else:
+            self.present_count = presents
+        self.last_recipient = None
 
     def use(self, obj_params: List):
+        if self.targeted_user is self.user:
+            self.notify_serv("On offre les cadeau aux autres, pas à soit-même, espèce d'égoïste de merde!")
+            return
+
+        if len(self.targeted_user.state.inventory.objects) >= 15:
+            self.notify_serv("L'utilisateur cible a déjà trop d'objets!")
+            return
+
+        if self.targeted_user is self.last_recipient:
+            self.notify_serv("Pas toujours le même espèce de père noël de carnaval!")
+            return
+
         from ..objects import get_random_object
         obj = get_random_object()
         self.targeted_user.state.inventory.add(obj)
-        self.notify_channel(f"{self.user_fullname} a offert un beau {obj.name} à {self.targeted_user.poke_params.fullname}!")
+        self.notify_channel(
+            f"{self.user_fullname} a offert un beau {obj.name} à {self.targeted_user.poke_params.fullname}!")
         self.present_count -= 1
+        self.last_recipient = self.targeted_user
         if self.present_count <= 0:
             self.should_be_destroyed = True
