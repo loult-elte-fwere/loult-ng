@@ -587,7 +587,7 @@ class EffectsStealer(LoultObject):
         for effect_type in self.targeted_user.state.effects:
             self.targeted_user.state.effects[effect_type] = []
 
-        self.notify_channel(f"{self.user_fullname} s'est accaparé les effets de f{self.targeted_user.poke_params.fullname}!")
+        self.notify_channel(f"{self.user_fullname} s'est accaparé les effets de {self.targeted_user.poke_params.fullname}!")
 
 
 @destructible
