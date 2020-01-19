@@ -142,7 +142,7 @@ class ScrollOfQurk(LoultObject):
             msg = f"{self.user_fullname} a changé {target.poke_params.fullname} en canard!"
         self.notify_serv(msg=msg, bin_payload=self._load_byte(self.FX_FILE))
         target.state.add_effect(self.DuckEffect())
-        params = self.targeted_user.poke_params
+        params = target.poke_params
         params.img_id = "qurk"
         params.pokename = "Qurkee"
         target._info = None
