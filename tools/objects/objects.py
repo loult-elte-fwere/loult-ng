@@ -544,7 +544,7 @@ class Poop(LoultObject):
             msg = f"{self.user_fullname} lance le {self.name} sur {self.targeted_user.poke_params.fullname}!"
             self.notify_channel(msg=msg, binary_payload=self._load_byte(self.fx_file))
             self.targeted_user.disconnect_all_clients(code=4006, reason="Reconnect please")
-        elif self.targeted_user is not None or self.targeted_user is self.user:
+        elif self.targeted_user is None or self.targeted_user is self.user:
             self.notify_channel(msg=f"{self.user.poke_params.fullname} s'étale le {self.name} sur le corps!")
         self.should_be_destroyed = True
 
