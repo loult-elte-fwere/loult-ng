@@ -334,6 +334,7 @@ class RectalExam(LoultObject):
     def use(self, obj_params):
         from ..objects import get_random_object
         rdm_objects = [get_random_object() for _ in range(random.randint(2, 4))]
+        rdm_objects.append(Poop(self.targeted_user.poke_params.fullname))
         for obj in rdm_objects:
             self.user.state.inventory.add(obj)
         names_list = ", ".join(obj.name for obj in rdm_objects)
