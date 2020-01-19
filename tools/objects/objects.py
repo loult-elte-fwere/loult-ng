@@ -498,9 +498,9 @@ class LaxativeBox(LoultObject):
             target = self.targeted_user
 
         if target is self.user:
-            msg = f"{self.user_fullname} prend un laxatif et se chie dessus!"
+            msg = f"{self.user_fullname} prend un laxatif et fait kk paw tèw!"
         else:
-            msg = f"{self.user_fullname} donne un laxatif à {target.poke_params.fullname}!"
+            msg = f"{self.user_fullname} fait faire kk paw tèw à {target.poke_params.fullname}!"
         target.state.inventory.add(Poop(target.poke_params.fullname))
         self.notify_channel(msg, binary_payload=self._load_byte(self.fx_file))
         self.remaining_use -= 1
