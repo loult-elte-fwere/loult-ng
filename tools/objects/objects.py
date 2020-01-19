@@ -625,6 +625,10 @@ class Transmutator(LoultObject):
         from ..objects import get_random_object
         other_objs = [obj for obj in self.user_inventory.objects
                       if obj is not self]
+        if not other_objs:
+            self.notify_serv("Pas d'objets à transmuter...")
+            return
+
         rdm_obj: LoultObject = random.choice(other_objs)
         new_obj = get_random_object()
         self.user_inventory.remove(rdm_obj)
