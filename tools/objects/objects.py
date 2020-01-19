@@ -562,7 +562,7 @@ class Cacapulte(LoultObject):
             self.notify_serv("Imposible de se tirer soit-même dessus!")
             return
 
-        msg = f"{self.user_fullname} kk-pulte le {self.name} sur {self.targeted_user.poke_params.fullname}!"
+        msg = f"{self.user_fullname} kk-pulte le {poop.name} sur {self.targeted_user.poke_params.fullname}!"
         self.notify_channel(msg=msg, binary_payload=self._load_byte(self.fx_file))
         self.targeted_user.disconnect_all_clients(code=4006, reason="Reconnect please")
 
