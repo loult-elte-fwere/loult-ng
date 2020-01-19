@@ -1,17 +1,18 @@
-from datetime import datetime
 import random
 import re
-from os import path, listdir
+from datetime import datetime
+from pathlib import Path
 from time import time as timestamp
+from typing import List
 
 import yaml
 
+from .base import userlist_dist, LoultObject, cooldown, destructible, targeted, inert, clonable
 from ..effects.effects import ExplicitTextEffect, GrandSpeechMasterEffect, StutterEffect, VocalDyslexia, \
     VowelExchangeEffect, FlowerEffect, CaptainHaddockEffect
-from .base import userlist_dist, LoultObject, cooldown, destructible, targeted, inert, clonable
 from ..tools import cached_loader
 
-DATA_PATH = path.join(path.dirname(path.realpath(__file__)), "data")
+DATA_PATH = Path(__file__).absolute().parent / Path("data")
 
 
 @inert
@@ -61,8 +62,8 @@ class Flower(LoultObject):
 @destructible
 class BaseballBat(LoultObject):
     ICON = "baseballbat.gif"
-    FIGHTING_FX_DIR = path.join(DATA_PATH, "fighting/")
-    BROKEN_BAT_FX = path.join(DATA_PATH, "broken_bat.mp3")
+    FIGHTING_FX_DIR = DATA_PATH / Path("fighting/")
+    BROKEN_BAT_FX = DATA_PATH / Path("broken_bat.mp3")
 
     def __init__(self, target_userid, target_username):
         super().__init__()
@@ -70,9 +71,8 @@ class BaseballBat(LoultObject):
         self.target_userid = target_userid
         self.remaining_hits = random.randint(5, 15)
         self.sounds = []
-        for filename in listdir(self.FIGHTING_FX_DIR):
-            realpath = path.join(self.FIGHTING_FX_DIR, filename)
-            self.sounds.append(cached_loader.load_byte(realpath))
+        for filename in self.FIGHTING_FX_DIR.iterdir():
+            self.sounds.append(cached_loader.load_byte(str(filename)))
 
     @property
     def name(self):
@@ -92,7 +92,7 @@ class BaseballBat(LoultObject):
         if self.remaining_hits <= 0:
             self.should_be_destroyed = True
             self.notify_channel(msg=f"{self.user_fullname} a cassé sa batte sur {self.target_name}",
-                                binary_payload=cached_loader.load_byte(self.BROKEN_BAT_FX))
+                                binary_payload=cached_loader.load_byte(str(self.BROKEN_BAT_FX)))
 
 
 @destructible
@@ -124,7 +124,7 @@ class Crown(LoultObject):
 @destructible
 class ScrollOfQurk(LoultObject):
     NAME = "Parchemin du Qurk"
-    ICON = "question.gif"
+    ICON = "parchemin.gif"
 
     class DuckEffect(ExplicitTextEffect):
         TIMEOUT = 300
@@ -141,7 +141,7 @@ class ScrollOfQurk(LoultObject):
             self.notify_channel(msg=f"{self.user_fullname} a changé {target.poke_params.fullname} en canard!")
 
         target.state.add_effect(self.DuckEffect())
-        params = self.target_user.poke_params
+        params = self.targeted_user.poke_params
         params.img_id = "qurk"
         params.pokename = "Qurkee"
         target._info = None
@@ -171,9 +171,9 @@ class AlcoholBottle(LoultObject):
     EFFECTS = [GrandSpeechMasterEffect, StutterEffect, VocalDyslexia, VowelExchangeEffect]
     FILLING_MAPPING = {0: "vide", 1: "presque vide", 2: "moitié vide",
                        3: "presque pleine", 4: "pleine"}
-    BOTTLE_FX = path.join(DATA_PATH, "broken_bottle.mp3")
-    GULP_FX = path.join(DATA_PATH, "gulp.mp3")
-    ALCOHOLS = yaml.safe_load(open(path.join(DATA_PATH, "alcohols.yml")))
+    BOTTLE_FX = DATA_PATH / Path("broken_bottle.mp3")
+    GULP_FX = DATA_PATH / Path("gulp.mp3")
+    ALCOHOLS = yaml.safe_load(open(DATA_PATH / Path("alcohols.yml")))
 
     def __init__(self):
         super().__init__()
@@ -217,7 +217,7 @@ class AlcoholBottle(LoultObject):
 
 
 class Microphone(LoultObject):
-    MIKEDROP_FX = path.join(DATA_PATH, "mikedrop.mp3")
+    MIKEDROP_FX = DATA_PATH / Path("mikedrop.mp3")
     NAME = 'micro'
     ICON = "micro.gif"
 
@@ -236,7 +236,7 @@ class C4(LoultObject):
 class Detonator(LoultObject):
     NAME = "Détonateur"
     ICON = "detonator.gif"
-    EXPLOSION_FX = path.join(DATA_PATH, "explosion.mp3")
+    EXPLOSION_FX = DATA_PATH / Path("explosion.mp3")
 
     def use(self, obj_params):
         # TODO : add fumble where the detonator blows up the user
@@ -259,7 +259,7 @@ class Detonator(LoultObject):
 class SuicideJacket(LoultObject):
     NAME = "ceinture d'explosif"
     ICON = "suicide.gif"
-    EXPLOSION_FX = path.join(DATA_PATH, "suicide_bomber.mp3")
+    EXPLOSION_FX = DATA_PATH / Path("suicide_bomber.mp3")
 
     def use(self, obj_params):
         hit_usrs = [usr for usr in self.channel.users.values()
@@ -274,9 +274,10 @@ class SuicideJacket(LoultObject):
         self.channel.broadcast(type='antiflood', event='banned',
                                flooder_id=self.user.user_id,
                                date=timestamp() * 1000)
-        self.loult_state.ban_cookie(self.user.cookie_hash)
+        self.loult_state.ban_ip(self.server.ip)
         self.user.disconnect_all_clients(code=4006, reason='Reconnect later')
         self.should_be_destroyed = True
+
 
 @cooldown(30)
 class Costume(LoultObject):
@@ -286,7 +287,7 @@ class Costume(LoultObject):
 
     def __init__(self):
         super().__init__()
-        self.character = random.choice(self.CHARACTERS)  # type:str
+        self.character: str = random.choice(self.CHARACTERS)
 
     @property
     def icon(self):
@@ -350,7 +351,7 @@ class Cigarettes(LoultObject):
     ICON = "cigarettes.gif"
     BRANDS = ["Lucky Loult", "Lucky Loult Menthol", "Mrleboro", "Chesterfnre", "Sheitanes Maïs",
               "Aguloises"]
-    CIG_FX = path.join(DATA_PATH, "cigarette_lighting.mp3")
+    CIG_FX = DATA_PATH / Path("cigarette_lighting.mp3")
 
     def __init__(self):
         super().__init__()
@@ -387,7 +388,7 @@ class Cigarettes(LoultObject):
 class Lighter(LoultObject):
     NAME = "briquet"
     ICON = "lighter.gif"
-    CIG_FX = path.join(DATA_PATH, "lighter.mp3")
+    CIG_FX = DATA_PATH / Path("lighter.mp3")
 
     def use(self, obj_params):
         self.channel.broadcast(binary_payload=self._load_byte(self.CIG_FX))
@@ -464,5 +465,136 @@ class CaptainHaddockPipe(LoultObject):
         self.channel.broadcast(type="notification",
                                msg="%s est un marin d'eau douce!" % self.user.poke_params.fullname)
         self.should_be_destroyed = True
+
+
+@destructible
+@cooldown(10)
+@targeted(mandatory=False)
+class LaxativeBox(LoultObject):
+    NAME = "Boite de laxatif industriel"
+    ICON = "laxatif.gif"
+    FX_DIR = DATA_PATH / Path("laxative")
+
+    def __init__(self):
+        super().__init__()
+        self.remaining_use = 6
+        self.fx_file = random.choice(list(self.FX_DIR.iterdir()))
+
+    @property
+    def name(self):
+        return f"{self.NAME} ({self.remaining_use})"
+
+    def use(self, obj_params: List):
+        if self.targeted_user is None:
+            target = self.user
+        else:
+            target = self.targeted_user
+
+        if target is self.user:
+            msg = f"{self.user_fullname} prend un laxatif et se chie dessus!"
+        else:
+            msg = f"{self.user_fullname} donne un laxatif à {target.poke_params.fullname}!"
+        target.state.inventory.add(Poop(target.poke_params.fullname))
+        self.notify_channel(msg, binary_payload=self._load_byte(self.fx_file))
+        self.remaining_use -= 1
+
+        if self.remaining_use <= 0:
+            self.should_be_destroyed = True
+
+
+@destructible
+@targeted(mandatory=False)
+class Poop(LoultObject):
+    ICON = "crotte.gif"
+    FX_FOLDER = DATA_PATH / Path("throw_splat")
+
+    def __init__(self, maker: str):
+        super().__init__()
+        self.maker = maker
+        self.fx_file = random.choice(list(self.FX_FOLDER.iterdir()))
+
+    @property
+    def name(self):
+        return f"kk de {self.maker}"
+
+    def use(self, obj_params: List):
+        if self.targeted_user is not None:
+            target_dist = userlist_dist(self.channel, self.user.user_id, self.targeted_userid)
+            if target_dist > 1:
+                self.notify_serv(msg="Trop loin pour lancer du kk!")
+                return
+
+            msg = f"{self.user_fullname} lance le {self.name} sur {self.targeted_user.poke_params.fullname}!"
+            self.notify_channel(msg=msg, binary_payload=self._load_byte(self.fx_file))
+            self.targeted_user.disconnect_all_clients(code=4006, reason="Reconnect please")
+        elif self.targeted_user is not None or self.targeted_user is self.user:
+            self.notify_channel(msg=f"{self.user.poke_params.fullname} s'étale le {self.name} sur le corps!")
+        self.should_be_destroyed = True
+
+
+@cooldown(60)
+@targeted()
+class Cacapulte(LoultObject):
+    NAME = "cacapulte"
+    ICON = "lance-pierre.gif"
+    FX_FOLDER = DATA_PATH / Path("catapult_splat")
+
+    def __init__(self):
+        super().__init__()
+        self.fx_file = random.choice(list(self.FX_FOLDER.iterdir()))
+
+    def use(self, obj_params: List):
+        poops = self.user_inventory.search_by_class(Poop)
+        if not poops:
+            self.notify_serv("Impossible de kk-pulter sans kk!")
+            return
+        poop = poops.pop()
+        self.user_inventory.remove(poop)
+
+        if self.targeted_user is self.user:
+            self.notify_serv("Imposible de se tirer soit-même dessus!")
+            return
+
+        msg = f"{self.user_fullname} kk-pulte le {self.name} sur {self.targeted_user.poke_params.fullname}!"
+        self.notify_channel(msg=msg, binary_payload=self._load_byte(self.fx_file))
+        self.targeted_user.disconnect_all_clients(code=4006, reason="Reconnect please")
+
+
+@cooldown(60)
+@targeted()
+class EffectsStealer(LoultObject):
+    NAME = "aspirateur d'effets"
+    ICON = "aspirateur-2.gif"
+
+    def use(self, obj_params: List):
+        if self.targeted_user is self.user:
+            self.notify_serv("Imposible d'aspirer ses propres effets!")
+            return
+
+        # stealing effects from the targeted user (their instance)
+        for effect_type, effects in self.targeted_user.state.effects.items():
+            for effect in effects:
+                self.user.state.add_effect(effect)
+
+        # removing effects from the targeted user's effects list
+        for effect_type in self.targeted_user.state.effects:
+            self.targeted_user.state.effects[effect_type] = []
+
+        self.notify_channel(f"{self.user_fullname} s'est accaparé les effets de f{self.targeted_user.poke_params.fullname}!")
+
+
+@destructible
+class PandorasBox(LoultObject):
+    NAME = "boite de pandore"
+    ICON = "boite-pandore.gif"
+
+    def use(self, obj_params: List):
+        from ..effects import get_random_effect
+        for user in self.channel.users.values():
+            user.state.add_effect(get_random_effect())
+
+        self.notify_channel(f"{self.user_fullname} a ouvert la boite de pandore !")
+        self.should_be_destroyed = True
+
 
 

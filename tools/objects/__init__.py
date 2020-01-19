@@ -5,7 +5,8 @@ from .base import LoultObject
 from .objects import (ScrollOfQurk,
                       Crown, Scolopamine, AlcoholBottle, Microphone, C4, Detonator, SuicideJacket, Flower,
                       Costume, WealthDetector, RectalExam, Cigarettes, Lighter,
-                      MollyChute, CaptainHaddockPipe)
+                      MollyChute, CaptainHaddockPipe, Cacapulte, LaxativeBox,
+                      PandorasBox, EffectsStealer)
 from .unused_objects import SimpleInstrument, PolynectarPotion, Cocaine, Revolver, RevolverCartridges, SniperRifle, \
     SniperBullets, RPG, RPGRocket, Grenade
 from tools.objects.weapons import Quiver
@@ -15,7 +16,8 @@ AVAILABLE_OBJECTS = [Crown, Scolopamine,
                      AlcoholBottle, Microphone, C4,
                      Detonator, SuicideJacket, Flower, Quiver,
                      RectalExam, Costume, Cigarettes, Lighter, MollyChute,
-                     CaptainHaddockPipe,
+                     CaptainHaddockPipe, ScrollOfQurk, EffectsStealer,
+                     PandorasBox, LaxativeBox, Cacapulte
                      ]
 
 

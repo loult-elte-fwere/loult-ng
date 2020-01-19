@@ -1,4 +1,5 @@
 from datetime import datetime
+from pathlib import Path
 from typing import Type, List
 
 from config import MILITIA_COOKIES
@@ -12,7 +13,7 @@ def userlist_dist(channel_obj, userid_1, userid_2):
 class LoultObject:
     NAME = "stuff"
     ICON = "question.gif"
-    COOLDOWN = None # in seconds
+    COOLDOWN = None  # in seconds
     DESTRUCTIBLE = False
     TARGETED = False
     TARGET_MANDATORY = False
@@ -64,8 +65,9 @@ class LoultObject:
         try:
             target = obj_params[0]
         except IndexError:
-            self.notify_serv(msg="Il faut spécifier un nom de pokémon (comme lors d'une attaque),"
-                                 "exemple: /use 3 Taupiqueur 2")
+            if self.TARGET_MANDATORY:
+                self.notify_serv(msg="Il faut spécifier un nom de pokémon (comme lors d'une attaque), "
+                                     "exemple: /use 3 Taupiqueur 2")
             self.targeted_user, self.targeted_userid = None, None
             return
 
@@ -117,17 +119,19 @@ class LoultObject:
     def use(self, obj_params: List):
         pass
 
-    def _load_byte(self, filepath):
-        with open(filepath, "rb") as binfile:
+    def _load_byte(self, filepath: Path):
+        with open(str(filepath), "rb") as binfile:
             return binfile.read()
 
 
 ###  all the class decorators that set various properties
 def cooldown(value: int):
     """Sets the cooldown (in seconds) for an object"""
+
     def wrapper(klass: Type[LoultObject]):
         klass.COOLDOWN = value
         return klass
+
     return wrapper
 
 
@@ -139,10 +143,12 @@ def destructible(klass: Type[LoultObject]):
 
 def targeted(mandatory=True):
     """Sets the cooldown (in seconds) for an object"""
+
     def wrapper(klass: Type[LoultObject]):
         klass.TARGETED = True
         klass.TARGET_MANDATORY = mandatory
         return klass
+
     return wrapper
 
 
