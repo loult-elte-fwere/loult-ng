@@ -610,6 +610,10 @@ class Transmutator(LoultObject):
     ICON = "transmutateur.gif"
 
     def use(self, obj_params: List):
+        if self.targeted_user is self.user:
+            self.notify_serv("On offre les cadeau aux autres, pas à soit-même, espèce d'égoïste de merde!")
+            return
+
         from ..objects import get_random_object
         other_objs = [obj for obj in self.user_inventory.objects
                       if obj is not self]
