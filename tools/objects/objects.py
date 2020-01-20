@@ -549,7 +549,7 @@ class Poop(LoultObject):
         self.should_be_destroyed = True
 
 
-@cooldown(60)
+@cooldown(30)
 @targeted()
 class Cacapulte(LoultObject):
     NAME = "cacapulte"
