@@ -64,6 +64,7 @@ class BaseballBat(LoultObject):
     ICON = "baseballbat.gif"
     FIGHTING_FX_DIR = DATA_PATH / Path("fighting/")
     BROKEN_BAT_FX = DATA_PATH / Path("broken_bat.mp3")
+    INSERTION_FX = DATA_PATH / Path("baseball_bat_insertion.mp3")
 
     def __init__(self, target_userid, target_username):
         super().__init__()
@@ -86,7 +87,9 @@ class BaseballBat(LoultObject):
                                     binary_payload=random.choice(self.sounds))
             self.remaining_hits -= 1
         else:
-            self.notify_serv(msg=f"Cette batte ne sert qu'à taper {self.lynched_name}")
+            self.notify_channel(msg=f"{self.user_fullname} s'insère une batte de baseball au fond des muqueuses!",
+                                binary_payload=self._load_byte(self.INSERTION_FX))
+            self.should_be_destroyed = True
 
         # if it's the last hit, notifying and destroying the object
         if self.remaining_hits <= 0:
@@ -279,12 +282,9 @@ class SuicideJacket(LoultObject):
                     if userlist_dist(self.channel, self.user.user_id, usr.user_id) < 3
                     and usr is not self.user]
 
-        self.notify_channel(
+        self.notify_serv(
             msg=f"{self.user.poke_params.fullname} s'est fait sauter, emportant avec lui {', '.join([usr.poke_params.fullname for usr in hit_usrs])}",
-            binary_payload=self._load_byte(self.EXPLOSION_FX))
-
-        for user in hit_usrs:
-            user.disconnect_all_clients(code=4006, reason="Reconnect please")
+            bin_payload=self._load_byte(self.EXPLOSION_FX))
         self.channel.broadcast(type='antiflood', event='banned',
                                flooder_id=self.user.user_id,
                                date=timestamp() * 1000)
