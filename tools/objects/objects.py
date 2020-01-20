@@ -245,7 +245,7 @@ class Detonator(LoultObject):
 
     def use(self, obj_params):
         if random.randint(1, 6) == 1:
-            self.notify_channel(f"{self.user_fullname} a mal réglé son détonateur et s'est fait sauté",
+            self.notify_channel(f"{self.user_fullname} a mal réglé son détonateur et s'est fait sauter",
                                 binary_payload=self._load_byte(self.EXPLOSION_FX))
             self.user.disconnect_all_clients(4006, "Reconnect please")
             self.should_be_destroyed = True
@@ -569,7 +569,7 @@ class Cacapulte(LoultObject):
         self.user_inventory.remove(poop)
 
         if self.targeted_user is self.user:
-            self.notify_serv("Imposible de se tirer soit-même dessus!")
+            self.notify_serv("Imposible de se tirer soi-même dessus!")
             return
 
         msg = f"{self.user_fullname} kk-pulte le {poop.name} sur {self.targeted_user.poke_params.fullname}!"
