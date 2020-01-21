@@ -200,11 +200,13 @@ class CaptainHaddockEffect(ExplicitTextEffect):
             self.insults = insults_file.read().split("\n")
 
     def process(self, text: str) -> str:
-        return "%s, %s %s!" % (
-            text.strip("!,.:?"),
-            random.choice(["bande de", "espèces de", "espèce de"]),
-            random.choice(self.insults)
-        )
+        insult = random.choice(self.insults)
+        if insult[0] in {"a", "e", "é", "è", "y", "o", "u", "h", "ê", "i"}:
+            article = "d'"
+        else:
+            article = "de "
+        swear = random.choice(['bande', 'espèce', 'satanés', 'bougre', 'mille million'])
+        return f"{text.strip('!,.:?')}, {swear} {article}{insult}!"
 
 
 class TouretteEffect(HiddenTextEffect):
