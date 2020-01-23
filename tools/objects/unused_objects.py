@@ -5,13 +5,13 @@ from os import path
 from tools.effects.effects import VenerEffect
 from tools.objects import LoultObject
 from tools.objects.base import cooldown, destructible, targeted, userlist_dist
-from tools.objects.objects import DATA_PATH
+from tools.objects.objects import DATA_FOLDER
 
 
 @cooldown(30)
 class SimpleInstrument(LoultObject):
     ICON = "gong.gif"
-    SND_DIR = path.join(DATA_PATH, "instruments/")
+    SND_DIR = path.join(DATA_FOLDER, "instruments/")
     INSTRUMENTS_MAPPING = {"gong": "gong.mp3"}
 
     def __init__(self, instrument=None):
@@ -67,8 +67,8 @@ class Cocaine(LoultObject):
 
 @targeted()
 class Revolver(LoultObject):
-    GUNSHOT_FX = path.join(DATA_PATH, "gun/gunshot.mp3")
-    EMPTY_FX = path.join(DATA_PATH, "gun/empty_mag.mp3")
+    GUNSHOT_FX = path.join(DATA_FOLDER, "gun/gunshot.mp3")
+    EMPTY_FX = path.join(DATA_FOLDER, "gun/empty_mag.mp3")
     NAME = "Walther PKK"
 
     def __init__(self, bullets=5):
@@ -106,7 +106,7 @@ class Revolver(LoultObject):
 @destructible
 class RevolverCartridges(LoultObject):
     NAME = "Chargeur de pistolet"
-    RELOADING_FX = path.join(DATA_PATH, "gun/reloading.mp3")
+    RELOADING_FX = path.join(DATA_FOLDER, "gun/reloading.mp3")
 
     def use(self, obj_params):
         # searching in the user's inventory for the emptiest gun to be used on
@@ -126,7 +126,7 @@ class RevolverCartridges(LoultObject):
 
 @targeted()
 class SniperRifle(LoultObject):
-    SNIPER_FX = path.join(DATA_PATH, "sniper_fx.mp3")
+    SNIPER_FX = path.join(DATA_FOLDER, "sniper_fx.mp3")
     NAME = "Fusil de précision"
 
     def __init__(self):
@@ -161,7 +161,7 @@ class SniperRifle(LoultObject):
 @destructible
 class SniperBullets(LoultObject):
     NAME = "Balles de sniper"
-    RELOADING_FX = path.join(DATA_PATH, "gun/bolt_reloading.mp3")
+    RELOADING_FX = path.join(DATA_FOLDER, "gun/bolt_reloading.mp3")
 
     def __init__(self, bullets=3):
         super().__init__()
@@ -191,7 +191,7 @@ class SniperBullets(LoultObject):
 @targeted()
 class RPG(LoultObject):
     NAME = "lance-roquette"
-    RPG_FX = path.join(DATA_PATH, "rpg_rocket.mp3")
+    RPG_FX = path.join(DATA_FOLDER, "rpg_rocket.mp3")
 
     def __init__(self):
         super().__init__()
@@ -229,7 +229,7 @@ class RPG(LoultObject):
 @destructible
 class RPGRocket(LoultObject):
     NAME = "Roquette pour RPG"
-    RELOADING_FX = path.join(DATA_PATH, "rpg_reload.mp3")
+    RELOADING_FX = path.join(DATA_FOLDER, "rpg_reload.mp3")
 
     def use(self, obj_params):
         users_rpg = server.user.state.inventory.search_by_class(RPG)
@@ -247,8 +247,8 @@ class RPGRocket(LoultObject):
 
 @destructible
 class Grenade(LoultObject):
-    UNPIN_FX = path.join(DATA_PATH, "grenade_unpin.mp3")
-    EXPLOSION_FX = path.join(DATA_PATH, "grenade_explosion.mp3")
+    UNPIN_FX = path.join(DATA_FOLDER, "grenade_unpin.mp3")
+    EXPLOSION_FX = path.join(DATA_FOLDER, "grenade_explosion.mp3")
     NAME = "Grenade"
 
     def use(self, obj_params):

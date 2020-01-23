@@ -1,6 +1,7 @@
 from os import listdir, path
 from asyncio import create_subprocess_shell
 from asyncio.subprocess import PIPE
+from pathlib import Path
 from typing import List
 
 import numpy
@@ -64,11 +65,10 @@ def mix_tracks(track1, track2, offset=None, align=None):
     return padded_short_t + long_t
 
 
-def get_sounds(dir: str) -> List[numpy.ndarray]:
+def get_sounds(dir: Path) -> List[numpy.ndarray]:
     sounds = []
-    for filename in listdir(dir):
-        realpath = path.join(dir, filename)
-        rate, data = cached_loader.load_wav(realpath)
+    for filename in dir.iterdir():
+        rate, data = cached_loader.load_wav(str(filename))
         sounds.append(data)
     return sounds
 

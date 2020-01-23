@@ -1,3 +1,4 @@
+import json
 import random
 import re
 from datetime import datetime
@@ -6,13 +7,15 @@ from time import time as timestamp
 from typing import List, Optional
 
 import yaml
+from dataclasses import dataclass
 
 from .base import userlist_dist, LoultObject, cooldown, destructible, targeted, inert, clonable
+from ..effects import AudioEffect
 from ..effects.effects import ExplicitTextEffect, GrandSpeechMasterEffect, StutterEffect, VocalDyslexia, \
     VowelExchangeEffect, FlowerEffect, CaptainHaddockEffect
 from ..tools import cached_loader
 
-DATA_PATH = Path(__file__).absolute().parent / Path("data")
+DATA_FOLDER = Path(__file__).absolute().parent / Path("data")
 
 
 @inert
@@ -62,9 +65,9 @@ class Flower(LoultObject):
 @destructible
 class BaseballBat(LoultObject):
     ICON = "baseballbat.gif"
-    FIGHTING_FX_DIR = DATA_PATH / Path("fighting/")
-    BROKEN_BAT_FX = DATA_PATH / Path("broken_bat.mp3")
-    INSERTION_FX = DATA_PATH / Path("baseball_bat_insertion.mp3")
+    FIGHTING_FX_DIR = DATA_FOLDER / Path("fighting/")
+    BROKEN_BAT_FX = DATA_FOLDER / Path("broken_bat.mp3")
+    INSERTION_FX = DATA_FOLDER / Path("baseball_bat_insertion.mp3")
 
     def __init__(self, target_userid, target_username):
         super().__init__()
@@ -128,7 +131,7 @@ class Crown(LoultObject):
 class ScrollOfQurk(LoultObject):
     NAME = "Parchemin du Qurk"
     ICON = "parchemin.gif"
-    FX_FILE = DATA_PATH / Path("magic_spell.mp3")
+    FX_FILE = DATA_FOLDER / Path("magic_spell.mp3")
 
     class DuckEffect(ExplicitTextEffect):
         TIMEOUT = 300
@@ -177,9 +180,10 @@ class AlcoholBottle(LoultObject):
     EFFECTS = [GrandSpeechMasterEffect, StutterEffect, VocalDyslexia, VowelExchangeEffect]
     FILLING_MAPPING = {0: "vide", 1: "presque vide", 2: "moitié vide",
                        3: "presque pleine", 4: "pleine"}
-    BOTTLE_FX = DATA_PATH / Path("broken_bottle.mp3")
-    GULP_FX = DATA_PATH / Path("gulp.mp3")
-    ALCOHOLS = yaml.safe_load(open(DATA_PATH / Path("alcohols.yml")))
+    BOTTLE_FX = DATA_FOLDER / Path("broken_bottle.mp3")
+    GULP_FX = DATA_FOLDER / Path("gulp.mp3")
+    LIQUID_FILL_FX = DATA_FOLDER / Path("liquid_fill.mp3")
+    ALCOHOLS = yaml.safe_load(open(DATA_FOLDER / Path("alcohols.yml")))
 
     def __init__(self):
         super().__init__()
@@ -214,16 +218,56 @@ class AlcoholBottle(LoultObject):
             self.should_be_destroyed = True
         else:
             if self.remaining_use <= 0:
-                return self.notify_serv(msg="La bouteille est vide!")
-            self.notify_channel(msg=f"{self.user.poke_params.fullname} se descend un peu de {self.alc_brand}!",
-                                binary_payload=self._load_byte(self.GULP_FX))
-            for effect_type in self.EFFECTS:
-                self.user.state.add_effect(effect_type())
-            self.remaining_use -= 1
+                self.user_inventory.add(PissBottle(filled=True))
+                self.notify_channel(f"{self.user_fullname} pisse dans une bouteille!",
+                                    binary_payload=self._load_byte(self.LIQUID_FILL_FX))
+                self.should_be_destroyed = True
+            else:
+                self.notify_channel(msg=f"{self.user.poke_params.fullname} se descend un peu de {self.alc_brand}!",
+                                    binary_payload=self._load_byte(self.GULP_FX))
+                for effect_type in self.EFFECTS:
+                    self.user.state.add_effect(effect_type())
+                self.remaining_use -= 1
+
+
+@destructible
+@targeted(mandatory=False)
+class PissBottle(LoultObject):
+    GULP_FX = DATA_FOLDER / Path("gulp.mp3")
+    BOTTLE_FX = DATA_FOLDER / Path("broken_bottle.mp3")
+
+    def __init__(self, filled: bool = True):
+        super().__init__()
+        self.is_filled = filled
+
+    @property
+    def name(self):
+        return f"Bouteille de pee pee ({'pleine' if self.is_filled else 'vide'})"
+
+    def use(self, obj_params: List):
+        if self.targeted_user is None:
+            croutons = self.user_inventory.search_by_class(Crouton)
+            if not croutons:
+                self.notify_serv("Pas de croûton à faire tremper, soupeur du dimanche!")
+                return
+            crouton: Crouton = croutons.pop()
+            crouton.is_wet = True
+            self.is_filled = False
+            self.notify_channel(f"{self.user_fullname} a trempé son croûton!")
+        else:
+            if self.targeted_user is self.user:
+                self.notify_channel(f"{self.user_fullname} descend un peu de pisse!",
+                                    binary_payload=self._load_byte(self.GULP_FX))
+                self.is_filled = False
+            else:
+                self.notify_channel(
+                    f"{self.user.poke_params.fullname} lance une {self.name} sur {self.targeted_user.poke_params.fullname}!",
+                    binary_payload=self._load_byte(self.BOTTLE_FX))
+                self.should_be_destroyed = True
 
 
 class Microphone(LoultObject):
-    MIKEDROP_FX = DATA_PATH / Path("mikedrop.mp3")
+    MIKEDROP_FX = DATA_FOLDER / Path("mikedrop.mp3")
     NAME = 'micro'
     ICON = "micro.gif"
 
@@ -243,8 +287,8 @@ class C4(LoultObject):
 class Detonator(LoultObject):
     NAME = "Détonateur"
     ICON = "detonator.gif"
-    EXPLOSION_FX = DATA_PATH / Path("explosion.mp3")
-    DETONATOR_CLICK_FX = DATA_PATH / Path("detonator_switch.mp3")
+    EXPLOSION_FX = DATA_FOLDER / Path("explosion.mp3")
+    DETONATOR_CLICK_FX = DATA_FOLDER / Path("detonator_switch.mp3")
 
     def use(self, obj_params):
         if random.randint(1, 6) == 1:
@@ -275,7 +319,7 @@ class Detonator(LoultObject):
 class SuicideJacket(LoultObject):
     NAME = "ceinture d'explosif"
     ICON = "suicide.gif"
-    EXPLOSION_FX = DATA_PATH / Path("suicide_bomber.mp3")
+    EXPLOSION_FX = DATA_FOLDER / Path("suicide_bomber.mp3")
 
     def use(self, obj_params):
         hit_usrs = [usr for usr in self.channel.users.values()
@@ -371,7 +415,7 @@ class Cigarettes(LoultObject):
     ICON = "cigarettes.gif"
     BRANDS = ["Lucky Loult", "Lucky Loult Menthol", "Mrleboro", "Chesterfnre", "Sheitanes Maïs",
               "Aguloises"]
-    CIG_FX = DATA_PATH / Path("cigarette_lighting.mp3")
+    CIG_FX = DATA_FOLDER / Path("cigarette_lighting.mp3")
 
     def __init__(self):
         super().__init__()
@@ -408,7 +452,7 @@ class Cigarettes(LoultObject):
 class Lighter(LoultObject):
     NAME = "briquet"
     ICON = "lighter.gif"
-    CIG_FX = DATA_PATH / Path("lighter.mp3")
+    CIG_FX = DATA_FOLDER / Path("lighter.mp3")
 
     def use(self, obj_params):
         self.channel.broadcast(binary_payload=self._load_byte(self.CIG_FX))
@@ -493,7 +537,7 @@ class CaptainHaddockPipe(LoultObject):
 class LaxativeBox(LoultObject):
     NAME = "Boite de laxatif industriel"
     ICON = "laxatif.gif"
-    FX_DIR = DATA_PATH / Path("laxative")
+    FX_DIR = DATA_FOLDER / Path("laxative")
 
     def __init__(self):
         super().__init__()
@@ -526,7 +570,7 @@ class LaxativeBox(LoultObject):
 @targeted(mandatory=False)
 class Poop(LoultObject):
     ICON = "crotte.gif"
-    FX_FOLDER = DATA_PATH / Path("throw_splat")
+    FX_FOLDER = DATA_FOLDER / Path("throw_splat")
 
     def __init__(self, maker: str):
         super().__init__()
@@ -557,7 +601,7 @@ class Poop(LoultObject):
 class Cacapulte(LoultObject):
     NAME = "cacapulte"
     ICON = "lance-pierre.gif"
-    FX_FOLDER = DATA_PATH / Path("catapult_splat")
+    FX_FOLDER = DATA_FOLDER / Path("catapult_splat")
 
     def __init__(self):
         super().__init__()
@@ -623,7 +667,7 @@ class Transmutator(LoultObject):
     NAME = "transmutateur d'objets"
     ICON = "transmutateur.gif"
 
-    FX_FILE = DATA_PATH / Path("transmutator.mp3")
+    FX_FILE = DATA_FOLDER / Path("transmutator.mp3")
 
     def use(self, obj_params: List):
         from ..objects import get_random_object
@@ -678,3 +722,118 @@ class SantasSack(LoultObject):
         self.last_recipient = self.targeted_user
         if self.present_count <= 0:
             self.should_be_destroyed = True
+
+
+@cooldown(300)
+class XMagazine(LoultObject):
+    class FapEffect(AudioEffect):
+        pass
+
+    def __init__(self):
+        super().__init__()
+        self.is_sticky = False
+
+    def use(self, obj_params: List):
+        pass
+
+
+@destructible
+class PoetryBook(LoultObject):
+    NAME = "Recueil de poésie"
+    POEM_DATA = DATA_FOLDER / Path("poems.json")
+    TEARING_FX = DATA_FOLDER / Path("tearing_paper.mp3")
+
+    @dataclass
+    class PoemData:
+        title: str
+        author: str
+        poem_lines: List[str]
+
+    def __init__(self, poems: int = None):
+        super().__init__()
+        count = random.randint(4, 6) if poems is None else poems
+        with open(self.POEM_DATA) as poems_json:
+            all_poem = json.load(poems_json)
+        poems_ids = list(range(len(all_poem)))
+        random.shuffle(poems_ids)
+        poems_ids = poems_ids[0:count]
+        self.poems = []
+        for poem_id in poems_ids:
+            poem = all_poem[poem_id]
+            self.poems.append(
+                self.PoemData(title=poem["title"].title(),
+                              author=poem["author"].title(),
+                              poem_lines=poem["poem"])
+            )
+
+    def use(self, obj_params: List):
+        self.notify_serv("Vous arrachez une page du recueil.",
+                         bin_payload=self._load_byte(self.TEARING_FX))
+        self.user_inventory.add(self.poems.pop())
+        if not self.poems:
+            self.should_be_destroyed = True
+
+
+@cooldown(100)
+class Poem(LoultObject):
+    NAME = "Poème"
+
+    class PoemReaderEffect(ExplicitTextEffect):
+        NAME = "lecture de poème"
+
+        def __init__(self, poem: PoetryBook.PoemData):
+            super().__init__()
+            self.lines_iter = iter(poem.poem_lines + [f"{poem.title}, de {poem.author}"])
+            self.done_reading = False
+
+        def is_expired(self):
+            return self.done_reading
+
+        def process(self, text: str) -> str:
+            try:
+                return next(self.lines_iter)
+            except StopIteration:
+                self.done_reading = True
+                return text
+
+    def __init__(self, poem: PoetryBook.PoemData):
+        super().__init__()
+        self.poem_data = poem
+
+    def name(self):
+        return f"Poème \"{self.poem_data.title}\" de {self.poem_data.author}"
+
+    def use(self, obj_params: List):
+        self.notify_channel(f"{self.user_fullname} va nous faire la lecture d'un poème de {self.poem_data.author}.")
+        self.user.state.add_effect(self.PoemReaderEffect(self.poem_data))
+
+
+@destructible
+@targeted(mandatory=False)
+class Crouton(LoultObject):
+    CRUNCH_FX = DATA_FOLDER / Path("crunch.mp3")
+    SQUISH_FX = DATA_FOLDER / Path("squish.mp3")
+    QURK_FX = DATA_FOLDER / Path("qurk.mp3")
+
+    def __init__(self):
+        super().__init__()
+        self.is_wet = False
+
+    @property
+    def name(self):
+        return f"Croûton {'humide' if self.is_wet else 'sec'}"
+
+    def use(self, obj_params: List):
+        if self.targeted_user is None:
+            if self.is_wet:
+                self.notify_channel(f"{self.user_fullname} déguste son croûton trempé!",
+                                    binary_payload=self._load_byte(self.SQUISH_FX))
+            else:
+                self.channel.broadcast(self._load_byte(self.CRUNCH_FX))
+        else:
+            if self.targeted_user.poke_params.pokename == "Qurkee":
+                self.notify_channel(
+                    f"{self.user_fullname} donne un croûton de pain à {self.targeted_user.poke_params.fullname}!",
+                    binary_payload=self._load_byte(self.QURK_FX))
+            else:
+                self.notify_serv("Impossible de donner un croûton à autre chose qu'un Qurkee")
