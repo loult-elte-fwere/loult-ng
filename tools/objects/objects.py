@@ -241,6 +241,10 @@ class PissBottle(LoultObject):
         self.is_filled = filled
 
     @property
+    def icon(self):
+        return "bouteille-pipi.gif" if self.is_filled else "bouteille-vide.gif"
+
+    @property
     def name(self):
         return f"Bouteille de pee pee ({'pleine' if self.is_filled else 'vide'})"
 
@@ -726,6 +730,7 @@ class SantasSack(LoultObject):
 
 @cooldown(300)
 class XMagazine(LoultObject):
+    ICON = "mag-porno.gif"
     class FapEffect(AudioEffect):
         pass
 
@@ -740,6 +745,7 @@ class XMagazine(LoultObject):
 @destructible
 class PoetryBook(LoultObject):
     NAME = "Recueil de poésie"
+    ICON = "recueil.gif"
     POEM_DATA = DATA_FOLDER / Path("poems.json")
     TEARING_FX = DATA_FOLDER / Path("tearing_paper.mp3")
 
@@ -777,6 +783,7 @@ class PoetryBook(LoultObject):
 @cooldown(100)
 class Poem(LoultObject):
     NAME = "Poème"
+    ICON = "plume.gif"
 
     class PoemReaderEffect(ExplicitTextEffect):
         NAME = "lecture de poème"
@@ -820,8 +827,12 @@ class Crouton(LoultObject):
         self.is_wet = False
 
     @property
+    def icon(self):
+        return "soupe.gif" if self.is_wet else "crouton.gif"
+
+    @property
     def name(self):
-        return f"Croûton {'humide' if self.is_wet else 'sec'}"
+        return f"Croûton {'trempé' if self.is_wet else 'sec'}"
 
     def use(self, obj_params: List):
         if self.targeted_user is None:
@@ -837,3 +848,22 @@ class Crouton(LoultObject):
                     binary_payload=self._load_byte(self.QURK_FX))
             else:
                 self.notify_serv("Impossible de donner un croûton à autre chose qu'un Qurkee")
+
+
+@cooldown(100)
+@targeted(mandatory=False)
+class EffectsDemultiplicator(LoultObject):
+    NAME = "Démultiplicateur d'effet"
+    POWER_UP_FX = DATA_FOLDER / Path("power_up.mp3")
+    ICON = "demultiplicateur.gif"
+
+    def use(self, obj_params: List):
+        target = self.user if self.targeted_user is None else self.targeted_user
+        for effect_type, effects in target.state.effects.items():
+            for effect in effects:
+                effect.timeout *= 2
+        if target is self.user:
+            msg = f"{self.user_fullname} a multiplié la longueur de ses effets!"
+        else:
+            msg = f"{self.user_fullname} as multiplié la longueur des effets de {self.targeted_user.poke_params.fullname}"
+        self.notify_channel(msg, binary_payload=self._load_byte(self.POWER_UP_FX))
