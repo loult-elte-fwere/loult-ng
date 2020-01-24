@@ -251,6 +251,9 @@ class PissBottle(LoultObject):
     def use(self, obj_params: List):
         if self.targeted_user is None:
             croutons = self.user_inventory.search_by_class(Crouton)
+            if not self.is_filled:
+                self.notify_serv("La bouteille est vide. Pas de soupe pour aujourd'hui hélas...")
+                return
             if not croutons:
                 self.notify_serv("Pas de croûton à faire tremper, soupeur du dimanche!")
                 return
