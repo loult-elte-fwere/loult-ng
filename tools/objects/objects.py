@@ -775,7 +775,7 @@ class PoetryBook(LoultObject):
     def use(self, obj_params: List):
         self.notify_serv("Vous arrachez une page du recueil.",
                          bin_payload=self._load_byte(self.TEARING_FX))
-        self.user_inventory.add(self.poems.pop())
+        self.user_inventory.add(Poem(self.poems.pop()))
         if not self.poems:
             self.should_be_destroyed = True
 
