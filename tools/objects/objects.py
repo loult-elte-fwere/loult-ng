@@ -807,8 +807,9 @@ class Poem(LoultObject):
         super().__init__()
         self.poem_data = poem
 
+    @property
     def name(self):
-        return f"Poème \"{self.poem_data.title}\" de {self.poem_data.author}"
+        return f"Poème '{self.poem_data.title}' de {self.poem_data.author}"
 
     def use(self, obj_params: List):
         self.notify_channel(f"{self.user_fullname} va nous faire la lecture d'un poème de {self.poem_data.author}.")
