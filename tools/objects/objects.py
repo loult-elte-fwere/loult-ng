@@ -862,7 +862,7 @@ class EffectsDemultiplicator(LoultObject):
         target = self.user if self.targeted_user is None else self.targeted_user
         for effect_type, effects in target.state.effects.items():
             for effect in effects:
-                effect.timeout *= 2
+                effect.TIMEOUT *= 2
         if target is self.user:
             msg = f"{self.user_fullname} a multiplié la longueur de ses effets!"
         else:
