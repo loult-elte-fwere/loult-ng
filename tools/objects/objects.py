@@ -818,6 +818,7 @@ class Poem(LoultObject):
 
 @destructible
 @targeted(mandatory=False)
+@cooldown(15)
 class Crouton(LoultObject):
     CRUNCH_FX = DATA_FOLDER / Path("crunch.mp3")
     SQUISH_FX = DATA_FOLDER / Path("squish.mp3")
@@ -826,6 +827,7 @@ class Crouton(LoultObject):
     def __init__(self):
         super().__init__()
         self.is_wet = False
+        self.bites = 4
 
     @property
     def icon(self):
@@ -838,17 +840,21 @@ class Crouton(LoultObject):
     def use(self, obj_params: List):
         if self.targeted_user is None:
             if self.is_wet:
-                self.notify_channel(f"{self.user_fullname} déguste son croûton trempé!",
+                self.notify_channel(f"{self.user_fullname} déguste du croûton trempé!",
                                     binary_payload=self._load_byte(self.SQUISH_FX))
             else:
                 self.channel.broadcast(self._load_byte(self.CRUNCH_FX))
+            self.bites -= 1
         else:
             if self.targeted_user.poke_params.pokename == "Qurkee":
                 self.notify_channel(
                     f"{self.user_fullname} donne un croûton de pain à {self.targeted_user.poke_params.fullname}!",
                     binary_payload=self._load_byte(self.QURK_FX))
+                self.bites -= 1
             else:
                 self.notify_serv("Impossible de donner un croûton à autre chose qu'un Qurkee")
+        if self.bites <= 0:
+            self.should_be_destroyed = True
 
 
 @cooldown(100)

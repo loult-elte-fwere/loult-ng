@@ -673,7 +673,7 @@ class PitchShiftEffect(AudioEffect):
 
 class WpseEffect(AudioEffect):
     """Adds or inserts funny sounds to the input sound, at random places"""
-    main_dir = DATA_FOLDER /  Path("data/maturity")
+    main_dir = DATA_FOLDER /  Path("maturity")
     subfolders = ["burps", "prout"]
     NAME = "c pas moi lol"
     TIMEOUT = 130
