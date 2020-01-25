@@ -263,6 +263,9 @@ class PissBottle(LoultObject):
             self.notify_channel(f"{self.user_fullname} a trempé son croûton!")
         else:
             if self.targeted_user is self.user:
+                if not self.is_filled:
+                    self.notify_serv("Plus de pee pee, désolé.")
+                    return
                 self.notify_channel(f"{self.user_fullname} descend un peu de pisse!",
                                     binary_payload=self._load_byte(self.GULP_FX))
                 self.is_filled = False
