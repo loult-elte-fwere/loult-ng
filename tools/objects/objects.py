@@ -288,6 +288,7 @@ class PissBottle(LoultObject):
 @targeted(mandatory=True)
 class PissDisk(LoultObject):
     ICON = "flaque.gif"
+    NAME = "disque de pisse"
 
     def use(self, obj_params: List):
         if self.targeted_user is self:
@@ -301,6 +302,7 @@ class PissDisk(LoultObject):
 @destructible
 class PissPuddle(LoultObject):
     ICON = "disque2piss.gif"
+    NAME = "flaque de pee pee"
 
     def use(self, obj_params: List):
         croutons = self.user_inventory.search_by_class(Crouton)
@@ -317,6 +319,7 @@ class PissPuddle(LoultObject):
 @cooldown(30)
 class Fridge(LoultObject):
     ICON = "fridge.gif"
+    NAME = "frigo"
 
     def __init__(self):
         super().__init__()
