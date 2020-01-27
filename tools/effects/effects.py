@@ -758,16 +758,15 @@ class BadCellphoneEffect(AudioEffect):
 class FapEffect(AudioEffect):
     TIMEOUT = 180
     FAP_FX = DATA_FOLDER / Path("fpefpefpe.wav")
-    SAMPLING_RATE = 16000
 
     def __init__(self):
         super().__init__()
-        self.fx_wave_array = cached_loader.load_wav(str(self.FAP_FX))
+        self.rate, self.fx_wave_array = cached_loader.load_wav(str(self.FAP_FX))
 
     def process(self, wave_data: np.ndarray) -> np.ndarray:
-        padding_time = self.SAMPLING_RATE * 1.5
+        padding_time = self.rate * 1.5
         rnd_pos = random.randint(0, len(self.fx_wave_array) - len(wave_data) - padding_time)
-        return mix_tracks(self.fx_wave_array[rnd_pos:rnd_pos + len(wave_data) + padding_time],
+        return mix_tracks(self.fx_wave_array[rnd_pos:rnd_pos + len(wave_data) + int(padding_time)] * 1.3,
                           wave_data,
                           align="center")
 

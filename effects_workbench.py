@@ -58,7 +58,7 @@ class SpeechDeformation(PhonemicEffect):
 
 fake_cookie = md5(("6225456233193a39466" + SALT).encode('utf8')).digest()
 user = User(fake_cookie, "wesh", None)
-for effect in [StutterEffect(), PitchShiftEffect(), PitchShiftEffect()]:
+for effect in [ FapEffect()]:
     print("Applying effect %s" % effect.name)
     user.state.add_effect(effect)
 
@@ -67,7 +67,7 @@ ferais un plaisir de putain de sortir des pédales comme vous parce que putain j
 ils sla pètent ouais moi jsais chier debout et tout mais mon gars les mecs qui chient debout arrivent pas
 a pisser assis et ceux qui pissent assis mon gars c'est des connards qui votent pour daesh aux élections
  régionales ça c'est avéré jai vécu des trucs dans ma life mon gars tsais meme pas ou ta sexualité se situe"""
-# msg = "Salut les amis"
+# msg = "C T pour les zwezwe mme la jugennw"
 
 loop = get_event_loop()
 text, wav = loop.run_until_complete(user.render_message(msg, "fr"))
