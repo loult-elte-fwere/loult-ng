@@ -2,8 +2,7 @@ from itertools import cycle
 from pathlib import Path
 from time import time as timestamp
 
-from tools.objects.objects import DATA_FOLDER
-from .base import LoultObject, destructible, targeted, for_militia, userlist_dist, cooldown, inert
+from .base import LoultObject, destructible, targeted, for_militia, userlist_dist, cooldown, inert, DATA_FOLDER
 
 
 @targeted()

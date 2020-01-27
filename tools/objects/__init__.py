@@ -7,7 +7,8 @@ from .objects import (ScrollOfQurk,
                       Costume, WealthDetector, RectalExam, Cigarettes, Lighter,
                       MollyChute, CaptainHaddockPipe, Cacapulte, LaxativeBox,
                       PandorasBox, EffectsStealer, Transmutator, SantasSack,
-                      Crouton, PoetryBook, EffectsDemultiplicator)
+                      Crouton, PoetryBook, EffectsDemultiplicator, XMagazine,
+                      Fridge)
 from .unused_objects import SimpleInstrument, PolynectarPotion, Cocaine, Revolver, RevolverCartridges, SniperRifle, \
     SniperBullets, RPG, RPGRocket, Grenade
 from tools.objects.weapons import Quiver
@@ -19,7 +20,8 @@ AVAILABLE_OBJECTS = [Crown, Scolopamine,
                      RectalExam, Costume, Cigarettes, Lighter, MollyChute,
                      CaptainHaddockPipe, ScrollOfQurk, EffectsStealer,
                      PandorasBox, LaxativeBox, Cacapulte, Transmutator,
-                     SantasSack, Crouton, PoetryBook, EffectsDemultiplicator
+                     SantasSack, Crouton, PoetryBook, EffectsDemultiplicator,
+                     XMagazine, Fridge
                      ]
 
 

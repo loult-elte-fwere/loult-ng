@@ -377,8 +377,8 @@ class RobinHoodEvent(PseudoPeriodicEvent):
 
 class SantaEvent(PseudoPeriodicEvent):
     """Someone becomes santa"""
-    PSEUDO_PERIOD = timedelta(hours=6)
-    VARIANCE = timedelta(hours=0.4)
+    PSEUDO_PERIOD = timedelta(hours=4)
+    VARIANCE = timedelta(hours=0.1)
 
     async def trigger(self, loultstate):
         for channel in loultstate.chans.values():

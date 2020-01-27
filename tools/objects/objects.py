@@ -4,18 +4,16 @@ import re
 from datetime import datetime
 from pathlib import Path
 from time import time as timestamp
-from typing import List, Optional
+from typing import List, Optional, Dict
 
 import yaml
 from dataclasses import dataclass
 
-from .base import userlist_dist, LoultObject, cooldown, destructible, targeted, inert, clonable
+from .base import userlist_dist, LoultObject, cooldown, destructible, targeted, inert, clonable, DATA_FOLDER
 from ..effects import AudioEffect
 from ..effects.effects import ExplicitTextEffect, GrandSpeechMasterEffect, StutterEffect, VocalDyslexia, \
     VowelExchangeEffect, FlowerEffect, CaptainHaddockEffect
 from ..tools import cached_loader
-
-DATA_FOLDER = Path(__file__).absolute().parent / Path("data")
 
 
 @inert
@@ -183,22 +181,30 @@ class AlcoholBottle(LoultObject):
     BOTTLE_FX = DATA_FOLDER / Path("broken_bottle.mp3")
     GULP_FX = DATA_FOLDER / Path("gulp.mp3")
     LIQUID_FILL_FX = DATA_FOLDER / Path("liquid_fill.mp3")
-    ALCOHOLS = yaml.safe_load(open(DATA_FOLDER / Path("alcohols.yml")))
+    ALCOHOLS: List[Dict] = yaml.safe_load(open(DATA_FOLDER / Path("alcohols.yml")))
 
-    def __init__(self):
+    def __init__(self, alcohol_type: Optional[str] = None):
         super().__init__()
         self.remaining_use = 4
-        rnd_alc = random.choice(self.ALCOHOLS)
+        if alcohol_type is None:
+            rnd_alc = random.choice(self.ALCOHOLS)
+        else:
+            for alcohol in self.ALCOHOLS:
+                if alcohol["name"] == alcohol_type:
+                    rnd_alc = alcohol
+                    break
+            else:
+                rnd_alc = random.choice(self.ALCOHOLS)
+
         self.alc_type = rnd_alc["name"]
         self.alc_brand = random.choice(rnd_alc["brands"])
 
     @property
     def name(self):
         if self.alc_type:
-            return "Bouteille de %s %s (%s)" % (self.alc_type, self.alc_brand,
-                                                self.FILLING_MAPPING[self.remaining_use])
+            return f"Bouteille de {self.alc_type} {self.alc_brand} ({self.FILLING_MAPPING[self.remaining_use]})"
         else:
-            return "Bouteille de %s (%s)" % (self.alc_brand, self.FILLING_MAPPING[self.remaining_use])
+            return f"Bouteille de {self.alc_brand} ({self.FILLING_MAPPING[self.remaining_use]})"
 
     def use(self, obj_params):
         # user decides to use it on someone else, meaning throwing it
@@ -273,7 +279,65 @@ class PissBottle(LoultObject):
                 self.notify_channel(
                     f"{self.user.poke_params.fullname} lance une {self.name} sur {self.targeted_user.poke_params.fullname}!",
                     binary_payload=self._load_byte(self.BOTTLE_FX))
+                self.targeted_user.poke_params.poke_adj = "pisseux"
+                self.channel.update_userlist()
                 self.should_be_destroyed = True
+
+
+@destructible
+@targeted(mandatory=True)
+class PissDisk(LoultObject):
+    ICON = "flaque.gif"
+
+    def use(self, obj_params: List):
+        if self.targeted_user is self:
+            self.notify_serv("Vous ne pouvez pas vous vous infliger le disque de pisse à vous même!")
+            return
+
+        self.notify_channel(f"{self.user_fullname} as glissé un disque de pisse sous la porte de {self.targeted_user.poke_params.fullname}!")
+        self.targeted_user.state.inventory.add(PissPuddle())
+
+
+@destructible
+class PissPuddle(LoultObject):
+    ICON = "disque2piss.gif"
+
+    def use(self, obj_params: List):
+        croutons = self.user_inventory.search_by_class(Crouton)
+        if not croutons:
+            self.notify_serv("Pas de croûton à faire tremper, croûtiste en carton!")
+            return
+
+        crouton: Crouton = croutons.pop()
+        crouton.is_wet = True
+        self.notify_channel(f"{self.user_fullname} a trempé son croûton!")
+        self.should_be_destroyed = True
+
+
+@cooldown(30)
+class Fridge(LoultObject):
+    ICON = "fridge.gif"
+
+    def __init__(self):
+        super().__init__()
+        self.remaining_beers = 6
+
+    def use(self, obj_params: List):
+        if self.remaining_beers <= 0:
+            self.notify_serv("Plus de bière dans le frigo...")
+            return
+
+        piss_bottles = self.user_inventory.search_by_class(PissBottle)
+        filled_bottles = [bottle.is_filled for bottle in piss_bottles]
+        if filled_bottles:
+            bottle = filled_bottles.pop()
+            bottle.is_filled = False
+            self.user_inventory.add(PissDisk())
+            self.notify_serv("Vous avez fait un disque de pisse!")
+
+        self.notify_serv("Vous prenez une bière dans le frigo!")
+        self.user_inventory.add(AlcoholBottle(alcohol_type="bière"))
+        self.remaining_beers -= 1
 
 
 class Microphone(LoultObject):
@@ -737,15 +801,53 @@ class SantasSack(LoultObject):
 @cooldown(300)
 class XMagazine(LoultObject):
     ICON = "mag-porno.gif"
+    STARS_DATA = DATA_FOLDER / Path("stars.json")
+    names_mapping = {
+        "man": "acteur",
+        "woman": "actrice",
+        "trans": "l'actrice cheûmale"
+    }
+    magazine_type_mapping = {
+        "man": "gay",
+        "woman": "hétéro",
+        "trans": "loultiste"
+    }
+
     class FapEffect(AudioEffect):
         pass
 
-    def __init__(self):
+    def __init__(self, gender: Optional[str] = None):
         super().__init__()
         self.is_sticky = False
+        with open(self.STARS_DATA) as jsonfile:
+            stars_data: Dict[str, List[str]] = json.load(jsonfile)
+        if gender is None:
+            gender = random.choice(list(stars_data.keys()))
+        self.gender = gender
+        all_stars = stars_data[gender]
+        random.shuffle(all_stars)
+        self.stars = all_stars[:4]
+
+    @property
+    def name(self):
+        if self.is_sticky:
+            return f"Magazine de X à tendance {self.magazine_type_mapping[self.gender]} (pages collées)"
+        else:
+            return f"Magazine de X à tendance {self.magazine_type_mapping[self.gender]}"
 
     def use(self, obj_params: List):
-        pass
+        if self.is_sticky:
+            self.notify_serv("Le magazine est déjà tout collé...")
+            return
+
+        rdm_actor = random.choice(self.stars)
+        self.notify_channel(f"{self.user_fullname} consulte un article sur {self.names_mapping[self.gender]} {rdm_actor} "
+                            f"dans un magazine pornographique à tendance {self.magazine_type_mapping[self.gender]}!")
+        self.user.state.add_effect(self.FapEffect())
+
+        if random.randint(1, 4) == 1:
+            self.is_sticky = True
+
 
 
 @destructible

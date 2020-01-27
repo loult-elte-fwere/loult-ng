@@ -4,8 +4,7 @@ from os import path
 
 from tools.effects.effects import VenerEffect
 from tools.objects import LoultObject
-from tools.objects.base import cooldown, destructible, targeted, userlist_dist
-from tools.objects.objects import DATA_FOLDER
+from tools.objects.base import cooldown, destructible, targeted, userlist_dist, DATA_FOLDER
 
 
 @cooldown(30)
