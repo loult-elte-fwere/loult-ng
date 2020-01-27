@@ -12,7 +12,7 @@ from dataclasses import dataclass
 from .base import userlist_dist, LoultObject, cooldown, destructible, targeted, inert, clonable, DATA_FOLDER
 from ..effects import AudioEffect
 from ..effects.effects import ExplicitTextEffect, GrandSpeechMasterEffect, StutterEffect, VocalDyslexia, \
-    VowelExchangeEffect, FlowerEffect, CaptainHaddockEffect
+    VowelExchangeEffect, FlowerEffect, CaptainHaddockEffect, FapEffect
 from ..tools import cached_loader
 
 
@@ -813,9 +813,6 @@ class XMagazine(LoultObject):
         "trans": "loultiste"
     }
 
-    class FapEffect(AudioEffect):
-        pass
-
     def __init__(self, gender: Optional[str] = None):
         super().__init__()
         self.is_sticky = False
@@ -843,7 +840,7 @@ class XMagazine(LoultObject):
         rdm_actor = random.choice(self.stars)
         self.notify_channel(f"{self.user_fullname} consulte un article sur {self.names_mapping[self.gender]} {rdm_actor} "
                             f"dans un magazine pornographique à tendance {self.magazine_type_mapping[self.gender]}!")
-        self.user.state.add_effect(self.FapEffect())
+        self.user.state.add_effect(FapEffect())
 
         if random.randint(1, 4) == 1:
             self.is_sticky = True
