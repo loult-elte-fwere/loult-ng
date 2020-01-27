@@ -318,7 +318,7 @@ class PissPuddle(LoultObject):
 
 @cooldown(30)
 class Fridge(LoultObject):
-    ICON = "fridge.gif"
+    ICON = "frigo.gif"
     NAME = "frigo"
 
     def __init__(self):
