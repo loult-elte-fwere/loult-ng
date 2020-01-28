@@ -287,7 +287,7 @@ class PissBottle(LoultObject):
 @destructible
 @targeted(mandatory=True)
 class PissDisk(LoultObject):
-    ICON = "flaque.gif"
+    ICON = "disque2piss.gif"
     NAME = "disque de pisse"
 
     def use(self, obj_params: List):
@@ -297,11 +297,12 @@ class PissDisk(LoultObject):
 
         self.notify_channel(f"{self.user_fullname} as glissé un disque de pisse sous la porte de {self.targeted_user.poke_params.fullname}!")
         self.targeted_user.state.inventory.add(PissPuddle())
+        self.should_be_destroyed = True
 
 
 @destructible
 class PissPuddle(LoultObject):
-    ICON = "disque2piss.gif"
+    ICON = "flaque.gif"
     NAME = "flaque de pee pee"
 
     def use(self, obj_params: List):
@@ -323,7 +324,7 @@ class Fridge(LoultObject):
 
     def __init__(self):
         super().__init__()
-        self.remaining_beers = 6
+        self.remaining_beers = 4
 
     def use(self, obj_params: List):
         if self.remaining_beers <= 0:
