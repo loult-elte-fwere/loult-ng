@@ -331,7 +331,7 @@ class Fridge(LoultObject):
             return
 
         piss_bottles = self.user_inventory.search_by_class(PissBottle)
-        filled_bottles = [bottle.is_filled for bottle in piss_bottles]
+        filled_bottles = [bottle for bottle in piss_bottles if bottle.is_filled]
         if filled_bottles:
             bottle = filled_bottles.pop()
             bottle.is_filled = False
