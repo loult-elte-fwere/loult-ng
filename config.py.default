@@ -54,5 +54,10 @@ MAX_COOKIES_PER_IP = 2
 # Number of objects by default in the channel inventory when a channel is created
 CHANNEL_SETUP_INVENTORY_COUNT = 10
 
+# enable attacks that give effects
+ENABLE_EFFECTS = False
+ENABLE_EVENTS = False
+ENABLE_OBJECTS = False
+
 # Max number of items in inventory (limits take or give)
 MAX_ITEMS_IN_INVENTORY = 15

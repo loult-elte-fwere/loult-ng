@@ -4,7 +4,7 @@ from copy import deepcopy
 from time import time as timestamp
 from typing import Tuple
 
-from config import MAX_COOKIES_PER_IP, BAN_TIME, CHANNEL_SETUP_INVENTORY_COUNT
+from config import MAX_COOKIES_PER_IP, BAN_TIME, CHANNEL_SETUP_INVENTORY_COUNT, ENABLE_OBJECTS
 from tools.objects.inventory import UserInventory
 from tools.tools import encode_json, OrderedDequeDict
 from tools.users import User
@@ -23,8 +23,9 @@ class Channel:
         self.ip_cookies_tracker = dict()  # type: Dict[str,Set[bytes]]
         self.inventory = UserInventory()
         # filling the channel's inventory with some random items
-        for _ in range(CHANNEL_SETUP_INVENTORY_COUNT):
-            self.inventory.add(get_random_object())
+        if ENABLE_OBJECTS:
+            for _ in range(CHANNEL_SETUP_INVENTORY_COUNT):
+                self.inventory.add(get_random_object())
 
     def _signal_user_connect(self, client, user: User):
         client.send_json(type='connect', date=timestamp() * 1000, **user.info)

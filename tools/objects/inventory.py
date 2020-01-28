@@ -1,6 +1,7 @@
 from typing import List
 import random
 
+from config import ENABLE_OBJECTS
 from .base import LoultObject
 
 
@@ -8,9 +9,10 @@ class UserInventory:
 
     def __init__(self):
         self.objects = [] # type: List[LoultObject]
-        if random.randint(1, 15) == 1:
-            from ..objects import get_random_object
-            self.add(get_random_object())
+        if ENABLE_OBJECTS:
+            if random.randint(1, 15) == 1:
+                from ..objects import get_random_object
+                self.add(get_random_object())
 
     def get_listing(self):
         return [{"id": i,
