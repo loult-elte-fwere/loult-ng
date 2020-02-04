@@ -75,7 +75,7 @@ class AudioRenderer:
         """Renders directly a string to audio using an espeak -> mbrola pipeline
         (output is a wav bytes object)"""
         lang, voice, sex, volume = self._get_additional_params(lang, voice_params)
-        synth_string = 'MALLOC_CHECK_=0 espeak -s %d -p %d --pho -q -v mb/mb-%s%d %s ' \
+        synth_string = 'MALLOC_CHECK_=0 espeak-ng -s %d -p %d --pho -q -v mb/mb-%s%d %s ' \
                        '| MALLOC_CHECK_=0 mbrola -v %g -e /usr/share/mbrola/%s%d/%s%d - -.wav' \
                        % (voice_params.speed, voice_params.pitch, lang, sex, text,
                           volume, lang, voice, lang, voice)
@@ -100,7 +100,7 @@ class AudioRenderer:
     async def string_to_phonemes(self, text: str, lang: str, voice_params: 'VoiceParameters') -> PhonemeList:
         """Renders an input string to a phonemlist object using espeak"""
         lang, voice, sex, volume = self._get_additional_params(lang, voice_params)
-        phonem_synth_string = 'MALLOC_CHECK_=0 espeak -s %d -p %d --pho -q -v mb/mb-%s%d %s ' \
+        phonem_synth_string = 'MALLOC_CHECK_=0 espeak-ng -s %d -p %d --pho -q -v mb/mb-%s%d %s ' \
                               % (voice_params.speed, voice_params.pitch, lang, sex, text)
         logger.debug("Running espeak command %s" % phonem_synth_string)
         process = await create_subprocess_shell(phonem_synth_string,
