@@ -327,9 +327,6 @@ class Fridge(LoultObject):
         self.remaining_beers = 4
 
     def use(self, obj_params: List):
-        if self.remaining_beers <= 0:
-            self.notify_serv("Plus de bière dans le frigo...")
-            return
 
         piss_bottles = self.user_inventory.search_by_class(PissBottle)
         filled_bottles = [bottle for bottle in piss_bottles if bottle.is_filled]
@@ -337,7 +334,11 @@ class Fridge(LoultObject):
             bottle = filled_bottles.pop()
             bottle.is_filled = False
             self.user_inventory.add(PissDisk())
-            self.notify_serv("Vous avez fait un disque de pisse!")
+            return self.notify_serv("Vous avez fait un disque de pisse!")
+
+        if self.remaining_beers <= 0:
+            self.notify_serv("Plus de bière dans le frigo...")
+            return
 
         self.notify_serv("Vous prenez une bière dans le frigo!")
         self.user_inventory.add(AlcoholBottle(alcohol_type="bière"))
