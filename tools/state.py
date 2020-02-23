@@ -24,6 +24,9 @@ class Channel:
         self.inventory = UserInventory()
         # filling the channel's inventory with some random items
         if ENABLE_OBJECTS:
+            from .objects import SantasSack
+            for _ in range(3):
+                self.inventory.add(SantasSack())
             for _ in range(CHANNEL_SETUP_INVENTORY_COUNT):
                 self.inventory.add(get_random_object())
 
