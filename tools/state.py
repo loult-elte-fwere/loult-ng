@@ -160,9 +160,11 @@ class LoultServerState:
         loop = get_event_loop()
         loop.call_later(BAN_TIME * 60, self.banned_cookies.remove, cookie)
 
-    def ban_ip(self, ip: str):
+    def ban_ip(self, ip: str, ban_duration = BAN_TIME):
         if ip in self.banned_ips:
             return
         self.banned_ips.add(ip)
         loop = get_event_loop()
         loop.call_later(BAN_TIME * 60 * 2, self.banned_ips.remove, ip)
+
+
