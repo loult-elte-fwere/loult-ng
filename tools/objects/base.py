@@ -4,15 +4,16 @@ from typing import Type, List
 
 from config import MILITIA_COOKIES
 
+DATA_FOLDER = Path(__file__).absolute().parent / Path("data")
 
 def userlist_dist(channel_obj, userid_1, userid_2):
     userlist = list(channel_obj.users.keys())
     return abs(userlist.index(userid_1) - userlist.index(userid_2))
 
-
 class LoultObject:
     NAME = "stuff"
     ICON = "question.gif"
+    ERROR_FX = DATA_FOLDER / Path("error.mp3")
     COOLDOWN = None  # in seconds
     DESTRUCTIBLE = False
     TARGETED = False
@@ -55,8 +56,10 @@ class LoultObject:
         else:
             return False
 
-    def notify_serv(self, msg: str):
+    def notify_serv(self, msg: str, bin_payload: bytes = None):
         self.server.send_json(type="notification", msg=msg)
+        if bin_payload:
+            self.server.send_binary(bin_payload)
 
     def notify_channel(self, msg: str, binary_payload: bytes = None):
         self.channel.broadcast(type="notification", msg=msg, binary_payload=binary_payload)
@@ -82,7 +85,8 @@ class LoultObject:
 
     def _check_militia(self):
         if self.server.raw_cookie not in MILITIA_COOKIES:
-            self.notify_serv(msg="Ceci est une arme pour militiens, utilisation non autorisée!")
+            self.notify_serv(msg="Ceci est une arme pour militiens, utilisation non autorisée!",
+                             bin_payload=self._load_byte(self.ERROR_FX))
             self.server.sendClose(code=4006, reason="Unauthorized object")
             return False
         return True
@@ -99,12 +103,14 @@ class LoultObject:
                 return
 
         if self.INERT:
-            self.notify_serv(msg="Cet objet ne peut être utilisé")
+            self.notify_serv(msg="Cet objet ne peut être utilisé",
+                             bin_payload=self._load_byte(self.ERROR_FX))
             return
 
         if self.COOLDOWN is not None:
             if (datetime.now() - self.last_use).seconds < self.COOLDOWN:
-                self.notify_serv(msg="Il faut attendre pour pouvoir utiliser cet objet.")
+                self.notify_serv(msg="Il faut attendre pour pouvoir utiliser cet objet.",
+                                 bin_payload=self._load_byte(self.ERROR_FX))
                 return
 
         if self.TARGETED:
@@ -168,3 +174,5 @@ def for_militia(klass: Type[LoultObject]):
     """Sets the object class as inert (no usage)"""
     klass.FOR_MILITIA = True
     return klass
+
+

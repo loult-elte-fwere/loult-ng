@@ -6,19 +6,22 @@ from .objects import (ScrollOfQurk,
                       Crown, Scolopamine, AlcoholBottle, Microphone, C4, Detonator, SuicideJacket, Flower,
                       Costume, WealthDetector, RectalExam, Cigarettes, Lighter,
                       MollyChute, CaptainHaddockPipe, Cacapulte, LaxativeBox,
-                      PandorasBox, EffectsStealer, Transmutator, SantasSack)
+                      PandorasBox, EffectsStealer, Transmutator, SantasSack,
+                      Crouton, PoetryBook, EffectsDemultiplicator, XMagazine,
+                      Fridge)
 from .unused_objects import SimpleInstrument, PolynectarPotion, Cocaine, Revolver, RevolverCartridges, SniperRifle, \
     SniperBullets, RPG, RPGRocket, Grenade
 from tools.objects.weapons import Quiver
 
 # objects which can be given to users and are not specifically linked to any events
 AVAILABLE_OBJECTS = [Crown, Scolopamine,
-                     AlcoholBottle, Microphone, C4,
+                     AlcoholBottle, C4,
                      Detonator, SuicideJacket, Flower, Quiver,
                      RectalExam, Costume, Cigarettes, Lighter, MollyChute,
                      CaptainHaddockPipe, ScrollOfQurk, EffectsStealer,
                      PandorasBox, LaxativeBox, Cacapulte, Transmutator,
-                     SantasSack
+                     SantasSack, Crouton, PoetryBook, EffectsDemultiplicator,
+                     XMagazine, Fridge
                      ]
 
 

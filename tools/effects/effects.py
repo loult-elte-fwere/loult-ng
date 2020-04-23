@@ -5,6 +5,7 @@ from datetime import datetime
 from functools import partial
 from itertools import cycle
 from os import path
+from pathlib import Path
 from typing import List
 from statistics import mean
 import re
@@ -21,6 +22,9 @@ from voxpopuli import PhonemeList, FrenchPhonemes
 from voxpopuli.phonemes import Phoneme
 from tools.users import VoiceParameters
 from .melody import chord_progressions, get_harmonies
+
+
+DATA_FOLDER = Path(__file__).absolute().parent / Path("data")
 
 
 # TODO : effet théatre, effet speech random
@@ -164,7 +168,8 @@ class FlowerEffect(ExplicitTextEffect):
 class ContradictorEffect(ExplicitTextEffect):
     NAME = "contradicteur"
     TIMEOUT = 600
-    TREE_FILEPATH = path.join(path.dirname(path.realpath(__file__)), "data/contradicteur/verbs_tree.pckl")
+    # TODO : test if verb tree is actually useful
+    TREE_FILEPATH = DATA_FOLDER / Path("contradicteur/verbs_tree.pckl")
 
     def __init__(self):
         super().__init__()
@@ -192,7 +197,7 @@ class ContradictorEffect(ExplicitTextEffect):
 class CaptainHaddockEffect(ExplicitTextEffect):
     NAME = "mille million de milles sabords"
     TIMEOUT = 200
-    INSULTS_FILEPATH = path.join(path.dirname(path.realpath(__file__)), "data/capitaine_haddock/insults.txt")
+    INSULTS_FILEPATH = DATA_FOLDER / Path("insults.txt")
 
     def __init__(self):
         super().__init__()
@@ -200,11 +205,13 @@ class CaptainHaddockEffect(ExplicitTextEffect):
             self.insults = insults_file.read().split("\n")
 
     def process(self, text: str) -> str:
-        return "%s, %s %s!" % (
-            text.strip("!,.:?"),
-            random.choice(["bande de", "espèces de", "espèce de"]),
-            random.choice(self.insults)
-        )
+        insult = random.choice(self.insults)
+        if insult[0] in {"a", "e", "é", "è", "y", "o", "u", "h", "ê", "i"}:
+            article = "d'"
+        else:
+            article = "de "
+        swear = random.choice(['bande', 'espèce', 'satanés', 'bougre', 'mille million'])
+        return f"{text.strip('!,.:?')}, {swear} {article}{insult}!"
 
 
 class TouretteEffect(HiddenTextEffect):
@@ -397,7 +404,7 @@ class VocalDyslexia(PhonemicEffect):
 
 
 class AutotuneEffect(PhonemicEffect):
-    pitch_file = path.join(path.dirname(path.realpath(__file__)), "data/melody/pitches.json")
+    pitch_file = DATA_FOLDER / Path("pitches.json")
     NAME = "lou a du talent"
     TIMEOUT = 150
 
@@ -666,7 +673,7 @@ class PitchShiftEffect(AudioEffect):
 
 class WpseEffect(AudioEffect):
     """Adds or inserts funny sounds to the input sound, at random places"""
-    main_dir = path.join(path.dirname(path.realpath(__file__)), "data/maturity")
+    main_dir = DATA_FOLDER /  Path("maturity")
     subfolders = ["burps", "prout"]
     NAME = "c pas moi lol"
     TIMEOUT = 130
@@ -674,7 +681,7 @@ class WpseEffect(AudioEffect):
     def __init__(self):
         super().__init__()
         self.type_folder = random.choice(self.subfolders)
-        self.samples = get_sounds(path.join(self.main_dir, self.type_folder))
+        self.samples = get_sounds(self.main_dir / Path(self.type_folder))
 
     def process(self, wave_data: np.ndarray):
         if random.randint(1, 2) == 1:
@@ -694,14 +701,14 @@ class BadCellphoneEffect(AudioEffect):
     _params_table = {1: (700, "3k", 30, -9),
                      2: (400, "3.5k", 25, -6),
                      3: (320, "3.8k", 22, -6)}
-    _interference_filepath = path.join(path.dirname(path.realpath(__file__)), "data/phone/interference.wav")
+    _interference_filepath = DATA_FOLDER / Path("interference.wav")
 
     def __init__(self, signal_strength: int = None):
         super().__init__()
         self.signal = signal_strength if signal_strength is not None else random.randint(1, 3)
         self._name = "%i barres de rézo" % self.signal
         self.hpfreq, self.lpfreq, self.overdrive, self.gain = self._params_table[self.signal]
-        rate, self.interf_fx = cached_loader.load_wav(self._interference_filepath)
+        rate, self.interf_fx = cached_loader.load_wav(str(self._interference_filepath))
 
     @property
     def name(self):
@@ -747,6 +754,21 @@ class BadCellphoneEffect(AudioEffect):
             phone_pass = self._apply_interference(phone_pass, int(seconds / 3))  # approx 1 interf/ 3 sec
         return phone_pass
 
+
+class FapEffect(AudioEffect):
+    TIMEOUT = 180
+    FAP_FX = DATA_FOLDER / Path("fpefpefpe.wav")
+
+    def __init__(self):
+        super().__init__()
+        self.rate, self.fx_wave_array = cached_loader.load_wav(str(self.FAP_FX))
+
+    def process(self, wave_data: np.ndarray) -> np.ndarray:
+        padding_time = self.rate * 1.5
+        rnd_pos = random.randint(0, len(self.fx_wave_array) - len(wave_data) - padding_time)
+        return mix_tracks(self.fx_wave_array[rnd_pos:rnd_pos + len(wave_data) + int(padding_time)] * 1.3,
+                          wave_data,
+                          align="center")
 
 #### Here are the effects groups ####
 
@@ -815,13 +837,12 @@ class GodSpeakingEffect(EffectGroup):
         """Adds a mood to the audio"""
         NAME = "ambiance"
         TIMEOUT = 120
-        _sound_file = path.join(path.dirname(path.realpath(__file__)),
-                                "data/godspeaking/godspeaking.wav")
+        _sound_file = DATA_FOLDER / Path("godspeaking.wav")
         _gain = 0.4
 
         def __init__(self):
             super().__init__()
-            self.rate, self.track_data = cached_loader.load_wav(self._sound_file)
+            self.rate, self.track_data = cached_loader.load_wav(str(self._sound_file))
 
         def process(self, wave_data: np.ndarray):
             padding_time = self.rate * 2
@@ -849,12 +870,12 @@ class VenerEffect(EffectGroup):
         """Adds a random mood to the audio"""
         NAME = "ambiance"
         TIMEOUT = 120
-        sound_file = path.join(path.dirname(path.realpath(__file__)), "data/vener/stinkhole_shave_me_extract.wav")
+        sound_file = DATA_FOLDER / Path("stinkhole_shave_me_extract.wav")
         gain = 0.3
 
         def __init__(self):
             super().__init__()
-            self.rate, self.track_data = cached_loader.load_wav(self.sound_file)
+            self.rate, self.track_data = cached_loader.load_wav(str(self.sound_file))
 
         @property
         def name(self):

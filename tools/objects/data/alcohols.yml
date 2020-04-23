@@ -11,7 +11,7 @@
     - Knob Creek
     - Loch Lomond
     - Woodford Reserve
-- name: Bière
+- name: bière
   brands: 
     - Les 3 Brasseurs
     - 3 Monts
@@ -69,7 +69,7 @@
     - Diplomático
     - Saint-James
     - Trois Rivières
-- name: Pastis
+- name: pastis
   brands:
     - 51
     - Ricard
