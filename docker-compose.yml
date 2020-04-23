@@ -1,0 +1,46 @@
+version: '2.0'
+
+services:
+  loult:
+    container_name: loult
+    build: "."
+    volumes:
+    #  - ./data/loult/config.py:/var/www/loult-ng/config.py
+    #  - ./data/loult/salt.py:/var/www/loult-ng/salt.py
+      - /var/www/loult-ng
+    expose:
+      - 9000
+    ports:
+      - "9090:9000"
+    # logging:
+    #   driver: "json-file"
+    #   options:
+    #     max-size: "500k"
+    #     max-file: "4"
+    
+  nginx:
+    image: nginx
+    container_name: nginx_loult
+#   restart: always
+    volumes:
+      - ./data/loult.conf:/etc/nginx/conf.d/default.conf
+      #- ./config/ssl:/etc/ssl
+    volumes_from:
+      - loult
+    depends_on:
+      - loult
+    ports:
+      - 8080:80
+      - 4443:443
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "500k"
+        max-file: "4"
+
+networks:
+   default:
+     ipam:
+       config:
+         - subnet: 172.16.235.0/24
+           gateway: 172.16.235.1
