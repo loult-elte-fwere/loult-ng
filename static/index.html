@@ -24,14 +24,24 @@
 </main>
 <footer id="foot">
     <div id="bank_display"></div>
+    <div class="icon" id="chest">
+        <img src="img/icons/coffre.svg" />
+        <div id="inventory_display"></div>
+    </div>
     <input autofocus placeholder="Message..." id="input" maxlength="300">
+    <div class="icon" id="record">
+        <img id="microphone-icon" src="img/icons/micro.svg"/>
+        <span class="tooltiptext">enregistrer du son</span>
+    </div>
+    <div class="icon" id="upload">
+        <label for="file-upload">
+            <img id="upload-icon" src="img/icons/upload-grey.svg">
+        </label>
+        <input id="file-upload" type="file"/>
+    </div>
     <div class="icon" id="vol">
         <img src="img/icons/flute.svg"/>
         <span class="tooltiptext">son</span>
-    </div>
-    <div class="icon" id="chest" style="display: none;">
-        <img src="img/icons/coffre.svg" />
-        <div id="inventory_display"></div>
     </div>
     <div class="icon" id="wiki_display">
         <img id="pokedex" src="img/icons/pokedex.svg" />
@@ -46,6 +56,15 @@
         <span class="tooltiptext">liste</span>
     </div>
 </footer>
+
+<div class="menu-popover popover-display-false" id="record-menu">
+    <div><i class="material-icons" id="send-button" disabled="">save_alt</i></div>
+    <div><i class="material-icons" id="play-button" disabled="">play_arrow</i></div>
+    <div><i class="material-icons hidden" id="pause-button" disabled="">pause</i></div>
+    <div><i class="material-icons" id="record-button">fiber_manual_record</i></div>
+    <div><i class="material-icons hidden" id="stop-button">stop</i></div>
+    <div><i class="material-icons hidden" id="restart-button">replay</i></div>
+</div>
 
 <div class="menu-popover popover-display-false" id="loult-menu">
     <div>
@@ -117,16 +136,16 @@
         <input id="cookie"/>
     </div>
     <div>
-            <span id="mediaembed">Vidéo/image</span>
-            <input type="checkbox" id="embed">
-            <span id="automute">Automute</span>
-            <input type="checkbox" id="am">
+        <span id="mediaembed">Vidéo/image</span>
+        <input type="checkbox" id="embed">
+        <span id="automute">Automute</span>
+        <input type="checkbox" id="am">
     </div>
     <div id="menu-footer">
         <a href="https://loult.family/magnacharta.html" target="_blank">Charte</a>
         <a href="https://github.com/loult-elte-fwere/loult-ng" target="_blank">Github</a>
         <a href="http://loult.wordpress.com" target="_blank"><img class="pokeball pokeballMenu"
-                src="img/icons/pokeball.svg" /> Blog</a>
+                                                                  src="img/icons/pokeball.svg" /> Blog</a>
     </div>
 
 </div>

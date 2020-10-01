@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 font-face {
+=======
+@font-face {
+>>>>>>> b8e6321c44dbbec71ed52235601d9119da4161ca
     font-family: "PokemonGB";
     src: url("/fonts/PokemonGB.eot") format("eot");
     src: url("/fonts/PokemonGB.ttf") format("truetype"),
@@ -215,6 +219,7 @@ main {
 
 #record > img {
     cursor: pointer;
+<<<<<<< HEAD
 }
 
 /* Make the microphone icon pulsate when recording is active */
@@ -241,6 +246,34 @@ main {
     right: 15px;
 }
 
+=======
+}
+
+/* Make the microphone icon pulsate when recording is active */
+#record > img.recording-active {
+    animation: pulsate 1s ease-out infinite;
+}
+@-webkit-keyframes pulsate {
+    0%   { filter: drop-shadow(0px 0px 0px green); }
+    50%  { filter: drop-shadow(0px 0px 10px green); }
+    100% { filter: drop-shadow(0px 0px 0px green); }
+}
+
+#record-menu{
+    height: unset;
+    width: unset;
+    right: 235px;
+}
+
+#record-menu:after {
+    right: 7px;
+}
+
+#record-menu:before {
+    right: 15px;
+}
+
+>>>>>>> b8e6321c44dbbec71ed52235601d9119da4161ca
 #record-menu > div .hidden {
     display: none;
 }
@@ -1727,12 +1760,21 @@ ul > li:hover .sword {
 
 .bibw #chat div {
     animation: fadein 400ms;
+<<<<<<< HEAD
 }
 
 .bibw #record-menu {
     right: 275px;
 }
 
+=======
+}
+
+.bibw #record-menu {
+    right: 275px;
+}
+
+>>>>>>> b8e6321c44dbbec71ed52235601d9119da4161ca
 @keyframes fadein {
     from {
         opacity: 0;
@@ -1837,6 +1879,7 @@ ul > li:hover .sword {
     .bibw footer > #bank_display {
         bottom: 55px;
     }
+<<<<<<< HEAD
 
     .icon img, #upload > label > img {
         margin: 2px;    
@@ -1869,4 +1912,6 @@ ul > li:hover .sword {
     .bibw footer > .icon > #inventory_display {
         right: unset; 
     }
+=======
+>>>>>>> b8e6321c44dbbec71ed52235601d9119da4161ca
 }
