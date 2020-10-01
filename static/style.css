@@ -1,4 +1,4 @@
-@font-face {
+font-face {
     font-family: "PokemonGB";
     src: url("/fonts/PokemonGB.eot") format("eot");
     src: url("/fonts/PokemonGB.ttf") format("truetype"),
@@ -654,6 +654,7 @@ ul > li > div > div:last-child > i {
     border-left: 0px;
     border-style: solid;
     border-color: #070c17 transparent transparent transparent;
+    opacity: 0!important;
 }
 
 .item {
@@ -1374,9 +1375,18 @@ button:focus, input:focus {
     overflow: hidden;
 }
 
-.icon img, #upload > label > img {
+.icon img {
     margin: 3px;
     transition: 0.25s;
+}
+
+#upload {
+    transition: 0.25s;
+}
+
+#microphone-icon {
+    padding-top: 1px; 
+    padding-bottom: 1px;
 }
 
 .icon:hover > img, #pokedex:hover, #roue:hover, #upload:hover{
@@ -1754,7 +1764,7 @@ ul > li:hover .sword {
 }
 
 .bibw footer > .icon > #inventory_display {
-    bottom: 90px;
+    bottom: 80px;
 }
 
 .bibw footer > #bank_display {
@@ -1830,11 +1840,80 @@ ul > li:hover .sword {
     }
 
     .bibw footer > .icon > #inventory_display {
-        right: 100px;
-        bottom: 80px;
+        bottom: 70px;
     }
 
     .bibw footer > #bank_display {
         bottom: 55px;
     }
+
+
+    .bibw footer > div:last-of-type {
+        margin: 0;
+    }
+
+    .icon img, #upload > label > img {
+        margin: 1px;
+    }
+
+    .bibw > footer#foot > input {
+        margin-right: 0;
+    }
+
+    .bibw #upload {
+        right: 170px;
+    }
+    .bibw #record {
+        right: 205px;
+    }
+
+    .bibw > #wiki-last-edits {
+        right: 44px; 
+    }
+
+    .bibw > .menu-popover {
+        right: 5px
+    }
+
+    .bibw footer > .icon > #inventory_display {
+        right: none 
+    }
+
+    .bibw > footer#foot > input {
+        font-size: 18px!important;
+        padding: 10px 80px 15px 5px;
+    }
+
+    .bibw #record-menu {
+        right: 197px;
+    }
+
+    
+    #wiki-last-edits {
+        width: 75%;
+    }
+
+    ul#articles-list {
+        height: auto;
+        position: relative;
+        border-radius: 20px;;
+        top: 0;
+    }
+
+    #wiki-popover-head > p:first-of-type {
+        text-align: right;
+    }
+
+    .menu-popover > div, .wiki-popover #wiki-popover-head, .wiki-popover ul, #menu-footer a, #wiki-popover-footer {
+        font-size: .75em;
+    }
+    #articles-list > li {
+        background: none;
+    }
+
+
+    #wiki-popover-footer {
+        display: none; 
+    }
+
 }
