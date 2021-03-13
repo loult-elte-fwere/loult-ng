@@ -2,7 +2,7 @@ import asyncio
 from datetime import datetime
 from typing import List
 
-from tools.events.base import Event, FiniteDurationEventMixin
+from server_classes.events.base import Event, FiniteDurationEventMixin
 
 
 class EventScheduler:

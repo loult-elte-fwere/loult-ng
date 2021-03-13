@@ -1,9 +1,9 @@
 import unittest
-from tools.effects import AVAILABLE_EFFECTS
-from tools.effects.effects import TextEffect, PhonemicEffect, AudioEffect, VoiceEffect
+from server_classes.effects import AVAILABLE_EFFECTS
+from server_classes.effects.effects import TextEffect, PhonemicEffect, AudioEffect, VoiceEffect
 from voxpopuli import Voice
-from tools.tools import AudioRenderer
-from tools.users import VoiceParameters
+from server_classes.tools import AudioRenderer
+from server_classes.state_users import VoiceParameters
 from hashlib import md5
 from asyncio import get_event_loop
 

@@ -15,7 +15,7 @@ from ..objects import get_random_object, Quiver, C4, Detonator, SantasSack
 from ..objects.objects import DiseaseObject, BaseballBat, AlcoholBottle
 from ..objects.weapons import RobinHoodsBow
 from ..tools import load_bytes
-from ..users import User
+from ..state_users import User
 
 DATA_PATH = Path(__file__).absolute().parent / Path("data")
 

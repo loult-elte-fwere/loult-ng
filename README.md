@@ -37,7 +37,7 @@ cp loult.conf /etc/nginx/sites-available/
 ln -s /etc/nginx/{sites-available,sites-enabled}/loult.conf
 systemctl reload nginx
 ```
-* Lancez `python3 poke.py`
+* Lancez `python3 server_entry_point.py`
 
 # Usage
 
@@ -60,7 +60,7 @@ Le système de ban utilise le pare-feu de Linux pour éviter de faire consommer
 des ressources au serveur python. Il faut cependant au préalable configurer
 ce pare-feu en y ajoutant quelques règles. Vous pouvez vous inspirer ou utiliser
 directement `nftables.conf.sample`. À noter qu'aucune interface ni outil n'est fourni
-pour placer ces bans manuels, vous devez lire `tools/ban.py` pour un implémenter un.
+pour placer ces bans manuels, vous devez lire `server_classes/ban.py` pour en implémenter un.
 
 Supposons que la table `filter` de type `inet` contienne une chaîne nommée
 `input` pour le hook `input` et une chaîne `output` pour le hook `output`.

@@ -1,8 +1,8 @@
 from typing import Tuple
 import random
 
-from tools.effects import get_random_effect
-from tools.effects.effects import (TouretteEffect, CrapweEffect, TurboHangoul, MwfeEffect, WpseEffect,
+from server_classes.effects import get_random_effect
+from server_classes.effects.effects import (TouretteEffect, CrapweEffect, TurboHangoul, MwfeEffect, WpseEffect,
                            GrandSpeechMasterEffect, AngryRobotVoiceEffect, FapEffect)
 
 

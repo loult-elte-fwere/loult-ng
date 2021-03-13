@@ -180,7 +180,7 @@ class UserInspector(LoultObject):
     ICON = "loupe.gif"
 
     def use(self, obj_params):
-        from ..users import PokeParameters
+        from ..state_users import PokeParameters
 
         self.notify_serv(f"Cookie: {self.targeted_user.clients[0].raw_cookie}")
         last_identities = []

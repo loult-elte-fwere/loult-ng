@@ -8,7 +8,7 @@ Group=www-data
 Restart=on-failure # happy now chenipotte?
 WorkingDirectory=/path/to/the/loult-ng
 Environment="PATH=/path/to/the/loult/venv/bin:/usr/bin"
-ExecStart=/path/to/the/loult-ng/venv/bin/python poke.py
+ExecStart=/path/to/the/loult-ng/venv/bin/python server_entry_point.py
 
 [Install]
 WantedBy=multi-user.target

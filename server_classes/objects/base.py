@@ -26,7 +26,7 @@ class LoultObject:
         from .inventory import UserInventory
         from ..state import Channel, LoultServerState
         from ..client import LoultServerProtocol
-        from ..users import User
+        from ..state_users import User
         self.last_use: datetime = datetime.fromtimestamp(0)
         self.user_inventory: UserInventory = None
         self.user: User = None

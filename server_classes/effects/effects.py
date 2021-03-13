@@ -14,13 +14,13 @@ import numpy as np
 from pysndfx import AudioEffectsChain
 from scipy.io.wavfile import read
 
-import tools
-from tools.audio_tools import mix_tracks, get_sounds, BASE_SAMPLING_RATE
-from tools.tools import cached_loader
-from tools.effects.tree import Node, Leaf
+import server_classes
+from server_classes.tools_audio import mix_tracks, get_sounds, BASE_SAMPLING_RATE
+from server_classes.tools import cached_loader
+from server_classes.effects.tree import Node, Leaf
 from voxpopuli import PhonemeList, FrenchPhonemes
 from voxpopuli.phonemes import Phoneme
-from tools.users import VoiceParameters
+from server_classes.state_users import VoiceParameters
 from .melody import chord_progressions, get_harmonies
 
 
