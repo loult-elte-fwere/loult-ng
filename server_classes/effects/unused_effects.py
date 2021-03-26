@@ -7,8 +7,8 @@ import numpy
 from scipy.io.wavfile import read
 from voxpopuli import PhonemeList
 
-from tools.audio_tools import mix_tracks
-from tools.effects import PhonemicEffect, AudioEffect
+from server_classes.tools_audio import mix_tracks
+from server_classes.effects import PhonemicEffect, AudioEffect
 
 
 class PhonemicShuffleEffect(PhonemicEffect):

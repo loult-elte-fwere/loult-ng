@@ -5,7 +5,7 @@ from typing import Dict
 
 from config import ATTACK_RESTING_TIME, MOD_COOKIES, SOUND_BROADCASTER_COOKIES, TIME_BEFORE_TALK, \
     MAX_ITEMS_IN_INVENTORY, MILITIA_COOKIES
-from tools.tools import open_sound_file
+from server_classes.tools import open_sound_file
 from .ban import Ban, BanFail
 from .combat import CombatSimulator
 from .objects import LoultObject, ScrollOfQurk, AlcoholBottle

@@ -1,11 +1,11 @@
 from os import path
 import os
-from tools.effects.tree import Leaf, Node
+from server_classes.effects.tree import Leaf, Node
 import pickle
 
 ###### WARNING : has to be copied and launched from the root of the project in order for picking to work
-VERBS_FILEPATH =path.join("tools/effects/data/contradicteur", "liste_verbes.txt")
-VERBS_TREE_FILEPATH =path.join("tools/effects/data/contradicteur", "verbs_tree.pckl")
+VERBS_FILEPATH =path.join("server_classes/effects/data/contradicteur", "liste_verbes.txt")
+VERBS_TREE_FILEPATH =path.join("server_classes/effects/data/contradicteur", "verbs_tree.pckl")
 
 tree = Node()
 

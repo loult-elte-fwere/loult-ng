@@ -5,14 +5,14 @@ from asyncio import get_event_loop, ensure_future, gather, set_event_loop_policy
 from itertools import chain
 
 from config import ENABLE_EFFECTS, ENABLE_OBJECTS, ENABLE_EVENTS
-from tools.ban import Ban, BanFail
-from tools.client import ClientRouter, LoultServerProtocol
-from tools.handlers import (MessageHandler, BinaryHandler, TrashHandler, BanHandler, ShadowbanHandler,
+from server_classes.ban import Ban, BanFail
+from server_classes.client import ClientRouter, LoultServerProtocol
+from server_classes.client_handlers import (MessageHandler, BinaryHandler, TrashHandler, BanHandler, ShadowbanHandler,
                             NoRenderMsgHandler, AttackHandler, PrivateMessageHandler, MoveHandler,
                             InventoryListingHandler, ObjectGiveHandler, ObjectUseHandler, ObjectTrashHandler,
                             ListChannelInventoryHandler, ObjectTakeHandler, WeaponsGrantHandler, ForensicsGrantHandler,
                             QurkMasterHandler, LynchUserHandler, PubBrawlHandler)
-from tools.state import LoultServerState
+from server_classes.state import LoultServerState
 
 if __name__ == "__main__":
     argparser = argparse.ArgumentParser()
@@ -100,7 +100,7 @@ if __name__ == "__main__":
     coro = loop.create_server(factory, '127.0.0.1', 9000)
     # setting up events, running both tasks if enabled
     if ENABLE_EVENTS:
-        from tools.events import events_factory, EventScheduler
+        from server_classes.events import events_factory, EventScheduler
         scheduler = EventScheduler(loult_state, events_factory())
         scheduler_task = ensure_future(scheduler.start())
         server = loop.run_until_complete(gather(coro, scheduler_task))

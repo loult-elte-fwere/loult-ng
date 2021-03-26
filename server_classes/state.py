@@ -8,9 +8,9 @@ from typing import Tuple, List, Dict, Set, Optional, Deque
 from dataclasses import dataclass, field
 
 from config import MAX_COOKIES_PER_IP, BAN_TIME, CHANNEL_SETUP_INVENTORY_COUNT, ENABLE_OBJECTS
-from tools.objects.inventory import UserInventory
-from tools.tools import encode_json, OrderedDequeDict
-from tools.users import User
+from server_classes.objects.inventory import UserInventory
+from server_classes.tools import encode_json, OrderedDequeDict
+from server_classes.state_users import User
 from .objects import get_random_object
 
 
