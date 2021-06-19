@@ -2,9 +2,9 @@ import random
 from datetime import datetime
 from os import path
 
-from server_classes.effects.effects import VenerEffect
-from server_classes.objects import LoultObject
-from server_classes.objects.base import cooldown, destructible, targeted, userlist_dist, DATA_FOLDER
+from ..effects.effects import VenerEffect
+from ..objects import LoultObject
+from ..objects.base import cooldown, destructible, targeted, userlist_dist, DATA_FOLDER
 
 
 @cooldown(30)

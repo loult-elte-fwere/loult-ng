@@ -3,11 +3,11 @@ import logging
 from asyncio import get_event_loop
 from hashlib import md5
 import os
-from server_classes.state import LoultServerState
+from loult_serv.state import LoultServerState
 
 from salt import SALT
-from server_classes.effects.effects import *  # See server_classes/__init__.py for available effects
-from server_classes.state_users import User
+from loult_serv.effects.effects import *  # See loult_serv/__init__.py for available effects
+from loult_serv.state_users import User
 
 logging.getLogger().setLevel(logging.DEBUG)
 logging.getLogger("pysndfx").setLevel(logging.DEBUG)

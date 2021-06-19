@@ -1,8 +1,8 @@
 import asyncio
 from datetime import datetime
-from typing import List
+from typing import List, Tuple
 
-from server_classes.events.base import Event, FiniteDurationEventMixin
+from .base import Event
 
 
 class EventScheduler:
@@ -10,7 +10,7 @@ class EventScheduler:
     def __init__(self, loultstate, events: List[Event]):
         self.loultstate = loultstate
         self.events = events
-        self.schedule = []  # type:List[Tuple[datetime, Event]]
+        self.schedule: List[Tuple[datetime, Event]] = []
 
     def _order_schedule(self):
         self.schedule.sort(key=lambda x: x[0])

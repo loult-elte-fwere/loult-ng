@@ -75,8 +75,8 @@ class BienChantewEvent(EffectEvent):
             for user in selected_users:
                 autotune = AutotuneEffect()
                 ouevewb = ReverbManEffect()
-                autotune._timeout = 7200  #  2 hours
-                ouevewb._timeout = 7200  #  2 hours
+                autotune._timeout = 7200  # 2 hours
+                ouevewb._timeout = 7200  # 2 hours
                 user.state.add_effect(autotune)
                 user.state.add_effect(ouevewb)
                 channel.broadcast(type="notification",

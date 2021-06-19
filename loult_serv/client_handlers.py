@@ -1,17 +1,20 @@
 from datetime import datetime, timedelta
 from html import escape
 from time import time as timestamp
-from typing import Dict
+from typing import Dict, TYPE_CHECKING, Optional
 
 from config import ATTACK_RESTING_TIME, MOD_COOKIES, SOUND_BROADCASTER_COOKIES, TIME_BEFORE_TALK, \
     MAX_ITEMS_IN_INVENTORY, MILITIA_COOKIES
-from server_classes.tools import open_sound_file
 from .ban import Ban, BanFail
 from .combat import CombatSimulator
 from .objects import LoultObject, ScrollOfQurk, AlcoholBottle
 from .objects.objects import BaseballBat
 from .objects.weapons import MilitiaSniper, MilitiaSniperAmmo, Civilisator, \
     Screamer, UserInspector, ChannelSniffer, Impersonator, TVRemote
+from .tools import open_sound_file
+
+if TYPE_CHECKING:
+    from .state_users import User
 
 
 def cookie_check(cookie_list):
@@ -34,6 +37,7 @@ def cookie_check(cookie_list):
 def targeted(mandatory: bool = False):
     def decorator(handler):
         async def wrapper(self, msg_data: Dict):
+            user: Optional['User']
             if "user_id" in msg_data:
                 user = self.channel_obj.users.get(msg_data["user_id"], None)
             elif "params" in msg_data:

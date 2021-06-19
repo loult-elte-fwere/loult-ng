@@ -1,17 +1,19 @@
 from asyncio import get_event_loop
 from collections import OrderedDict, deque
 from copy import deepcopy
+from dataclasses import dataclass, field
 from datetime import datetime
 from time import time as timestamp
-from typing import Tuple, List, Dict, Set, Optional, Deque
-
-from dataclasses import dataclass, field
+from typing import Tuple, List, Dict, Set, Optional, Deque, TYPE_CHECKING
 
 from config import MAX_COOKIES_PER_IP, BAN_TIME, CHANNEL_SETUP_INVENTORY_COUNT, ENABLE_OBJECTS
-from server_classes.objects.inventory import UserInventory
-from server_classes.tools import encode_json, OrderedDequeDict
-from server_classes.state_users import User
 from .objects import get_random_object
+from .objects.inventory import UserInventory
+from .state_users import User
+from .tools import encode_json, OrderedDequeDict
+
+if TYPE_CHECKING:
+    from .client import LoultServerProtocol
 
 
 class Channel:
@@ -19,13 +21,13 @@ class Channel:
     def __init__(self, channel_name, state):
         self.name = channel_name
         self.loult_state = state
-        self.clients: Set['LoultServer'] = set()
+        self.clients: Set['LoultServerProtocol'] = set()
         self.users: Dict[str, User] = OrderedDict()
         self.backlog: List = []
         # this is used to track how many cookies we have per connected IP in that channel
-        self.ip_cookies_tracker: Dict[str,Set[bytes]] = dict()
+        self.ip_cookies_tracker: Dict[str, Set[bytes]] = dict()
         self.inventory = UserInventory()
-        # filling the channel's inventory with some random items
+        # filling the channel's inventory with some random items
         if ENABLE_OBJECTS:
             from .objects import SantasSack
             for _ in range(3):
@@ -49,7 +51,7 @@ class Channel:
                 client.send_binary(binary_payload)
 
     def get_userlist(self):
-        return OrderedDict([(user_id , deepcopy(user.info))
+        return OrderedDict([(user_id, deepcopy(user.info))
                             for user_id, user in self.users.items()])
 
     def update_userlist(self):
@@ -81,7 +83,7 @@ class Channel:
         except KeyError:
             pass
 
-    def user_connect(self, new_user : User, client):
+    def user_connect(self, new_user: User, client):
         if client.ip in self.ip_cookies_tracker:
             if client.cookie not in self.ip_cookies_tracker[client.ip]:
                 if len(self.ip_cookies_tracker[client.ip]) >= MAX_COOKIES_PER_IP:
@@ -173,12 +175,13 @@ class IdentitiesTracker:
         if item.ip is not None:
             self.ips.remove(item.ip)
 
+
 @dataclass
 class ConnectionEvent:
-    cookie : str
-    ip : str
-    channel : str
-    time : datetime
+    cookie: str
+    ip: str
+    channel: str
+    time: datetime
 
 
 class IdentitiesBacklog:
@@ -214,7 +217,7 @@ class LoultServerState:
         self.shadowbanned: IdentitiesTracker = IdentitiesTracker()
         self.trashed: IdentitiesTracker = IdentitiesTracker()
 
-    def channel_connect(self, client, user_cookie : str, channel_name : str) -> Tuple[Channel, User]:
+    def channel_connect(self, client, user_cookie: str, channel_name: str) -> Tuple[Channel, User]:
         # if the channel doesn't exist, we instanciate it and add it to the channel dict
         if channel_name not in self.chans:
             self.chans[channel_name] = Channel(channel_name, self)
@@ -225,7 +228,7 @@ class LoultServerState:
 
     def apply_ban(self, cookie: Optional[str] = None, ip: Optional[str] = None,
                   ban_type: str = "ban",  # ban, shadowban or trash
-                  duration: int = BAN_TIME * 60 # in seconds
+                  duration: int = BAN_TIME * 60  # in seconds
                   ):
         identity = UserIdentity(cookie=cookie, ip=ip)
         if ban_type == "shadowban":
@@ -241,8 +244,8 @@ class LoultServerState:
         loop.call_later(duration, tracker.remove, identity)
 
     def remove_ban(self, cookie: Optional[str] = None, ip: Optional[str] = None,
-                  ban_type: str = "ban",  # ban, shadowban or trash
-                  ):
+                   ban_type: str = "ban",  # ban, shadowban or trash
+                   ):
         identity = UserIdentity(cookie=cookie, ip=ip)
         if ban_type == "shadowban":
             tracker = self.shadowbanned
@@ -262,4 +265,3 @@ class LoultServerState:
 
     def is_trashed(self, cookie: Optional[str] = None, ip: Optional[str] = None):
         return UserIdentity(cookie=cookie, ip=ip) in self.trashed
-

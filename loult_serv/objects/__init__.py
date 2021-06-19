@@ -11,7 +11,7 @@ from .objects import (ScrollOfQurk,
                       Fridge)
 from .unused_objects import SimpleInstrument, PolynectarPotion, Cocaine, Revolver, RevolverCartridges, SniperRifle, \
     SniperBullets, RPG, RPGRocket, Grenade
-from server_classes.objects.weapons import Quiver
+from .weapons import Quiver
 
 # objects which can be given to users and are not specifically linked to any events
 AVAILABLE_OBJECTS = [Crown, Scolopamine,

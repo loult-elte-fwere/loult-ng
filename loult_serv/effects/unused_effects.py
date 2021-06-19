@@ -1,4 +1,3 @@
-
 """This is where effects go to die"""
 import random
 from os import path, listdir
@@ -7,15 +6,15 @@ import numpy
 from scipy.io.wavfile import read
 from voxpopuli import PhonemeList
 
-from server_classes.tools_audio import mix_tracks
-from server_classes.effects import PhonemicEffect, AudioEffect
+from ..audio_tools import mix_tracks
+from ..effects import PhonemicEffect, AudioEffect
 
 
 class PhonemicShuffleEffect(PhonemicEffect):
     NAME = "interprète kiglon"
     TIMEOUT = 120
 
-    def process(self, phonems : PhonemeList):
+    def process(self, phonems: PhonemeList):
         random.shuffle(phonems)
         return phonems
 
@@ -65,9 +64,9 @@ class BeatsEffect(AudioEffect):
     NAME = "JR"
     TIMEOUT = 150
 
-    _directories = {"posay" : ["other"],
+    _directories = {"posay": ["other"],
                     "tape ton para": ["ez3kiel", "outrun", "serbian_film"],
-                    "JR" : ["jr"]}
+                    "JR": ["jr"]}
 
     def __init__(self):
         super().__init__()

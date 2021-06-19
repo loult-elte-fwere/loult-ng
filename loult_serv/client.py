@@ -44,7 +44,7 @@ class RoutingTable:
                     handler = values[msg_data[field]]
                     return await handler.handle(msg_data)
 
-        self.server.logger.warning("Could not route message")
+        self.server.logger.warning(f"Could not route message : {msg_data}")
 
     async def route_binary(self, payload: bytes):
         return await self.binary_route.handle(payload)
@@ -136,7 +136,7 @@ class LoultServerProtocol:
             raise ConnectionDeny(403, 'temporarily banned.')
 
         self.cookie = cookie_hash
-        #  trashed users are automatically redirected to a "trash" channel
+        #  trashed users are automatically redirected to a "trash" channel
         if self.loult_state.is_trashed(cookie=cookie_hash, ip=self.ip):
             self.channel_n = "cancer"
         else:

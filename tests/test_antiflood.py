@@ -1,7 +1,7 @@
 import unittest
-from datetime import datetime, timedelta
-from server_classes.state_users import UserState
+
 from config import FLOOD_DETECTION_MSG_PER_SEC, FLOOD_DETECTION_WINDOW
+from loult_serv.state_users import UserState
 
 
 class TestUserState(unittest.TestCase):

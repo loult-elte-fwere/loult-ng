@@ -1,28 +1,23 @@
 import json
 import random
+import re
 from copy import deepcopy
 from datetime import datetime
 from functools import partial
 from itertools import cycle
-from os import path
 from pathlib import Path
-from typing import List
 from statistics import mean
-import re
+from typing import List
 
 import numpy as np
 from pysndfx import AudioEffectsChain
-from scipy.io.wavfile import read
-
-import server_classes
-from server_classes.tools_audio import mix_tracks, get_sounds, BASE_SAMPLING_RATE
-from server_classes.tools import cached_loader
-from server_classes.effects.tree import Node, Leaf
 from voxpopuli import PhonemeList, FrenchPhonemes
 from voxpopuli.phonemes import Phoneme
-from server_classes.state_users import VoiceParameters
-from .melody import chord_progressions, get_harmonies
 
+from .melody import chord_progressions, get_harmonies
+from ..state_users import VoiceParameters
+from ..tools import cached_loader
+from ..audio_tools import mix_tracks, get_sounds, BASE_SAMPLING_RATE
 
 DATA_FOLDER = Path(__file__).absolute().parent / Path("data")
 
@@ -163,35 +158,6 @@ class FlowerEffect(ExplicitTextEffect):
                 result.append(random.choice(self.flowers))
             result.append(token)
         return " ".join(result[:-1])  # slice to avoid trailing whitespace
-
-
-class ContradictorEffect(ExplicitTextEffect):
-    NAME = "contradicteur"
-    TIMEOUT = 600
-    # TODO : test if verb tree is actually useful
-    TREE_FILEPATH = DATA_FOLDER / Path("contradicteur/verbs_tree.pckl")
-
-    def __init__(self):
-        super().__init__()
-        self.verb_tree = cached_loader.load_pickle(self.TREE_FILEPATH)
-
-    def process(self, text: str):
-        if random.randint(1, 2) == 1:
-            splitted = text.split()
-            reconstructed = ''
-            previous_was_negation = False
-            for word in splitted:
-                if word.lower() in ["pas", "pa", "aps"]:
-                    previous_was_negation = True
-                else:
-                    reconstructed += word + " "
-                    if previous_was_negation and self.verb_tree.has_leaf(Leaf(word)):  # testing if it's a verb
-                        reconstructed += 'pas'
-                        previous_was_negation = False
-
-            return reconstructed
-        else:
-            return text
 
 
 class CaptainHaddockEffect(ExplicitTextEffect):
@@ -440,7 +406,7 @@ class AutotuneEffect(PhonemicEffect):
 class RythmicEffect(PhonemicEffect):
     NAME = "JR"
     TIMEOUT = 200
-    BEAT_TIME = 80  #  in milliseconds
+    BEAT_TIME = 80  #  in milliseconds
 
     def __init__(self):
         super().__init__()
@@ -673,7 +639,7 @@ class PitchShiftEffect(AudioEffect):
 
 class WpseEffect(AudioEffect):
     """Adds or inserts funny sounds to the input sound, at random places"""
-    main_dir = DATA_FOLDER /  Path("maturity")
+    main_dir = DATA_FOLDER / Path("maturity")
     subfolders = ["burps", "prout"]
     NAME = "c pas moi lol"
     TIMEOUT = 130
@@ -725,7 +691,7 @@ class BadCellphoneEffect(AudioEffect):
         return wave_data
 
     def _apply_cuts(self, wave_data, amount):
-        #  making cuts in the sound, of around 0.3 sec
+        #  making cuts in the sound, of around 0.3 sec
         cuts_lengths = (np.abs(np.random.normal(0.3, 0.09, amount)) * BASE_SAMPLING_RATE).astype("int32")
         for cut_length in cuts_lengths:
             zeros = np.zeros(cut_length)
@@ -770,6 +736,7 @@ class FapEffect(AudioEffect):
         return mix_tracks(self.fx_wave_array[rnd_pos:rnd_pos + len(wave_data) + int(padding_time)] * 1.3,
                           wave_data,
                           align="center")
+
 
 #### Here are the effects groups ####
 

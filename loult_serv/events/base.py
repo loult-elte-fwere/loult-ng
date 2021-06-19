@@ -1,6 +1,4 @@
 import random
-from collections import OrderedDict
-from copy import deepcopy
 from datetime import time, datetime, date, timedelta
 from time import time as timestamp
 
@@ -40,8 +38,8 @@ class Event:
 class PeriodicEvent(Event):
     """Event that happens periodically, with a fixed period"""
 
-    PERIOD = None  # type:timedelta
-    FIRST_OCC = None  # type:datetime
+    PERIOD: timedelta = None
+    FIRST_OCC: datetime = None
 
     def __init__(self):
         super().__init__()
@@ -55,9 +53,9 @@ class PseudoPeriodicEvent(Event):
     """Event that happens pseudo-periodically: the period is randomly generated after
     each occurrence, from a gaussian distribution"""
 
-    PSEUDO_PERIOD = None  # type:timedelta
-    VARIANCE = None  # type:timedelta
-    FIRST_OCC = None  # type:datetime
+    PSEUDO_PERIOD: timedelta = None
+    VARIANCE: timedelta = None
+    FIRST_OCC: datetime = None
 
     def __init__(self):
         super().__init__()
@@ -75,7 +73,7 @@ class PseudoPeriodicEvent(Event):
 class FiniteDurationEventMixin(Event):
     """Mixin class for events that have a termination trigger"""
 
-    DURATION = None  # type:timedelta
+    DURATION: timedelta = None
 
     def __init__(self):
         self.is_happening = False

@@ -1,7 +1,7 @@
 # in seconds, the time a pokemon has to wait before being able to attack again
 ATTACK_RESTING_TIME = 30
 
-# Time before a user can talk after connecting, in seconds
+# Time before a user can talk after connecting, in seconds
 TIME_BEFORE_TALK = 5
 
 # Time before an IP can attempt a new connection (in seconds)

@@ -718,7 +718,7 @@ class EffectsStealer(LoultObject):
             for effect in effects:
                 self.user.state.add_effect(effect)
 
-        #  removing effects from the targeted user's effects list
+        #  removing effects from the targeted user's effects list
         for effect_type in self.targeted_user.state.effects:
             self.targeted_user.state.effects[effect_type] = []
 

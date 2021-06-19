@@ -14,13 +14,16 @@ from pathlib import Path
 from re import sub
 from shlex import quote
 from struct import pack
-from typing import Union, Dict
+from typing import Union, Dict, TYPE_CHECKING
 
 import emoji
 import numpy
 from resampy import resample
 from scipy.io import wavfile
 from voxpopuli import PhonemeList, Phoneme
+
+if TYPE_CHECKING:
+    from .state_users import VoiceParameters
 
 logger = logging.getLogger('tools')
 
@@ -110,7 +113,7 @@ class AudioRenderer:
 
     @staticmethod
     async def to_f32_16k(wav: bytes) -> numpy.ndarray:
-        from .tools_audio import BASE_SAMPLING_RATE
+        from .audio_tools import BASE_SAMPLING_RATE
         # converting the wav to ndarray, which is much easier to use for DSP
         rate, data = wavfile.read(BytesIO(wav))
         # casting the data array to the right format (float32, for usage by pysndfx)

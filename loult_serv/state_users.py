@@ -1,20 +1,23 @@
+import json
 import logging
 import random
 from asyncio import get_event_loop
 from colorsys import hsv_to_rgb
 from datetime import timedelta, datetime
+from os import path
 from re import compile as regex
 from struct import pack
-from typing import Tuple, List, Dict, Type
-from os import path
-import json
+from typing import Tuple, List, Dict, Type, TYPE_CHECKING
+
+from voxpopuli import PhonemeList
 
 from config import FLOOD_DETECTION_WINDOW, BANNED_WORDS, FLOOD_WARNING_TIMEOUT, FLOOD_DETECTION_MSG_PER_SEC, \
     ATTACK_RESTING_TIME
-from server_classes import pokemons_list_enum
+from . import pokemons_list_enum
+from .tools import AudioRenderer, SpoilerBipEffect, prepare_text_for_tts, emojize
 
-from server_classes.tools import AudioRenderer, SpoilerBipEffect, prepare_text_for_tts, emojize
-from voxpopuli import PhonemeList
+if TYPE_CHECKING:
+    from .effects import Effect
 
 DATA_FILES_FOLDER = path.join(path.dirname(path.realpath(__file__)), "data/")
 
@@ -93,7 +96,7 @@ class UserState:
     detection_window = timedelta(seconds=FLOOD_DETECTION_WINDOW)
 
     def __init__(self, banned_words=BANNED_WORDS):
-        from server_classes.effects import AudioEffect, HiddenTextEffect, ExplicitTextEffect, PhonemicEffect, \
+        from .effects import AudioEffect, HiddenTextEffect, ExplicitTextEffect, PhonemicEffect, \
             VoiceEffect, Effect
 
         self.effects: Dict[Type[Effect], List[Effect]] = {
@@ -106,7 +109,7 @@ class UserState:
         self.timestamps = list()
         self.has_been_warned = False  # User has been warned he shouldn't flood
         self._banned_words = [regex(word) for word in banned_words]
-        self.is_shadowbanned = False  #  User has been shadowbanned
+        self.is_shadowbanned = False  # User has been shadowbanned
 
         from .objects.inventory import UserInventory
         self.inventory = UserInventory()
@@ -209,7 +212,7 @@ class User:
 
     def disconnect_all_clients(self, code: int, reason: str):
         for client in self.clients:
-            client.sendClose(code=code,reason=reason)
+            client.sendClose(code=code, reason=reason)
 
     @property
     def info(self):
@@ -245,7 +248,7 @@ class User:
     async def _vocode(self, text: str, lang: str) -> bytes:
         """Renders a text and a language to a wav bytes object using espeak + mbrola"""
         # if there are voice effects, apply them to the voice renderer's voice and give them to the renderer
-        from server_classes.effects import VoiceEffect, PhonemicEffect
+        from .effects import VoiceEffect, PhonemicEffect
         if self.state.effects[VoiceEffect]:
             voice_params = self.apply_effects(self.voice_params, self.state.effects[VoiceEffect])
         else:
@@ -275,7 +278,7 @@ class User:
             return await self.audio_renderer.string_to_audio(text, lang, voice_params)
 
     async def render_message(self, text: str, lang: str):
-        from server_classes.effects import ExplicitTextEffect, HiddenTextEffect, AudioEffect
+        from .effects import ExplicitTextEffect, HiddenTextEffect, AudioEffect
 
         cleaned_text = text[:600]
         # subsituting emoji tags in the message

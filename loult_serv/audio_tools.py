@@ -1,4 +1,3 @@
-from os import listdir, path
 from asyncio import create_subprocess_shell
 from asyncio.subprocess import PIPE
 from pathlib import Path
@@ -6,9 +5,8 @@ from typing import List
 
 import numpy
 from numpy import pad
-from scipy.io.wavfile import read
 
-from server_classes.tools import cached_loader
+from .tools import cached_loader
 
 BASE_SAMPLING_RATE = 16000
 
@@ -58,7 +56,7 @@ def mix_tracks(track1, track2, offset=None, align=None):
             right = left if diff % 2 == 0 else left + 1
             padded_short_t = pad(short_t, (left, right), "constant", constant_values=0.0)
     else:
-        from server_classes.tools import ToolsError
+        from .tools import ToolsError
         raise ToolsError()
 
     # the result vector's elements are c_i = a_i + b_i
