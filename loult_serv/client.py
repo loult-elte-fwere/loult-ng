@@ -1,5 +1,6 @@
 import json
 import logging
+import re
 from asyncio import ensure_future
 from collections import OrderedDict
 from collections import defaultdict
@@ -10,11 +11,11 @@ from os import urandom
 from re import sub
 from time import time as timestamp
 from typing import List
-import re
 
+from autobahn.exception import Disconnected
 from autobahn.websocket.types import ConnectionDeny
 
-from config import TIME_BETWEEN_CONNECTIONS, MOD_COOKIES, MILITIA_COOKIES, FILTER_DOMAINS, AUTHORIZED_DOMAINS
+from config import TIME_BETWEEN_CONNECTIONS, FILTER_DOMAINS, AUTHORIZED_DOMAINS
 from salt import SALT
 from .tools import encode_json
 
@@ -55,10 +56,10 @@ class ClientRouter:
     table which actually instanciates handlers that process messages"""
 
     def __init__(self):
-        self.routes = [] #type: List[Route]
+        self.routes = []  # type: List[Route]
         self.binary_route = None
 
-    def add_route(self, field : str, value : str, handler_class):
+    def add_route(self, field: str, value: str, handler_class):
         self.routes.append(Route(field, value, handler_class))
 
     def set_binary_route(self, handler_class):
@@ -156,10 +157,16 @@ class LoultServerProtocol:
         return None, retn
 
     def send_json(self, **kwargs):
-        self.sendMessage(encode_json(kwargs), isBinary=False)
+        try:
+            self.sendMessage(encode_json(kwargs), isBinary=False)
+        except Disconnected:
+            self.sendClose(code="4000", reason="Something went wrong, closing connection")
 
     def send_binary(self, payload):
-        self.sendMessage(payload, isBinary=True)
+        try:
+            self.sendMessage(payload, isBinary=True)
+        except Disconnected:
+            self.sendClose(code="4000", reason="Something went wrong, closing connection")
 
     def onOpen(self):
         """Triggered once the WSS is opened. Mainly consists of registering the user in the channel, and
@@ -167,14 +174,14 @@ class LoultServerProtocol:
         # telling the  connected users'register to register the current user in the current channel
         try:
             self.channel_obj, self.user = self.loult_state.channel_connect(self, self.cookie, self.channel_n)
-        except UnauthorizedCookie: # this means the user's cookie was denied
+        except UnauthorizedCookie:  # this means the user's cookie was denied
             self.sendClose(code=4005, reason='Too many cookies already connected to your IP')
 
         # setting up routing table once all objects are functionnal
         self.routing_table = self.router.get_router(self.loult_state, self)
 
         # copying the channel's userlist info and telling the current JS client which userid is "its own"
-        my_userlist = OrderedDict([(user_id , deepcopy(user.info))
+        my_userlist = OrderedDict([(user_id, deepcopy(user.info))
                                    for user_id, user in self.channel_obj.users.items()])
         my_userlist[self.user.user_id]['params']['you'] = True  # tells the JS client this is the user's pokemon
         # sending the current user list to the client
@@ -186,6 +193,7 @@ class LoultServerProtocol:
 
     def onMessage(self, payload, isBinary):
         """Triggered when a user sends any type of message to the server"""
+
         async def auto_close(coroutine):
             try:
                 return await coroutine
@@ -212,7 +220,7 @@ class LoultServerProtocol:
             self.channel_obj.channel_leave(self, self.user)
             # emptying user inventory to the channel's common inventory
             for obj in self.user.state.inventory.objects:
-                if not (obj.CLONABLE or obj.FOR_MILITIA): # except for clonable object
+                if not (obj.CLONABLE or obj.FOR_MILITIA):  # except for clonable object
                     self.channel_obj.inventory.add(obj)
 
         msg = 'left with reason "{}"'.format(reason) if reason else 'left'
