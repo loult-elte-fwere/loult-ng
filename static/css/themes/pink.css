@@ -1,0 +1,55 @@
+.pink main,
+.pink #userlist,
+.pink footer > div,
+.pink #window,
+.pink #window > div:first-child {
+    border-color: #F09;
+}
+
+.pink header,
+.pink #window > div:first-child,
+.pink footer > div > i,
+.pink footer,
+.pink #close {
+    background: #F09;
+}
+
+.pink footer > div > i,
+.pink #close,
+.pink #window > div:first-child {
+    color: #EEE;
+}
+
+.pink #close {
+    padding: 5px;
+    border-radius: 99px;
+    border: 2px solid #DDD;
+}
+
+.pink #close:hover {
+    background: #F09 !important;
+    opacity: 0.8;
+}
+
+.pink,
+.pink #userlist,
+.pink #window,
+.pink #input {
+    background: #FCE;
+    color: #F09;
+}
+
+.pink ::-webkit-scrollbar-track {
+    background-color: #FCE;
+}
+
+.pink ::-webkit-scrollbar,
+.pink ::-webkit-scrollbar-thumb {
+    background-color: #F09;
+}
+
+.pink ::-webkit-scrollbar-track,
+.pink ::-webkit-scrollbar,
+.pink ::-webkit-scrollbar-thumb {
+    border-color: #FCE;
+}

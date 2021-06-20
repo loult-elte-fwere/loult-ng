@@ -1,0 +1,29 @@
+.console #chat > div > i,
+.console #chat > div > div:first-child,
+.console #chat > div > div:first-child > img {
+    display: none !important;
+}
+
+.console #chat > div > div:nth-child(2) {
+    text-align: left !important;
+    padding-left: 5px;
+}
+
+.console #chat > div.msg > div:nth-child(2) > div:first-child {
+    float: left;
+    height: 100%;
+}
+
+.console #chat > div.msg > div:nth-child(2) > div:first-child::after {
+    content: ':';
+    padding-left: 5px;
+}
+
+.console #chat > div {
+    padding: 0;
+}
+
+.console #chat > div > div:last-child {
+    line-height: inherit;
+    font-size: inherit;
+}
