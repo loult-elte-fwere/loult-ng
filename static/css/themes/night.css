@@ -1,39 +1,51 @@
 
-.night #chat > div > :nth-child(2) > div:not(:first-child), .night ul > li > div > div {
+.night #chat > div > :nth-child(2) > div:not(:first-child),
+.night #userlist > li > div > div {
     color: #EEE;
 }
 
-.night, .night ul, .night #window, .night #input, .night select {
+.night,
+.night #userlist,
+.night #window,
+.night #input {
     background: #222;
     color: #EEE;
 }
 
-.night ul > li > i, .night select, .night footer > div > i {
-    color: #DDD;
-}
 
-.night #close, .night #chat > div > div:first-child, .night ul > li > div > div:first-child > div {
+.night #close,
+.night #chat > div > div:first-child,
+.night #userlist > li > div > div:first-child > div {
     background-color: #505151;
     display: flex;
 }
 
-.night footer > div > .footer-menu-icon:hover {
-    background-color: #111;
-}
-
-.night main, .night #window > div:first-child, .night footer > div, .night footer > div > i, .night ul, .night #close, .night #window, .night ul > li > div > div:last-child {
+.night main,
+.night #input,
+.night #userlist,
+.night #close,
+.night #footer-menu,
+.night #window {
     border-color: #111;
 }
 
-.night header, .night #window > div:first-child {
+.night #input{
+    border: solid #111 2px;
+    margin-right: 0px;
+    border-right: 0px;
+}
+
+.night header,
+.night #window > div:first-child {
     background: linear-gradient(to bottom, #111 0%, #333 100%);
 }
 
-.night footer {
+.night #footer-menu {
     background: linear-gradient(to bottom, #333 0%, #111 100%);
+    border: solid #111 2px;
 }
 
-.night ul > li > div {
+.night #userlist > li > div {
     background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0) 35px, #222 35px, #222 100%);
 }
 
@@ -46,10 +58,13 @@
     background-color: #222;
 }
 
-.night ::-webkit-scrollbar, .night ::-webkit-scrollbar-thumb {
+.night ::-webkit-scrollbar,
+.night ::-webkit-scrollbar-thumb {
     background-color: #333;
 }
 
-.night ::-webkit-scrollbar-track, .night ::-webkit-scrollbar, .night ::-webkit-scrollbar-thumb {
+.night ::-webkit-scrollbar-track,
+.night ::-webkit-scrollbar,
+.night ::-webkit-scrollbar-thumb {
     border-color: #222;
 }

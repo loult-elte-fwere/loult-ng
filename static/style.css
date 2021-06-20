@@ -1,6 +1,5 @@
 /***** THEMES CONFIG *****/
 
-
 @import "css/themes/blue.css";
 @import "css/themes/pink.css";
 @import "css/themes/night.css";
@@ -9,7 +8,6 @@
 @import "css/themes/bibw.css";
 @import "css/themes/fat.css";
 @import "css/themes/console.css";
-@import "css/themes/cozy.css";
 
 
 font-face {
@@ -32,6 +30,10 @@ font-face {
 
 ::-webkit-scrollbar, ::-webkit-scrollbar-thumb {
     background-color: #DDD;
+}
+
+.hidden {
+    display: none;
 }
 
 html, body, header, main, footer, div, i, ul, li, select, input {
@@ -74,7 +76,7 @@ body {
 }
 
 
-header, footer {
+header {
     max-height: 50px;
     height: 50px;
     z-index: 25;
@@ -120,20 +122,6 @@ header > div > img {
     100% {
         opacity: 1;
     }
-}
-
-footer {
-    background: linear-gradient(to bottom, #FFF 0%, #EEE 100%);
-}
-
-footer > div {
-    height: 100%;
-    width: 200px;
-    border-left: 2px solid #BBB;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
 }
 
 
@@ -211,7 +199,8 @@ main {
 #record-menu {
     height: unset;
     width: unset;
-    right: 235px; /* TODO/ change this */
+    right: 145px;
+    bottom: 110px;
 }
 
 #record-menu:after {
@@ -220,10 +209,6 @@ main {
 
 #record-menu:before {
     right: 15px;
-}
-
-#record-menu > div .hidden {
-    display: none;
 }
 
 #record-menu > div {
@@ -285,6 +270,10 @@ main {
     justify-content: space-between;
     padding: 5px 0;
     position: relative;
+}
+
+#chat > div:first-of-type {
+    padding-top: 120px;
 }
 
 #chat > div > :not(:nth-child(2)) {
@@ -362,7 +351,11 @@ main {
     overflow-x: hidden;
     overflow-y: scroll;
     background: #f9f9f9;
+    padding-bottom: 10px;
 }
+
+
+/****** USER LIST ELEMENTS ******/
 
 #userlist > li {
     background-position: left 4px bottom 6px;
@@ -594,19 +587,6 @@ a:hover, li > i:hover, footer i:hover, #window input:hover, #window label:hover,
 /***** INVENTAIRE *****/
 
 
-#chest {
-    position: relative;
-    overflow: inherit;
-}
-
-#chest-tooltip {
-    margin-bottom: -25px;
-}
-
-#chest:hover > #inventory_display {
-    /* opacity: 1; */
-}
-
 #inventory_display {
     position: fixed;
     z-index: 99;
@@ -617,11 +597,13 @@ a:hover, li > i:hover, footer i:hover, #window input:hover, #window label:hover,
     flex-wrap: wrap;
     align-content: flex-start;
     max-width: 220px;
-    bottom: 70px;
+    bottom: 110px;
+    right: 210px;
     min-width: 85px;
     padding: 7px;
     padding: 25px 25px 25px 30px;
 }
+
 
 #inventory_display::after {
     content: " ";
@@ -710,7 +692,11 @@ a:hover, li > i:hover, footer i:hover, #window input:hover, #window label:hover,
 
 /***** MENUS POKEDEX & PARAMETERS *****/
 
-.menu-popover > div, .wiki-popover #wiki-popover-head, .wiki-popover ul, #popover-menu-footer a, #wiki-popover-footer {
+.menu-popover > div,
+#wiki-popover-head,
+#wiki-last-edits ul,
+#popover-menu-footer a,
+#wiki-popover-footer {
     margin: 0 15px;
     border-bottom: 1px solid #9e9e9e;
     font-size: .9em;
@@ -730,7 +716,7 @@ a:hover, li > i:hover, footer i:hover, #window input:hover, #window label:hover,
     background-color: #f2fbff;
     border-radius: 18px;
     bottom: 70px;
-    right: 68px;
+    right: 15px;
     z-index: 50;
     color: #000;
     grid-template-columns: 100%;
@@ -787,11 +773,11 @@ ul#articles-list > li > p:nth-of-type(2) {
 
 /***** MENU PARAMETERS *****/
 
-#menu_display {
-    overflow: hidden;
+#menu-gear-display {
     -webkit-transition: -webkit-transform .33s ease-in-out !important;
     transition: transform .33s ease-in-out !important;
 }
+
 
 .rotation {
     -webkit-transform: rotate(60deg);
@@ -819,7 +805,8 @@ ul#articles-list > li > p:nth-of-type(2) {
 }
 
 .menu-popover > div:last-child, #wiki-popover-head,
-.wiki-popover ul, #wiki-last-edits ul > li > h3 > a {
+#wiki-last-edits ul,
+#wiki-last-edits ul > li > h3 > a {
     border: none;
     color: black
 }
@@ -829,30 +816,6 @@ ul#articles-list > li > p:nth-of-type(2) {
     text-decoration: none;
     margin: 0;
     border-bottom: none;
-}
-
-.menu-popover:before, .wiki-popover::before {
-    content: " ";
-    position: absolute;
-    right: 43px;
-    bottom: -12px;
-    border: 10px solid transparent;
-    z-index: 20;
-    border-width: 12px 12px 0;
-    border-color: #a7a7a7 transparent;
-}
-
-.menu-popover:after, .wiki-popover::after {
-    content: " ";
-    position: absolute;
-    right: 35px;
-    bottom: -30px;
-    border: 20px solid transparent;
-    z-index: 51;
-}
-
-.menu-popover:after, #wiki-last-edits::after {
-    border-top-color: #f2fbff;
 }
 
 input#volrange {
@@ -947,7 +910,7 @@ button:focus, input:focus {
     margin-left: -15px;
 }
 
-.pokeballMenu {
+.menu-blog-pokeball {
     position: absolute;
     margin-right: 22px !important;
     float: left;
@@ -959,25 +922,6 @@ button:focus, input:focus {
 @media screen and (max-width: 680px) {
     head {
         padding-right: 0;
-    }
-
-    footer {
-        height: 80px;
-        max-height: 50px;
-    }
-
-    footer > div {
-        -webkit-flex-wrap: wrap;
-        flex-wrap: wrap;
-        width: 100px;
-    }
-
-    footer > div > i:nth-child(odd) {
-        border-left: 0;
-    }
-
-    footer > div > i:nth-child(-n+2) {
-        border-bottom: 2px solid #BBB;
     }
 
     #input {
@@ -1097,18 +1041,6 @@ button:focus, input:focus {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 /***** FOOTER MENU *****/
 
 #footer-menu {
@@ -1117,6 +1049,7 @@ button:focus, input:focus {
     grid-gap: 3px;
     height: 100px;
     width: 100%;
+    min-width: 200px;
 }
 
 
@@ -1130,7 +1063,9 @@ button:focus, input:focus {
     overflow: hidden;
 }
 
-.footer-menu-icon img {
+.footer-menu-icon > img,
+.footer-menu-icon > label > img,
+.footer-menu-icon > a > img {
     margin: 3px;
     transition: 0.25s;
 }
@@ -1139,21 +1074,20 @@ button:focus, input:focus {
     display: none;
 }
 
-#upload {
-    transition: 0.25s;
-}
-
 #microphone-icon {
     padding-top: 1px;
     padding-bottom: 1px;
 }
 
-.footer-menu-icon:hover img {
+.footer-menu-icon:hover > img,
+.footer-menu-icon:hover > label > img,
+.footer-menu-icon:hover > a > img
+{
     transform: scale(1.3) !important;
 }
 
 .tooltiptext {
-    font-family: "PokemonGB";
+    font-family: "PokemonGB", monospace;
     font-size: 10px;
     visibility: hidden;
     text-transform: uppercase;
@@ -1163,8 +1097,8 @@ button:focus, input:focus {
     height: 10px;
     /* Position du tooltip */
     position: absolute;
-    bottom: 10px;
-    right: 30px;
+    bottom: 110px;
+    right: 10px;
     text-align: right;
     z-index: 1;
 }
@@ -1203,10 +1137,6 @@ button:focus, input:focus {
     }
 }
 
-/***** bibw *****/
-
-
-
 .pokeball {
     width: 17px;
     height: 17px;
@@ -1222,7 +1152,7 @@ button:focus, input:focus {
     z-index: 999;
 }
 
-ul > li:hover .sword {
+#userlist > li:hover .sword {
     display: block;
 }
 
@@ -1267,4 +1197,83 @@ ul > li:hover .sword {
         display: none;
     }
 
+}
+
+/******* USERLIST FOLDING ******/
+
+.userlist-folded #right-panel {
+    width: 50px;
+}
+
+.userlist-folded #userlist {
+    display: none;
+}
+
+.userlist-folded .footer-menu-icon {
+    height: 50px;
+    overflow: unset;
+}
+
+.userlist-folded #footer-menu {
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: flex-start;
+    width: 100%;
+    grid: none;
+    height: 100%;
+    overflow-y: scroll;
+}
+
+.userlist-folded #vol {
+    order: 1;
+}
+
+.userlist-folded #upload {
+    order: 2;
+}
+
+.userlist-folded #record {
+    order: 3;
+}
+
+.userlist-folded #menu-gear-display {
+    order: 4;
+}
+
+.userlist-folded #chest {
+    order: 5;
+}
+
+.userlist-folded #bnl-link {
+    order: 6;
+}
+
+.userlist-folded #menu-wiki-display {
+    order: 7;
+}
+
+.userlist-folded #userlist-toggle {
+    order: 8;
+}
+
+.userlist-folded header {
+    padding-right: 0px;
+}
+
+.userlist-folded .tooltiptext {
+    top: 60px;
+    right: 60px;
+}
+
+.userlist-folded .menu-popover,
+.userlist-folded #wiki-last-edits {
+    right: 70px;
+}
+
+.userlist-folded #record-menu {
+    right: 70px;
+}
+
+.userlist-folded #inventory_display {
+    right: 70px;
 }

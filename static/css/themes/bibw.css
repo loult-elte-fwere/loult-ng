@@ -31,7 +31,7 @@ body.bibw.blue {
     mix-blend-mode: none;
 }
 
-.bibw.blue  > input,
+.bibw.blue > input,
 .bibw.day > #input {
     background: linear-gradient(#acd8ff 0%, #0074d9 100%);
     border-right: 0
@@ -88,14 +88,19 @@ body.bibw.blue {
     margin-right: 25px;
 }
 
-.bibw > .menu-popover {
+.bibw .menu-popover {
     bottom: 90px;
     right: 38px;
 }
 
-.bibw > #wiki-last-edits {
+.bibw #wiki-last-edits {
     bottom: 90px;
-    right: 86px;
+    right: 30px;
+}
+
+.userlist-folded.bibw #wiki-last-edits,
+.userlist-folded.bibw .menu-popover {
+    right: 90px
 }
 
 .bibw #chat {
@@ -202,7 +207,7 @@ body.bibw.blue {
     font-size: 20px !important;
     line-height: 50px;
     margin-right: 10px;
-    padding: 10px 25px 15px 25px;
+    padding: 10px 25px 10px 25px;
     margin-left: 10px;
 }
 
@@ -210,13 +215,6 @@ body.bibw.blue {
     color: #7baaad;
 }
 
-.bibw #upload {
-    right: 240px;
-}
-
-.bibw #record {
-    right: 280px;
-}
 
 .bibw #chat > div > div:last-child {
     color: #9AD5D8 !important;
@@ -256,6 +254,18 @@ body.bibw.blue {
     border-radius: 0;
 }
 
+
+.bibw #footer-menu {
+    background: none;
+    border: none;
+}
+
+.bibw .footer-menu-icon .tooltiptext {
+    right: 30px;
+    top: unset;
+    bottom: 10px;
+}
+
 .bibw footer > div > .footer-menu-icon {
     border-radius: 50px;
 }
@@ -268,6 +278,9 @@ body.bibw.blue {
     background: rgba(0, 0, 0, .66);
 }
 
+.bibw #footer-menu .footer-menu-icon:hover {
+    background-color: unset;
+}
 
 .bibw main #chat div > a {
     color: #1AC;
@@ -295,9 +308,13 @@ body.bibw.blue {
 }
 
 .bibw #record-menu {
-    right: 275px;
+    right: 170px;
+    bottom: 130px;
 }
 
+.userlist-folded.bibw #record-menu {
+    right: 90px;
+}
 @keyframes fadein {
     from {
         opacity: 0;
@@ -308,7 +325,7 @@ body.bibw.blue {
 }
 
 
-.bibw  #chat > div:first-of-type {
+.bibw #chat > div:first-of-type {
     padding-top: 120px;
 }
 
@@ -319,9 +336,6 @@ body.bibw.blue {
     visibility: hidden;
 }
 
-.bibw footer > .footer-menu-icon > #inventory_display {
-    bottom: 80px;
-}
 
 .bibw footer > #bank_display {
     bottom: 90px;

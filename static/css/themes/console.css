@@ -1,4 +1,6 @@
-.console #chat > div > i, .console #chat > div > div:first-child, .console #chat > div > div:first-child > img {
+.console #chat > div > i,
+.console #chat > div > div:first-child,
+.console #chat > div > div:first-child > img {
     display: none !important;
 }
 
