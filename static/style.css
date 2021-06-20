@@ -254,6 +254,7 @@ main {
     overflow-y: scroll;
     z-index: 20;
     height: 100%;
+    overflow-wrap: anywhere;
 }
 
 #chat > div {
