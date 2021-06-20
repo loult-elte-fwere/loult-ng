@@ -160,13 +160,13 @@ class LoultServerProtocol:
         try:
             self.sendMessage(encode_json(kwargs), isBinary=False)
         except Disconnected:
-            self.sendClose(code="4000", reason="Something went wrong, closing connection")
+            self.sendClose(code=4000, reason="Something went wrong, closing connection")
 
     def send_binary(self, payload):
         try:
             self.sendMessage(payload, isBinary=True)
         except Disconnected:
-            self.sendClose(code="4000", reason="Something went wrong, closing connection")
+            self.sendClose(code=4000, reason="Something went wrong, closing connection")
 
     def onOpen(self):
         """Triggered once the WSS is opened. Mainly consists of registering the user in the channel, and
