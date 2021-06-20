@@ -1,0 +1,432 @@
+.bibw ::-webkit-scrollbar {
+    display: none;
+}
+
+body.bibw.night {
+    background: -moz-linear-gradient(50% 102.96% 90deg, rgba(2, 58, 104, 1) 0%, rgba(6, 41, 74, 1) 8.72%, rgba(9, 28, 51, 1) 17.44%, rgba(10, 21, 38, 1) 25.72%, rgba(11, 18, 33, 1) 33.07%, rgba(11, 18, 33, 1) 100%);
+    background: -webkit-linear-gradient(90deg, rgba(2, 58, 104, 1) 0%, rgba(6, 41, 74, 1) 8.72%, rgba(9, 28, 51, 1) 17.44%, rgba(10, 21, 38, 1) 25.72%, rgba(11, 18, 33, 1) 33.07%, rgba(11, 18, 33, 1) 100%);
+    background: -webkit-gradient(linear, 50% 102.96%, 50% 3.14%, color-stop(0, rgba(2, 58, 104, 1)), color-stop(0.0872, rgba(6, 41, 74, 1)), color-stop(0.1744, rgba(9, 28, 51, 1)), color-stop(0.2572, rgba(10, 21, 38, 1)), color-stop(0.3307, rgba(11, 18, 33, 1)), color-stop(1, rgba(11, 18, 33, 1)));
+    background: -o-linear-gradient(90deg, rgba(2, 58, 104, 1) 0%, rgba(6, 41, 74, 1) 8.72%, rgba(9, 28, 51, 1) 17.44%, rgba(10, 21, 38, 1) 25.72%, rgba(11, 18, 33, 1) 33.07%, rgba(11, 18, 33, 1) 100%);
+    background: -ms-linear-gradient(90deg, rgba(2, 58, 104, 1) 0%, rgba(6, 41, 74, 1) 8.72%, rgba(9, 28, 51, 1) 17.44%, rgba(10, 21, 38, 1) 25.72%, rgba(11, 18, 33, 1) 33.07%, rgba(11, 18, 33, 1) 100%);
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#023A68', endColorstr='#0B1221' ,GradientType=0)";
+    background: linear-gradient(0deg, rgba(2, 58, 104, 1) 0%, rgba(6, 41, 74, 1) 8.72%, rgba(9, 28, 51, 1) 17.44%, rgba(10, 21, 38, 1) 25.72%, rgba(11, 18, 33, 1) 33.07%, rgba(11, 18, 33, 1) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#0B1221', endColorstr='#023A68', GradientType=0);
+}
+
+body.bibw.day {
+    background: -moz-linear-gradient(top, #dbe7ff 0%, #3375c3 19%, #001848 82%, #f0d9f1 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(top, #dbe7ff 0%, #3375c3 19%, #001848 82%, #f0d9f1 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to bottom, #dbe7ff 0%, #3375c3 19%, #001848 82%, #f0d9f1 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+}
+
+body.bibw.blue {
+    background: #FDFDFD;
+}
+
+.bibw.blue header > div {
+    background: #00427b;
+}
+
+.bibw.blue header > div > img {
+    mix-blend-mode: none;
+}
+
+.bibw.blue  > input,
+.bibw.day > #input {
+    background: linear-gradient(#acd8ff 0%, #0074d9 100%);
+    border-right: 0
+}
+
+.bibw.blue > #input::placeholder {
+    color: #b5dbfd;
+}
+
+.bibw.blue #input, .bibw select {
+    color: white;
+}
+
+.bibw.blue #chat > div > :nth-child(2) > div:not(:first-child),
+.bibw #userlist > li > div > div {
+    color: black;
+}
+
+.bibw.blue #chat > .log > div > div:first-of-type,
+.bibw.blue > #main > #chat > .part > div > div {
+    text-shadow: none;
+    color: #0074d9;
+}
+
+.bibw.day #userlist > li > i,
+.bibw select,
+.bibw footer > div > i {
+    color: #CEEEFF;
+}
+
+.bibw.day > #input {
+    color: black;
+    background: -moz-linear-gradient(top, #ceeeff 0%, #9bdcff 100%);
+    background: -webkit-linear-gradient(top, #ceeeff 0%, #9bdcff 100%);
+    background: linear-gradient(to bottom, #ceeeff 0%, #9bdcff 100%);
+}
+
+.bibw.day > #chat > .log > div > div:first-of-type {
+    color: #0074d9 !important;
+    font-style: italic;
+}
+
+.bibw.day header > div,
+.bibw.blue header > div {
+    background: none;
+}
+
+
+.bibw > main {
+    font-size: 16px;
+}
+
+.bibw > main > #userlist {
+    margin-right: 25px;
+}
+
+.bibw > .menu-popover {
+    bottom: 90px;
+    right: 38px;
+}
+
+.bibw > #wiki-last-edits {
+    bottom: 90px;
+    right: 86px;
+}
+
+.bibw #chat {
+    margin-left: 25px;
+    line-height: 1.6em;
+    scrollbar-width: none;
+}
+
+.bibw #chat > div > :nth-child(2) > div:not(:first-child),
+.bibw #userlist > li > div > div {
+    color: #ddd;
+}
+
+.bibw #chat > div > :nth-child(2) .greentext {
+    color: #154DFF;
+}
+
+.bibw,
+.bibw #userlist,
+.bibw #window,
+.bibw #input,
+.bibw select {
+    background: #222;
+    color: #EEE;
+
+}
+
+.bibw #userlist > li {
+    width: 100%;
+    margin-left: 7px;
+    padding-right: 7px;
+}
+
+.bibw #userlist > li:first-of-type {
+    margin-top: 30px;
+}
+
+.bibw #userlist > li > i, .bibw select {
+    color: #7baaad;
+}
+
+.bibw #close,
+.bibw #chat > div > div:first-child,
+.bibw #userlist > li > div > div:first-child > div {
+    background: none !important;
+    border: none;
+    top: -10px;
+}
+
+.bibw main,
+.bibw #window > div:first-child,
+.bibw footer > div,
+.bibw footer > div > i,
+.bibw #userlist,
+.bibw #close,
+.bibw #window,
+.bibw #userlist > li > div > div:last-child {
+    border: none !important;
+    background: none;
+}
+
+.bibw header {
+    background: none !important;
+    position: absolute;
+    width: 100%;
+}
+
+.bibw header > div {
+    background-color: #0B1221;
+    border-radius: 40px;
+    width: auto;
+    padding-left: 15px;
+    padding-right: 15px;
+    margin-top: 15px;
+}
+
+.bibw header > div > img {
+    mix-blend-mode: hard-light;
+}
+
+.bibw #left-panel, .bibw #right-panel {
+    background: none !important;
+    margin-bottom: 25px;
+}
+
+.bibw #right-panel {
+    margin-right: 20px;
+}
+
+.bibw #userlist > li > div {
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0) 35px, #222 35px, #222 100%);
+}
+
+
+.bibw #underlay {
+    -webkit-filter: invert(50%) brightness(100%);
+    filter: invert(50%) brightness(100%);
+    background-size: 25%;
+}
+
+.bibw #input {
+    background: #070c17;
+    border-radius: 50px;
+    font-size: 20px !important;
+    line-height: 50px;
+    margin-right: 10px;
+    padding: 10px 25px 15px 25px;
+    margin-left: 10px;
+}
+
+.bibw > #input::placeholder {
+    color: #7baaad;
+}
+
+.bibw #upload {
+    right: 240px;
+}
+
+.bibw #record {
+    right: 280px;
+}
+
+.bibw #chat > div > div:last-child {
+    color: #9AD5D8 !important;
+    opacity: 0 !important;
+    visibility: hidden;
+    font-size: 10px;
+    padding-right: 17px;
+}
+
+
+/* targeting chrome */
+
+@media screen and (-webkit-min-device-pixel-ratio: 0) and (min-resolution: .001dpcm) {
+    .item > a > img, .bibw #chat > div > div:first-child > img:nth-child(1) {
+        image-rendering: crisp-edges;
+    }
+}
+
+/* targeting microsoft edge */
+
+@supports (-ms-ime-align:auto) {
+    .bibw #chat > div > div:first-child > img:nth-child(1) {
+        image-rendering: pixelated;
+    }
+}
+
+
+.bibw #chat > div > div > div {
+    padding: 2px;
+}
+
+.bibw #chat > div > :first-child {
+    width: 64px;
+    max-width: 64px;
+    max-height: 64px;
+    text-align: center;
+    border-radius: 0;
+}
+
+.bibw footer > div > .footer-menu-icon {
+    border-radius: 50px;
+}
+
+.bibw footer > div > .footer-menu-icon:hover {
+    background-color: #9AD5D8;
+}
+
+.bibw #overlay > #cover {
+    background: rgba(0, 0, 0, .66);
+}
+
+
+.bibw main #chat div > a {
+    color: #1AC;
+}
+
+.bibw > #main > #chat > .part > div > div {
+    color: #7baaad;
+}
+
+.bibw #chat > .info > div > div {
+    color: #9AD5D8;
+}
+
+.bibw #chat > .log > div > div {
+    color: #7baaad;
+}
+
+.bibw #chat > .log > div > div:first-of-type {
+    color: #52c1df;
+    text-shadow: #2cf1fb 1px 0px 10px;
+}
+
+.bibw #chat div {
+    animation: fadein 400ms;
+}
+
+.bibw #record-menu {
+    right: 275px;
+}
+
+@keyframes fadein {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+
+.bibw  #chat > div:first-of-type {
+    padding-top: 120px;
+}
+
+.bibw ::-webkit-scrollbar-track,
+.bibw ::-moz-scrollbar-track {
+    opacity: 0;
+    display: none;
+    visibility: hidden;
+}
+
+.bibw footer > .footer-menu-icon > #inventory_display {
+    bottom: 80px;
+}
+
+.bibw footer > #bank_display {
+    bottom: 90px;
+}
+
+@media screen and (max-width: 680px) {
+
+    .bibw #chat {
+        margin-left: 15px;
+    }
+
+    .bibw > main {
+        font-size: 14px;
+    }
+
+    .bibw footer {
+        margin-bottom: 0;
+        max-height: 60px !important;
+    }
+
+    .bibw > #input {
+        position: relative;
+        height: 50px;
+        padding-bottom: 8px;
+        bottom: 5px;
+    }
+
+
+    .bibw #chat > div > :first-child {
+        width: 50px;
+        height: 50px;
+    }
+
+    .bibw #chat > .log > div > div {
+        text-align: left;
+    }
+
+    .bibw #chat > .info > div > div {
+        padding-left: 20px;
+    }
+
+    .bibw header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding-right: 0;
+    }
+
+    .bibw header > div {
+        background: none;
+        position: fixed;
+        height: auto;
+        transform: scale(0.7);
+    }
+
+
+    .bibw #userlist > li {
+        background-color: #023a68;
+    }
+
+    .bibw > footer#foot > input {
+        padding-bottom: 8px;
+    }
+
+    .bibw > footer#foot > .footer-menu-icon {
+        width: 40px;
+        height: 40px;
+    }
+
+    .bibw footer > .footer-menu-icon > #inventory_display {
+        bottom: 70px;
+    }
+
+    .bibw footer > #bank_display {
+        bottom: 55px;
+    }
+
+
+    .bibw footer > div:last-of-type {
+        margin: 0;
+    }
+
+    .bibw > footer#foot > input {
+        margin-right: 0;
+    }
+
+
+    .bibw > #wiki-last-edits {
+        right: 44px;
+    }
+
+    .bibw > .menu-popover {
+        right: 5px
+    }
+
+    .bibw footer > .footer-menu-icon > #inventory_display {
+        right: none
+    }
+
+    .bibw > input {
+        font-size: 18px !important;
+        padding: 10px 80px 15px 5px;
+    }
+
+    .bibw #record-menu {
+        right: 197px;
+    }
+}

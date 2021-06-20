@@ -17,45 +17,61 @@
     </div>
 </header>
 <main id="main">
-    <div id="underlay"></div>
-    <div id="chat">
+    <div id="left-panel">
+        <div id="underlay"></div>
+        <div id="chat">
+        </div>
+        <div id="bank_display"></div>
+
+        <input autofocus placeholder="Message..." id="input" maxlength="300">
+
     </div>
-    <ul id="userlist"></ul>
+    <div id="right-panel">
+        <ul id="userlist"></ul>
+
+        <div id="footer-menu">
+            <div class="footer-menu-icon" id="record">
+                <img id="microphone-icon" src="img/icons/micro.svg"/>
+                <span class="tooltiptext">enregistrer du son</span>
+            </div>
+            <div class="footer-menu-icon" id="chest">
+                <img src="img/icons/coffre.svg"/>
+                <div id="inventory_display"></div>
+                <span class="tooltiptext">Inventaire</span>
+            </div>
+            <div class="footer-menu-icon" id="bnl-link">
+                <a href="https://bnl.loult.family" target="_blank">
+                    <img id="bnl-icon" src="img/icons/bnl-closed.svg"/>
+                </a>
+                <span class="tooltiptext">Accéder à la BNL</span>
+            </div>
+            <div class="footer-menu-icon" id="userswitch">
+                <img id="pokeball" src="img/icons/masterball.svg"/>
+                <span class="tooltiptext">Liste utilisateurs</span>
+            </div>
+
+            <div class="footer-menu-icon" id="upload">
+                <label for="file-upload">
+                    <img id="upload-icon" src="img/icons/upload-grey.svg">
+                </label>
+                <input id="file-upload" type="file"/>
+                <span class="tooltiptext">Envoyer un fichier</span>
+            </div>
+            <div class="footer-menu-icon" id="vol">
+                <img src="img/icons/flute.svg"/>
+                <span class="tooltiptext">son</span>
+            </div>
+            <div class="footer-menu-icon" id="menu_display">
+                <img class="" id="gear" src="img/icons/roue-crantee.svg">
+                <span class="tooltiptext">Menu</span>
+            </div>
+            <div class="footer-menu-icon" id="wiki_display">
+                <img id="pokedex" src="img/icons/pokedex.svg"/>
+                <span class="tooltiptext">WikiLoult</span>
+            </div>
+        </div>
+    </div>
 </main>
-<footer id="foot">
-    <div id="bank_display"></div>
-    <div class="icon" id="chest">
-        <img src="img/icons/coffre.svg" />
-        <div id="inventory_display"></div>
-    </div>
-    <input autofocus placeholder="Message..." id="input" maxlength="300">
-    <div class="icon" id="record">
-        <img id="microphone-icon" src="img/icons/micro.svg"/>
-        <span class="tooltiptext">enregistrer du son</span>
-    </div>
-    <div class="icon" id="upload">
-        <label for="file-upload">
-            <img id="upload-icon" src="img/icons/upload-grey.svg">
-        </label>
-        <input id="file-upload" type="file"/>
-    </div>
-    <div class="icon" id="vol">
-        <img src="img/icons/flute.svg"/>
-        <span class="tooltiptext">son</span>
-    </div>
-    <div class="icon" id="wiki_display">
-        <img id="pokedex" src="img/icons/pokedex.svg" />
-        <span class="tooltiptext">WikiLoult</span>
-    </div>
-    <div class="icon" id="menu_display">
-        <img class="" id="gear" src="img/icons/roue-crantee.svg" >
-        <span class="tooltiptext">Menu</span>
-    </div>
-    <div class="icon" id="userswitch">
-        <img id="pokeball" src="img/icons/masterball.svg"/>
-        <span class="tooltiptext">liste</span>
-    </div>
-</footer>
 
 <div class="menu-popover popover-display-false" id="record-menu">
     <div><i class="material-icons" id="send-button" disabled="">save_alt</i></div>
@@ -86,7 +102,6 @@
         <select id="theme">
             <option value="bibw">Bibw</option>
             <option value="cozy">Toumiwmiw</option>
-            <!--option value="compact">Old school</option-->
             <option value="console">Minitel</option>
             <option value="fat">Phat Katz</option>
         </select>
@@ -141,11 +156,11 @@
         <span id="automute">Automute</span>
         <input type="checkbox" id="am">
     </div>
-    <div id="menu-footer">
+    <div id="popover-menu-footer">
         <a href="https://loult.family/magnacharta.html" target="_blank">Charte</a>
         <a href="https://github.com/loult-elte-fwere/loult-ng" target="_blank">Github</a>
         <a href="http://loult.wordpress.com" target="_blank"><img class="pokeball pokeballMenu"
-                                                                  src="img/icons/pokeball.svg" /> Blog</a>
+                                                                  src="img/icons/pokeball.svg"/> Blog</a>
     </div>
 
 </div>

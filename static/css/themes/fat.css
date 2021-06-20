@@ -1,0 +1,34 @@
+.fat #chat {
+    padding-left: 4px;
+}
+
+.fat #chat > div > div:first-child {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    opacity: 0.1;
+    z-index: 21;
+    background: transparent !important;
+}
+
+.fat #chat > div:not(:first-child) {
+    border-top: 2px solid #999;
+    border-color: inherit;
+}
+
+.fat #chat > div > :nth-child(2) {
+    padding-left: 1px;
+    z-index: 24;
+}
+
+.fat #underlay {
+    display: none;
+}
+
+.fat #chat > div > :nth-child(2) > div:not(:first-child) {
+    color: inherit !important;
+}

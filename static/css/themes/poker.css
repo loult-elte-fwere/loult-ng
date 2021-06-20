@@ -1,0 +1,26 @@
+.poker.cozy #chat > div > div:first-child {
+    border: 10px solid #FFF;
+}
+
+.poker.compact #chat > div > div:first-child {
+    border: 5px solid #FFF;
+}
+
+.poker #chat > div > div:first-child > img:nth-child(1) {
+    left: 0;
+    bottom: 3px;
+}
+
+.poker #chat > div > div:first-child {
+    background-color: #111 !important;
+}
+
+.poker #chat > div:nth-child(odd) > div:first-child {
+    border-left-color: inherit;
+    border-right-color: inherit;
+}
+
+.poker #chat > div:nth-child(even) > div:first-child {
+    border-top-color: inherit;
+    border-bottom-color: inherit;
+}
