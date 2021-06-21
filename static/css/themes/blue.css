@@ -1,28 +1,20 @@
-.blue main, .blue ul, .blue footer > div, .blue #window, .blue #window > div:first-child {
+.blue main,
+.blue #userlist,
+.blue footer > div
+{
     border-color: #0074d9;
 }
 
-.blue header, .blue #window > div:first-child, .blue footer > div > i, .blue footer, .blue #close {
+.blue header,
+.blue footer {
     background: #0074d9;
 }
 
-.blue footer > div > i, .blue #close, .blue #window > div:first-child {
-    color: #EEE;
-}
-
-.blue footer > div > i {
-    border-color: #EEE;
-}
 
 .blue #userlist > li > i {
     color: #333;
 }
 
-.blue #close {
-    padding: 5px;
-    border-radius: 99px;
-    border: 2px solid #DDD;
-}
 
 .blue #close:hover {
     background: #0074d9 !important;

@@ -23,13 +23,11 @@
 .night main,
 .night #input,
 .night #userlist,
-.night #close,
-.night #footer-menu,
-.night #window {
+.night #footer-menu {
     border-color: #111;
 }
 
-.night #input{
+.night #input {
     border: solid #111 2px;
     margin-right: 0px;
     border-right: 0px;

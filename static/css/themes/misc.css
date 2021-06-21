@@ -1,4 +1,5 @@
-.flip #chat, .flip ul {
+.flip #chat,
+.flip #userlist {
     transform: rotate(180deg);
     direction: rtl;
     padding: 5px;
