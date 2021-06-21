@@ -6,6 +6,8 @@ from datetime import datetime
 from time import time as timestamp
 from typing import Tuple, List, Dict, Set, Optional, Deque, TYPE_CHECKING
 
+from autobahn.exception import Disconnected
+
 from config import MAX_COOKIES_PER_IP, BAN_TIME, CHANNEL_SETUP_INVENTORY_COUNT, ENABLE_OBJECTS
 from .objects import get_random_object
 from .objects.inventory import UserInventory
@@ -45,10 +47,13 @@ class Channel:
     def broadcast(self, binary_payload=None, **kwargs):
         msg = encode_json(kwargs)
         for client in self.clients:
-            if kwargs:  # in case there is no "text" message to be broadcasted
-                client.sendMessage(msg)
-            if binary_payload:
-                client.send_binary(binary_payload)
+            try:
+                if kwargs:  # in case there is no "text" message to be broadcasted
+                    client.sendMessage(msg)
+                if binary_payload:
+                    client.send_binary(binary_payload)
+            except Disconnected:
+                client.sendClose(code=4000, reason="Something went wrong, closing connection")
 
     def get_userlist(self):
         return OrderedDict([(user_id, deepcopy(user.info))
