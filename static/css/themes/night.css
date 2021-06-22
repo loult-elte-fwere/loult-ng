@@ -1,0 +1,68 @@
+
+.night #chat > div > :nth-child(2) > div:not(:first-child),
+.night #userlist > li > div > div {
+    color: #EEE;
+}
+
+.night,
+.night #userlist,
+.night #window,
+.night #input {
+    background: #222;
+    color: #EEE;
+}
+
+
+.night #close,
+.night #chat > div > div:first-child,
+.night #userlist > li > div > div:first-child > div {
+    background-color: #505151;
+    display: flex;
+}
+
+.night main,
+.night #input,
+.night #userlist,
+.night #footer-menu {
+    border-color: #111;
+}
+
+.night #input {
+    border: solid #111 2px;
+    margin-right: 0px;
+    border-right: 0px;
+}
+
+.night header,
+.night #window > div:first-child {
+    background: linear-gradient(to bottom, #111 0%, #333 100%);
+}
+
+.night #footer-menu {
+    background: linear-gradient(to bottom, #333 0%, #111 100%);
+    border: solid #111 2px;
+}
+
+.night #userlist > li > div {
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0) 35px, #222 35px, #222 100%);
+}
+
+.night #underlay {
+    -webkit-filter: invert(50%) brightness(200%);
+    filter: invert(50%) brightness(200%);
+}
+
+.night ::-webkit-scrollbar-track {
+    background-color: #222;
+}
+
+.night ::-webkit-scrollbar,
+.night ::-webkit-scrollbar-thumb {
+    background-color: #333;
+}
+
+.night ::-webkit-scrollbar-track,
+.night ::-webkit-scrollbar,
+.night ::-webkit-scrollbar-thumb {
+    border-color: #222;
+}

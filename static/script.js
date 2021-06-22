@@ -1341,17 +1341,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Inventory chest
 
-        chest.addEventListener('mouseover', function (event) {
-            chest.firstElementChild.src = 'img/icons/coffreouvert.svg';
-            ws.send(JSON.stringify({type: 'inventory'}));
-            inventory_display.style.display = "flex";
-            bank_display.style.display = "none";
-        });
-
-        chest.addEventListener('mouseleave', function (event) {
-            event.stopPropagation();
-            chest.firstElementChild.src = 'img/icons/coffre.svg';
-            inventory_display.style.display = "none";
+        chest.addEventListener('click', function (event) {
+            if (inventory_display.style.display === "none") {
+                chest.firstElementChild.src = 'img/icons/coffreouvert.svg';
+                ws.send(JSON.stringify({type: 'inventory'}));
+                inventory_display.style.display = "flex";
+            } else {
+                event.stopPropagation();
+                chest.firstElementChild.src = 'img/icons/coffre.svg';
+                inventory_display.style.display = "none";
+            }
         });
 
         bank_display.addEventListener('mouseleave', function (event) {
@@ -1416,25 +1415,28 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Users list display
 
-        var userswitch = document.getElementById('userswitch');
+        var userswitch = document.getElementById('userlist-toggle');
 
         userswitch.onclick = function () {
             var atBottom = (chat.scrollTop === (chat.scrollHeight - chat.offsetHeight));
-            userlist.style.width = (userlist.style.width === '0px' ? '200px' : '0px');
-            head.style.paddingRight = underlay.style.right = userlist.style.width;
+            document.body.classList.toggle("userlist-folded");
+            // userlist.style.width = (userlist.style.width === '0px' ? '200px' : '0px');
+            // head.style.paddingRight = underlay.style.right = userlist.style.width;
             if (atBottom)
                 chat.scrollTop = chat.scrollHeight;
         };
 
         // wheel turning
-        gear.onclick = function myFunction() {
-            var wheelTurning = document.getElementById("menu_display");
-            wheelTurning.classList.toggle("rotation");
+        var menugear = document.getElementById('menu-gear-display');
+        var menugearToolTip = document.getSelection('#menu-gear-display > span');
+
+        gear.onclick = function () {
+            menugear.classList.toggle("rotation");
+            menugearToolTip.classList.toggle("hidden");
         }
 
         // Menu pop-over panel display
-        var menugear = document.getElementById('menu_display');
-        menugear.onclick = function openMenu() {
+        menugear.onclick = function () {
             menuOpen = !menuOpen;
             var element = document.getElementById("loult-menu");
             element.classList.toggle("popover-display-false");
@@ -1448,6 +1450,16 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         pokedex.onmouseleave = function unhover() {
             pokedex.setAttribute('src', 'img/icons/pokedex.svg');
+        }
+
+
+        // BNL link
+        var bnlLink = document.getElementById('bnl-icon')
+        bnlLink.onmouseover = function hover() {
+            bnlLink.setAttribute('src', 'img/icons/bnl-open.svg');
+        }
+        bnlLink.onmouseleave = function unhover() {
+            bnlLink.setAttribute('src', 'img/icons/bnl-closed.svg');
         }
 
         async function getLastEdits() {

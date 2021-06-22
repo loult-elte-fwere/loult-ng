@@ -1,0 +1,22 @@
+.blue main,
+.blue #userlist,
+.blue footer > div
+{
+    border-color: #0074d9;
+}
+
+.blue header,
+.blue footer {
+    background: #0074d9;
+}
+
+
+.blue #userlist > li > i {
+    color: #333;
+}
+
+
+.blue #close:hover {
+    background: #0074d9 !important;
+    opacity: 0.8;
+}

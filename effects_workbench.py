@@ -3,11 +3,11 @@ import logging
 from asyncio import get_event_loop
 from hashlib import md5
 import os
-from tools.state import LoultServerState
+from loult_serv.state import LoultServerState
 
 from salt import SALT
-from tools.effects.effects import *  # See tools/__init__.py for available effects
-from tools.users import User
+from loult_serv.effects.effects import *  # See loult_serv/__init__.py for available effects
+from loult_serv.state_users import User
 
 logging.getLogger().setLevel(logging.DEBUG)
 logging.getLogger("pysndfx").setLevel(logging.DEBUG)
@@ -35,7 +35,7 @@ class AddTrackEffect(AudioEffect):
     TIMEOUT = 30
 
     def process(self, wave_data: np.ndarray):
-        with open("tools/data/ambiance/war_mood.wav", "rb") as sndfile:
+        with open("server_classes/data/ambiance/war_mood.wav", "rb") as sndfile:
             rate, track_data = read(sndfile)
         # rnd_pos = random.randint(0,len(track_data) - len(wave_data))
         print(len(track_data))

@@ -1,9 +1,9 @@
 import unittest
-from tools.effects import AVAILABLE_EFFECTS
-from tools.effects.effects import TextEffect, PhonemicEffect, AudioEffect, VoiceEffect
+from loult_serv.effects import AVAILABLE_EFFECTS
+from loult_serv.effects.effects import TextEffect, PhonemicEffect, AudioEffect, VoiceEffect
 from voxpopuli import Voice
-from tools.tools import AudioRenderer
-from tools.users import VoiceParameters
+from loult_serv.tools import AudioRenderer
+from loult_serv.state_users import VoiceParameters
 from hashlib import md5
 from asyncio import get_event_loop
 

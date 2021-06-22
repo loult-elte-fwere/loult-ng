@@ -1,0 +1,30 @@
+.flip #chat,
+.flip #userlist {
+    transform: rotate(180deg);
+    direction: rtl;
+    padding: 5px;
+    border: 0;
+}
+
+.omg #underlay {
+    background-image: url("/img/logo_shiny.svg") !important;
+    background-size: 90%
+}
+
+.omg header {
+    display: none;
+}
+
+.omg main {
+    border-top: 0;
+}
+
+.retro {
+    -webkit-filter: grayscale(100%);
+    filter: grayscale(100%);
+}
+
+.drukqs {
+    -webkit-animation: fader 30s infinite;
+    animation: fader 30s infinite;
+}
