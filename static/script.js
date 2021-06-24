@@ -870,8 +870,8 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         var wsConnect = function () {
-            //ws = new WebSocket(location.origin.replace('http', 'ws') + '/socket' + location.pathname);
-            ws = new WebSocket('wss://loult.family/socket/toast');
+            ws = new WebSocket(location.origin.replace('http', 'ws') + '/socket' + location.pathname);
+            //ws = new WebSocket('wss://loult.family/socket/toast');
             ws.binaryType = 'arraybuffer';
 
             var lastMuted = false;
