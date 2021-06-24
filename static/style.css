@@ -126,7 +126,8 @@ header > div > img {
 
 
 main {
-    z-index: 20;
+    position: relative;
+    z-index: 0;
     min-width: 0;
     min-height: 0;
     height: 100%;
@@ -177,6 +178,7 @@ main {
 
 #record > img {
     cursor: pointer;
+<<<<<<< HEAD
 }
 
 /* Make the microphone icon pulsate when recording is active */
@@ -197,12 +199,12 @@ main {
 }
 
 #record-menu {
-    height: unset;
-    width: unset;
-    right: 145px;
-    bottom: 110px;
+    height: 128px;
+    width: 64px;
+    right: 220px;
+    bottom: 64px;
 }
-
+/*
 #record-menu:after {
     right: 7px;
 }
@@ -210,10 +212,11 @@ main {
 #record-menu:before {
     right: 15px;
 }
-
+*/
 #record-menu > div {
     margin: 0 12px;
     border-bottom: unset;
+    margin: 0 auto;
 }
 
 #record-menu > div > i {
@@ -225,6 +228,7 @@ main {
     opacity: 0.4;
     color: lightgrey;
     cursor: not-allowed;
+    margin: 0 auto;
 }
 
 #play-button {
@@ -598,8 +602,8 @@ a:hover, li > i:hover, footer i:hover, #window input:hover, #window label:hover,
     flex-wrap: wrap;
     align-content: flex-start;
     max-width: 220px;
-    bottom: 110px;
-    right: 210px;
+    bottom: 64px;
+    right: 220px;
     min-width: 85px;
     padding: 7px;
     padding: 25px 25px 25px 30px;
@@ -717,7 +721,7 @@ a:hover, li > i:hover, footer i:hover, #window input:hover, #window label:hover,
     background-color: #f2fbff;
     border-radius: 18px;
     bottom: 70px;
-    right: 15px;
+    right: 220px;
     z-index: 50;
     color: #000;
     grid-template-columns: 100%;
@@ -793,7 +797,7 @@ ul#articles-list > li > p:nth-of-type(2) {
     background-color: #f2fbff;
     border-radius: 18px;
     bottom: 70px;
-    right: 18px;
+    right: 220px;
     z-index: 50;
     color: #000;
     grid-template-columns: 100%;
@@ -1056,8 +1060,8 @@ button:focus, input:focus {
 
 .footer-menu-icon {
     display: inline-block;
-    width: 49px;
-    height: 49px;
+    width: 48px;
+    height: 48px;
     margin: 0;
     padding: 5px;
     border: 0;
@@ -1088,7 +1092,7 @@ button:focus, input:focus {
 }
 
 .tooltiptext {
-    font-family: "PokemonGB", monospace;
+    font-family: Verdana;
     font-size: 10px;
     visibility: hidden;
     text-transform: uppercase;
@@ -1104,8 +1108,19 @@ button:focus, input:focus {
     z-index: 1;
 }
 
-.footer-menu-icon:hover .tooltiptext {
+.userlist-folded > main > #right-panel > #footer-menu > .footer-menu-icon:hover .tooltiptext {
     visibility: visible;
+    position: absolute;
+    right: 64px;
+    top: 0;
+    text-align: right;
+    top: 16px;
+}
+
+
+main > #right-panel > #footer-menu > .footer-menu-icon:hover .tooltiptext {
+    visibility: visible;
+    right: 28px;
 }
 
 @-webkit-keyframes fader {
@@ -1204,6 +1219,14 @@ button:focus, input:focus {
 
 .userlist-folded #right-panel {
     width: 50px;
+    position: absolute; 
+    right: 0;
+    z-index: 1000;
+    top: -2px;
+}
+
+.bibw + .userlist-folded #right-panel {
+    top: 100px!important;
 }
 
 .userlist-folded #userlist {
@@ -1259,6 +1282,8 @@ button:focus, input:focus {
 
 .userlist-folded header {
     padding-right: 0px;
+    position: relative;
+    z-index: 1;
 }
 
 .userlist-folded .tooltiptext {

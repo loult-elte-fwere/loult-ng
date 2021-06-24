@@ -14,10 +14,10 @@ body.bibw.night {
 }
 
 body.bibw.day {
-    background: -moz-linear-gradient(top, #dbe7ff 0%, #3375c3 19%, #001848 82%, #f0d9f1 100%); /* FF3.6-15 */
-    background: -webkit-linear-gradient(top, #dbe7ff 0%, #3375c3 19%, #001848 82%, #f0d9f1 100%); /* Chrome10-25,Safari5.1-6 */
-    background: linear-gradient(to bottom, #dbe7ff 0%, #3375c3 19%, #001848 82%, #f0d9f1 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    background: rgb(208,157,109);
+    background: radial-gradient(circle, rgba(208,157,109,1) 0%, rgba(78,135,203,1) 78%, rgba(61,99,144,1) 94%);
 }
+
 
 body.bibw.blue {
     background: #FDFDFD;
@@ -31,10 +31,14 @@ body.bibw.blue {
     mix-blend-mode: none;
 }
 
-.bibw.blue > input,
-.bibw.day > #input {
-    background: linear-gradient(#acd8ff 0%, #0074d9 100%);
+.bibw.blue  input {
+    background: linear-gradient(#acd8ff 0%, #0074d9 100%)!important;
     border-right: 0
+}
+
+.bibw.day #input {
+    background: none; 
+    border: 1px solid white;
 }
 
 .bibw.blue > #input::placeholder {
@@ -98,13 +102,19 @@ body.bibw.blue {
     right: 30px;
 }
 
+.bibw.userlist-folded #right-panel {
+    right: -12px;
+    top: 50%;
+    margin-top: -260px;
+}
+
 .userlist-folded.bibw #wiki-last-edits,
 .userlist-folded.bibw .menu-popover {
     right: 90px
 }
 
 .bibw #chat {
-    margin-left: 25px;
+    margin-left: 0 12px 0 12px;
     line-height: 1.6em;
     scrollbar-width: none;
 }
@@ -130,7 +140,7 @@ body.bibw.blue {
 
 .bibw #userlist > li {
     width: 100%;
-    margin-left: 7px;
+    /*margin-left: 7px;*/
     padding-right: 7px;
 }
 
@@ -140,6 +150,7 @@ body.bibw.blue {
 
 .bibw #userlist > li > i, .bibw select {
     color: #7baaad;
+    opacity: .66;
 }
 
 .bibw #close,
@@ -166,24 +177,21 @@ body.bibw.blue {
     background: none !important;
     position: absolute;
     width: 100%;
+    padding-right: 220px;
 }
 
 .bibw header > div {
     background-color: #0B1221;
     border-radius: 40px;
     width: auto;
-    padding-left: 15px;
-    padding-right: 15px;
-    margin-top: 15px;
-}
-
-.bibw header > div > img {
-    mix-blend-mode: hard-light;
+    padding-left: 8px;
+    padding-right: 8px;
+    margin-top: 12px;
 }
 
 .bibw #left-panel, .bibw #right-panel {
     background: none !important;
-    margin-bottom: 25px;
+    margin-bottom: 24px;
 }
 
 .bibw #right-panel {
@@ -206,9 +214,9 @@ body.bibw.blue {
     border-radius: 50px;
     font-size: 20px !important;
     line-height: 50px;
-    margin-right: 10px;
+    margin: 0 12px 0 12px;
     padding: 10px 25px 10px 25px;
-    margin-left: 10px;
+    height: 48px;
 }
 
 .bibw > #input::placeholder {
@@ -221,7 +229,7 @@ body.bibw.blue {
     opacity: 0 !important;
     visibility: hidden;
     font-size: 10px;
-    padding-right: 17px;
+    width: 82px;
 }
 
 
@@ -261,10 +269,18 @@ body.bibw.blue {
 }
 
 .bibw .footer-menu-icon .tooltiptext {
+    font-family: Verdana;
     right: 30px;
     top: unset;
     bottom: 10px;
+    right: 28px!important;
+    color: #7baaad;
 }
+
+.bibw.userlist-folded > main > #right-panel > #footer-menu > .footer-menu-icon:hover .tooltiptext {
+    display: none;
+}
+
 
 .bibw footer > div > .footer-menu-icon {
     border-radius: 50px;
@@ -307,14 +323,12 @@ body.bibw.blue {
     animation: fadein 400ms;
 }
 
-.bibw #record-menu {
-    right: 170px;
-    bottom: 130px;
+.bibw #record-menu, .bibw #inventory_display, .bibw #loult-menu, .bibw #wiki-last-edits {
+    right: 232px;
+    bottom: 96px;
 }
 
-.userlist-folded.bibw #record-menu {
-    right: 90px;
-}
+
 @keyframes fadein {
     from {
         opacity: 0;
@@ -381,7 +395,7 @@ body.bibw.blue {
         display: flex;
         align-items: center;
         justify-content: center;
-        padding-right: 0;
+        padding-right: 220px;
     }
 
     .bibw header > div {
@@ -439,8 +453,16 @@ body.bibw.blue {
         font-size: 18px !important;
         padding: 10px 80px 15px 5px;
     }
-
-    .bibw #record-menu {
-        right: 197px;
+    
+    .bibw #left-panel, .bibw #right-panel {
+        margin-bottom: 8px
     }
+
+}
+
+.part > div > div, .bibw.day .part, .part > div > div, .bibw.day #chat > .log > div > div:first-of-type {
+    color: white; 
+    border-color: white;
+    text-shadow: none;
+    font-weight: 500;
 }
