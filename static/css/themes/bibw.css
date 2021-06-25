@@ -13,12 +13,6 @@ body.bibw.night {
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#0B1221', endColorstr='#023A68', GradientType=0);
 }
 
-body.bibw.day {
-    background: rgb(208,157,109);
-    background: radial-gradient(circle, rgba(208,157,109,1) 0%, rgba(78,135,203,1) 78%, rgba(61,99,144,1) 94%);
-}
-
-
 body.bibw.blue {
     background: #FDFDFD;
 }
@@ -34,11 +28,6 @@ body.bibw.blue {
 .bibw.blue  input {
     background: linear-gradient(#acd8ff 0%, #0074d9 100%)!important;
     border-right: 0
-}
-
-.bibw.day #input {
-    background: none; 
-    border: 1px solid white;
 }
 
 .bibw.blue > #input::placeholder {
@@ -60,17 +49,30 @@ body.bibw.blue {
     color: #0074d9;
 }
 
+body.bibw.day {
+    background: rgb(208,157,109);
+    background: radial-gradient(circle, #D9AB80 0%, #6C4545 78%, #3D6390 94%);
+}
+
+.bibw.day #input {
+    background: none; 
+    border: 1px solid white;
+    height: 56px;
+    margin-bottom: -4px;
+}
+
 .bibw.day #userlist > li > i,
 .bibw select,
 .bibw footer > div > i {
     color: #CEEEFF;
 }
-
-.bibw.day > #input {
-    color: black;
-    background: -moz-linear-gradient(top, #ceeeff 0%, #9bdcff 100%);
-    background: -webkit-linear-gradient(top, #ceeeff 0%, #9bdcff 100%);
-    background: linear-gradient(to bottom, #ceeeff 0%, #9bdcff 100%);
+.bibw.day main #chat div > a, .bibw.day #chat > div > div > div,
+.bibw.day .part, .part > div > div, .bibw.day #chat > .log > div > div:first-of-type,
+.bibw.day #chat > div > :nth-child(2) .greentext {
+    color: #FFF8BB;
+}
+.bibw.day #chat > .log > div > div:first-of-type {
+    text-shadow:2px 0px 10px #FFF8BB, -2px 0px 10px #FFF8BB; 
 }
 
 .bibw.day > #chat > .log > div > div:first-of-type {
@@ -121,7 +123,7 @@ body.bibw.blue {
 
 .bibw #chat > div > :nth-child(2) > div:not(:first-child),
 .bibw #userlist > li > div > div {
-    color: #ddd;
+    color: #FDFDFD;
 }
 
 .bibw #chat > div > :nth-child(2) .greentext {
@@ -184,8 +186,6 @@ body.bibw.blue {
     background-color: #0B1221;
     border-radius: 40px;
     width: auto;
-    padding-left: 8px;
-    padding-right: 8px;
     margin-top: 12px;
 }
 
@@ -458,11 +458,4 @@ body.bibw.blue {
         margin-bottom: 8px
     }
 
-}
-
-.part > div > div, .bibw.day .part, .part > div > div, .bibw.day #chat > .log > div > div:first-of-type {
-    color: white; 
-    border-color: white;
-    text-shadow: none;
-    font-weight: 500;
 }

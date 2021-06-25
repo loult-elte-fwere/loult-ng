@@ -126,8 +126,6 @@ header > div > img {
 
 
 main {
-    position: relative;
-    z-index: 0;
     min-width: 0;
     min-height: 0;
     height: 100%;
@@ -792,8 +790,8 @@ ul#articles-list > li > p:nth-of-type(2) {
 .menu-popover {
     display: grid;
     position: absolute;
-    height: 480px;
-    width: 255px;
+    height: 512px;
+    width: 280px;
     background-color: #f2fbff;
     border-radius: 18px;
     bottom: 70px;
@@ -817,7 +815,7 @@ ul#articles-list > li > p:nth-of-type(2) {
 }
 
 #popover-menu-footer > a {
-    color: #06A;
+    color: #2D8CE5;
     text-decoration: none;
     margin: 0;
     border-bottom: none;
@@ -832,10 +830,12 @@ input#volrange {
 
 input#volrange::-moz-range-track {
     background: black;
+    height: 1px;
 }
 
 input#volrange::-moz-range-progress {
     background-color: #2D8CE5;
+    height: 1px;
 }
 
 input#volrange::-moz-range-thumb {
@@ -851,6 +851,9 @@ input#volrange::-moz-range-thumb {
     font-family: inherit;
     font-weight: inherit;
 }
+.menu-popover > div:first-of-type {
+    padding-bottom: 4px;
+}
 
 .menu-popover > div > select {
     text-align: right;
@@ -864,31 +867,53 @@ input#volrange::-moz-range-thumb {
 
 #cookie, #change-cookie {
     box-sizing: border-box;
-    background: #e2f2f9;
-    border: 1px solid #9E9E9E;
+    border: 1px solid #2D8CE5;
     font-family: inherit;
     font-weight: 700;
     font-size: 1em;
-    height: 40px;
+    height: 56px;
     text-align: center;
+    margin: 8px 0 8px 0; 
 }
 
 #cookie {
-    border-radius: 0 15px 15px 0;
-    width: 55%;
-    font-size: .9em;
+    border-radius: 0 28px 28px 0;
+    border-left: none;
+    width: 50%;
+    font-size: 1em;
     font-weight: 500 !important;
+    background: #FFF;
 }
 
 #cookie:focus, #change-cookie:active {
     border: 1px solid rgb(20, 121, 251);
-    box-shadow: 0 0 0px 2px rgba(20, 121, 251, .25);
+    box-shadow: 0 0 0px 1px rgba(20, 121, 251,.25);
+}
+#change-cookie:active {
+    background: linear-gradient(#acd8ff 0%, #0074d9 66%, #acd8ff 100% ) !important;   
 }
 
 #change-cookie {
-    border-radius: 15px 0 0 15px;
-    width: 45%;
+    border-radius: 28px 0 0 28px;
+    width: 50%;
     text-align: left;
+    background: linear-gradient(#acd8ff 0%, #0074d9 100%) !important;
+    color:white;
+}
+
+#change-cookie div {
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    justify-content: center;
+}
+
+#cookie_icon {
+    display: block;
+    width: 24px;
+    height: 24px;
+    margin-left: 8px;
+    margin-top: 6px;
 }
 
 #change-cookie:hover {
@@ -917,9 +942,10 @@ button:focus, input:focus {
 
 .menu-blog-pokeball {
     position: absolute;
-    margin-right: 22px !important;
+    margin-right: 20px !important;
     float: left;
     right: 33px;
+    margin-top: 0!important;
 }
 
 /***** RESPONSIVE *****/
@@ -1156,6 +1182,7 @@ main > #right-panel > #footer-menu > .footer-menu-icon:hover .tooltiptext {
 .pokeball {
     width: 17px;
     height: 17px;
+    margin-top: 6px;
 }
 
 .sword {
