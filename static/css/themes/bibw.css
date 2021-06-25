@@ -51,8 +51,6 @@ body.bibw.blue {
 
 body.bibw.day {
     background: rgb(208,157,109);
-    background: linear-gradient(0.25turn, #6C4545 0%, #3d6390  66%, #D9AB80 100%); 
-    background: linear-gradient(-0.95turn, #6C4545 0%, #1f202f 0%, #FFCCA6 100%);
     background: radial-gradient(circle, #D9AB80 0%, #6C4545 78%, #3D6390 94%);
 }
 
